@@ -8,7 +8,11 @@ package com.toyknight.aeii.core.unit;
 public class Unit {
     
     private int attack;
-    
+    private int type;
+    private String unit_code;
+    private int team;
+    private int Max_hp;
+            
     public int getAttack() {
         return attack;
     }
