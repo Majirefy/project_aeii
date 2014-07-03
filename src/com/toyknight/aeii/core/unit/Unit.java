@@ -34,11 +34,11 @@ public class Unit {
       this.type = type;
     }
     
-      public String getUnit_code() {
+      public String getUnitCode() {
         return unit_code;
     }
     
-    public void setUnit_code(String unit_code) {
+    public void setUnitCode(String unit_code) {
         this.unit_code = unit_code;
     }
     
@@ -50,19 +50,19 @@ public class Unit {
         this.team = team;
     }
     
-      public int getMax_hp() {
+      public int getMaxHp() {
         return max_hp;
     }
     
-    public void setMax_hp(int max_hp) {
+    public void setMaxHp(int max_hp) {
         this.max_hp = max_hp;
     }
     
-      public int getCurrent_hp() {
+      public int getCurrentHp() {
         return current_hp;
     }
     
-    public void setCurrent_hp(int current_hp) {
+    public void setCurrentHp(int current_hp) {
         this.current_hp = current_hp;
     }
     
@@ -82,11 +82,11 @@ public class Unit {
         this.defence = defence;
     }
     
-      public int getMovement_point() {
+      public int getMovementPoint() {
         return movement_point;
     }
     
-    public void setMovement_point(int movement_point) {
+    public void setMovementPoint(int movement_point) {
         this.movement_point = movement_point;
     }
     
@@ -98,35 +98,39 @@ public class Unit {
         this.state = state;
     }
     
-      public int getHp_growth() {
+      public int getHpGrowth() {
         return hp_growth;
     }
     
-    public void setAttack_growth(int attack_growth) {
+    public void setAttackGrowth(int attack_growth) {
         this.attack_growth = attack_growth;
     }
-    
-      public int getDefence_growth() {
-        return defence_growth;
-    }
-    
-    public void setDefence_growth(int defence_growth) {
+	
+	public int getAttackGrowth() {
+		return attack_growth;
+	}
+	
+	public void setDefenceGrowth(int defence_growth) {
         this.defence_growth = defence_growth;
     }
     
-      public int getX_position() {
+    public int getDefenceGrowth() {
+        return defence_growth;
+    }
+    
+    public int getXPosition() {
         return x_position;
     }
     
-    public void setX_position(int x_position) {
+    public void setXPosition(int x_position) {
         this.x_position = x_position;
     }
     
-      public int getY_position() {
+      public int getYPosition() {
         return y_position;
     }
     
-    public void setY_position(int y_position) {
+    public void setYPosition(int y_position) {
         this.y_position = y_position;
     } 
 	
