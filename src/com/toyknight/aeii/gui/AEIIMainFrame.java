@@ -43,11 +43,11 @@ public class AEIIMainFrame extends JFrame implements WindowListener {
 				BASE_TILE_SIZE * COLUMNS,
 				BASE_TILE_SIZE * ROWS);
 		inGameFpsDelay = 1000 / Configuration.getGameSpeed();
-		this.setIconImage(
-				new ImageIcon(getClass().getResource("gameicon.png")).getImage());
 	}
 
 	public void init() {
+		this.setIconImage(
+				new ImageIcon(getClass().getResource("gameicon.png")).getImage());
 		canvas = new GameCanvas(BASE_CANVAS_SIZE, CANVAS_SCALE);
 		this.getContentPane().add(canvas);
 		this.getContentPane().setIgnoreRepaint(true);
