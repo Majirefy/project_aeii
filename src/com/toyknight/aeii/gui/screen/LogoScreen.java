@@ -1,6 +1,7 @@
 
 package com.toyknight.aeii.gui.screen;
 
+import com.toyknight.aeii.Launcher;
 import com.toyknight.aeii.gui.AEIIMainFrame;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
@@ -57,7 +58,7 @@ public class LogoScreen extends Screen {
 	public void update() {
 		if(logoDrapValue > 0) {
 			if(wait_time < 1700) {
-				wait_time += getContext().getCurrentFpsDelay();
+				wait_time += Launcher.getCurrentFpsDelay();
 			} else {
 				logoShown = true;
 			}
