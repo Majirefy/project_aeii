@@ -8,13 +8,13 @@ import java.awt.Graphics;
  *
  * @author toyknight
  */
-public abstract class AEIIGui {
+public abstract class AEIIComponent {
 	
 	private final Dimension SIZE;
 	private int x = 0;
 	private int y = 0;
 	
-	public AEIIGui(Dimension size) {
+	public AEIIComponent(Dimension size) {
 		this.SIZE = size;
 	}
 	

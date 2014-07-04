@@ -8,7 +8,7 @@ import java.awt.Graphics;
  *
  * @author toyknight
  */
-public class Screen extends AEIIGui {
+public class Screen extends AEIIComponent {
 	
 	private final AEIIMainFrame context;
 
@@ -30,7 +30,7 @@ public class Screen extends AEIIGui {
 		
 	}
 	
-	public final void addGui(AEIIGui gui) {
+	public final void addGui(AEIIComponent gui) {
 		
 	}
 
