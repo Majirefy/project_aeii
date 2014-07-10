@@ -2,36 +2,25 @@
 package com.toyknight.aeii.gui;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
+import javax.swing.JPanel;
 
 /**
  *
  * @author toyknight
  */
-public class Screen extends AEIIComponent {
+public abstract class Screen extends JPanel {
 	
 	private final AEIIMainFrame context;
 
 	public Screen(Dimension size, AEIIMainFrame context) {
-		super(size);
+		this.setPreferredSize(size);
 		this.context = context;
 	}
 	
-	public final AEIIMainFrame getContext() {
+	protected final AEIIMainFrame getContext() {
 		return context;
 	}
-
-	@Override
-	public void paint(Graphics g) {
-	}
 	
-	@Override
-	public void update() {
-		
-	}
-	
-	public final void addGui(AEIIComponent gui) {
-		
-	}
+	abstract public void update();
 
 }

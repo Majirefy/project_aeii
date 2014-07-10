@@ -2,12 +2,16 @@ package com.toyknight.aeii;
 
 import com.toyknight.aeii.gui.AEIIMainFrame;
 import com.toyknight.aeii.gui.GameCanvas;
+import com.toyknight.aeii.gui.ResManager;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.screen.LogoScreen;
 import com.toyknight.aeii.gui.util.DialogUtil;
+import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -24,7 +28,8 @@ public class Launcher {
 	private static long inMenuFpsDelay = 1000 / 15;
 	private static long inGameFpsDelay;
 	private static long currentFpsDelay = inMenuFpsDelay;
-	private static final AnimationThread animation_thread = new AnimationThread();
+	private static final Thread animation_thread = new Thread(new Animator());
+	private static final ExecutorService excecutor = Executors.newSingleThreadExecutor();
 
 	private static void init()
 			throws
@@ -42,18 +47,25 @@ public class Launcher {
 		MF.addWindowListener(new AEIIWindowListener());
 		MF.init();
 	}
-	private static void loadResources() {
-		((LogoScreen)MF.getCurrentScreen()).setResourceLoaded(true);
+
+	private static void loadResources() throws IOException {
+		ResManager.loadResources();
+		MF.setResourceLoaded();
 	}
 
 	private static void launch() {
-		isRunning = true;
-		isUpdating = true;
-		MF.setVisible(true);
-		animation_thread.start();
-		loadResources();
+		try {
+			isRunning = true;
+			isUpdating = true;
+			MF.setVisible(true);
+			excecutor.submit(animation_thread);
+			loadResources();
+		} catch (IOException ex) {
+			DialogUtil.showError(MF, ex.getMessage());
+			exit();
+		}
 	}
-	
+
 	public static long getCurrentFpsDelay() {
 		return currentFpsDelay;
 	}
@@ -61,41 +73,39 @@ public class Launcher {
 	public static void exit() {
 		isRunning = false;
 		isUpdating = false;
-		while (animation_thread.isAlive()) {
-		}
+		excecutor.shutdown();
 		MF.dispose();
 	}
 
 	public static void main(String[] args) {
-		try {
-			init();
-		} catch (ClassNotFoundException |
-				InstantiationException |
-				IllegalAccessException |
-				UnsupportedLookAndFeelException ex) {
-			//do nothing
-		} catch (IOException ex) {
-			DialogUtil.showError(null, ex.getMessage());
-		} finally {
-			launch();
-		}
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					init();
+				} catch (ClassNotFoundException |
+						InstantiationException |
+						IllegalAccessException |
+						UnsupportedLookAndFeelException ex) {
+					//do nothing
+				} catch (IOException ex) {
+					DialogUtil.showError(null, ex.getMessage());
+				} finally {
+					launch();
+				}
+			}
+		});
 	}
 
-	private static final class AnimationThread extends Thread {
-		
-		private Screen current_screen;
-		private GameCanvas canvas;
+	private static final class Animator implements Runnable {
 
 		@Override
 		public void run() {
 			while (isRunning) {
 				long start_time = System.currentTimeMillis();
 				if (isUpdating) {
-					canvas = MF.getCanvas();
-					current_screen = MF.getCurrentScreen();
-					current_screen.paint(canvas.getOffScreenGraphics());
-					canvas.paint(canvas.getGraphics());
-					current_screen.update();
+					MF.getCurrentScreen().update();
+					MF.getCurrentScreen().repaint();
 				}
 				long end_time = System.currentTimeMillis();
 				if (end_time - start_time < currentFpsDelay) {
