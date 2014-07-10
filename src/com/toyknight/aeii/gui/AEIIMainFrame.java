@@ -3,6 +3,7 @@ package com.toyknight.aeii.gui;
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
 import com.toyknight.aeii.gui.screen.LogoScreen;
+import com.toyknight.aeii.gui.screen.MainMenuScreen;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import javax.swing.JFrame;
 public class AEIIMainFrame extends JFrame {
 	
 	public static final String ID_LOGO_SCREEN = "logo";
+	public static final String ID_MAIN_MENU_SCREEN = "main_menu";
 
 	private final int ROWS = 10;
 	private final int COLUMNS = 15;
@@ -23,10 +25,9 @@ public class AEIIMainFrame extends JFrame {
 	private final int BASE_TILE_SIZE;
 	private final Dimension SCREEN_SIZE;
 
-	private GameCanvas canvas;
-
 	private Screen current_screen;
 	private LogoScreen logo_screen;
+	private MainMenuScreen main_menu_screen;
 
 	private CardLayout screen_container;
 
@@ -47,6 +48,8 @@ public class AEIIMainFrame extends JFrame {
 		this.getContentPane().setLayout(screen_container);
 		logo_screen = new LogoScreen(SCREEN_SIZE, this);
 		this.getContentPane().add(logo_screen, ID_LOGO_SCREEN);
+		main_menu_screen = new MainMenuScreen(SCREEN_SIZE, this);
+		this.getContentPane().add(main_menu_screen, ID_MAIN_MENU_SCREEN);
 		setCurrentScreen(ID_LOGO_SCREEN);
 
 		this.setResizable(false);
@@ -61,17 +64,20 @@ public class AEIIMainFrame extends JFrame {
 			case ID_LOGO_SCREEN:
 				current_screen = logo_screen;
 				break;
+			case ID_MAIN_MENU_SCREEN:
+				current_screen = main_menu_screen;
 			default:
 				break;
 		}
+		current_screen.revalidate();
 	}
 
 	public Screen getCurrentScreen() {
 		return current_screen;
 	}
-
-	public GameCanvas getCanvas() {
-		return canvas;
+	
+	public int getScreenScale() {
+		return SCREEN_SCALE;
 	}
 
 	public int getTileSize() {

@@ -1,10 +1,7 @@
 package com.toyknight.aeii;
 
 import com.toyknight.aeii.gui.AEIIMainFrame;
-import com.toyknight.aeii.gui.GameCanvas;
 import com.toyknight.aeii.gui.ResManager;
-import com.toyknight.aeii.gui.Screen;
-import com.toyknight.aeii.gui.screen.LogoScreen;
 import com.toyknight.aeii.gui.util.DialogUtil;
 import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
@@ -49,7 +46,7 @@ public class Launcher {
 	}
 
 	private static void loadResources() throws IOException {
-		ResManager.loadResources();
+		ResManager.init();
 		MF.setResourceLoaded();
 	}
 

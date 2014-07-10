@@ -3,6 +3,7 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Launcher;
 import com.toyknight.aeii.gui.AEIIMainFrame;
+import static com.toyknight.aeii.gui.AEIIMainFrame.ID_MAIN_MENU_SCREEN;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
 import com.toyknight.aeii.gui.util.ResourceUtil;
@@ -67,7 +68,7 @@ public class LogoScreen extends Screen {
 			}
 		}else {
 			if(bgColor.equals(Color.BLACK)) {
-				
+				getContext().setCurrentScreen(ID_MAIN_MENU_SCREEN);
 			}else {
 				bgColor = new Color(bgColor.getRed()-17, bgColor.getGreen()-17, bgColor.getBlue()-17);
 			}
