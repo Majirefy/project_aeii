@@ -19,8 +19,8 @@ public class AEIIMainFrame extends JFrame {
 	public static final String ID_LOGO_SCREEN = "logo";
 	public static final String ID_MAIN_MENU_SCREEN = "main_menu";
 
-	private final int ROWS = 10;
-	private final int COLUMNS = 15;
+	private final int ROWS = 12;
+	private final int COLUMNS = 19;
 	private final int SCREEN_SCALE;
 	private final int BASE_TILE_SIZE;
 	private final Dimension SCREEN_SIZE;

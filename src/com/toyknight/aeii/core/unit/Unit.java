@@ -1,6 +1,8 @@
 
 package com.toyknight.aeii.core.unit;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author toyknight
@@ -15,13 +17,12 @@ public class Unit {
     private int attack;
     private int defence;
     private int movement_point;
-//  private ArrayList[] abilities[];
-//  private ArrayList[] spells[];
+	private ArrayList<Integer> abilities;
     private int state;
     private int hp_growth;
     private int attack_growth;
     private int defence_growth;
-  //  private int movement_growth;
+    private int movement_growth;
     private int x_position;
     private int y_position;
      
