@@ -24,9 +24,10 @@ public class Launcher {
 
 	private static boolean isRunning;
 	private static boolean isUpdating;
-	private static long inMenuFpsDelay = 1000 / 15;
+	
+	private static long inMenuFpsDelay;
 	private static long inGameFpsDelay;
-	private static long currentFpsDelay = inMenuFpsDelay;
+	private static long currentFpsDelay;
 	private static final Thread animation_thread = new Thread(new Animator());
 	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -40,6 +41,7 @@ public class Launcher {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		Configuration.init();
 		Language.init();
+		inMenuFpsDelay = 1000 / 15;
 		inGameFpsDelay = 1000 / Configuration.getGameSpeed();
 		String title = Language.getText("LB_TITLE");
 		MF = new AEIIMainFrame(title);
@@ -57,6 +59,7 @@ public class Launcher {
 			isRunning = true;
 			isUpdating = true;
 			MF.setVisible(true);
+			currentFpsDelay = inMenuFpsDelay;
 			executor.submit(animation_thread);
 			loadResources();
 		} catch (IOException ex) {
