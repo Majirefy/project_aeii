@@ -19,6 +19,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Launcher {
 
 	private static AEIIMainFrame MF;
+	
+	private static final Object FPS_LOCK = new Object();
 
 	private static boolean isRunning;
 	private static boolean isUpdating;
@@ -26,7 +28,7 @@ public class Launcher {
 	private static long inGameFpsDelay;
 	private static long currentFpsDelay = inMenuFpsDelay;
 	private static final Thread animation_thread = new Thread(new Animator());
-	private static final ExecutorService excecutor = Executors.newSingleThreadExecutor();
+	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	private static void init()
 			throws
@@ -55,22 +57,36 @@ public class Launcher {
 			isRunning = true;
 			isUpdating = true;
 			MF.setVisible(true);
-			excecutor.submit(animation_thread);
+			executor.submit(animation_thread);
 			loadResources();
 		} catch (IOException ex) {
 			DialogUtil.showError(MF, ex.getMessage());
 			exit();
 		}
 	}
+	
+	public static void setCurrentFpsDelayToGame() {
+		synchronized(FPS_LOCK) {
+			currentFpsDelay = inGameFpsDelay;
+		}
+	}
+	
+	public static void setCurrentFpsDelayToMenu() {
+		synchronized(FPS_LOCK) {
+			currentFpsDelay = inMenuFpsDelay;
+		}
+	}
 
 	public static long getCurrentFpsDelay() {
-		return currentFpsDelay;
+		synchronized(FPS_LOCK) {
+			return currentFpsDelay;
+		}
 	}
 
 	public static void exit() {
 		isRunning = false;
 		isUpdating = false;
-		excecutor.shutdown();
+		executor.shutdown();
 		MF.dispose();
 	}
 
@@ -105,8 +121,9 @@ public class Launcher {
 					MF.getCurrentScreen().repaint();
 				}
 				long end_time = System.currentTimeMillis();
-				if (end_time - start_time < currentFpsDelay) {
-					waitDelay(currentFpsDelay - (end_time - start_time));
+				long current_fps_delay = getCurrentFpsDelay();
+				if (end_time - start_time < current_fps_delay) {
+					waitDelay(current_fps_delay - (end_time - start_time));
 				} else {
 					waitDelay(0);
 				}
