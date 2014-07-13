@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
  */
 public class ResManager {
 	
+	private static BufferedImage img_logo;
 	private static BufferedImage[] borders;
 	private final static Color aeii_panel_bg = new Color(36, 42, 69);
 	
@@ -21,6 +22,7 @@ public class ResManager {
 	
 	public static void init() throws IOException {
 		loadBorder();
+		img_logo = ImageIO.read(new File("res\\logo.png"));
 	}
 	
 	private static void loadBorder() throws IOException {
@@ -31,6 +33,10 @@ public class ResManager {
 					ResourceUtil.getImageClip(img_borders, 16*i, 0, 16, 16);
 			borders[i] = border;
 		}
+	}
+	
+	public static BufferedImage getLogoImage() {
+		return img_logo;
 	}
 	
 	public static BufferedImage getBorder(int index) {
