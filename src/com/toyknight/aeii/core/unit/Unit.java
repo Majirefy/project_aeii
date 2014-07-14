@@ -10,18 +10,22 @@ import java.util.ArrayList;
 public class Unit {
    
     private int type;
+    private int grade;     //等级（初始等级为0，最高可以升级到3级）
     private String unit_code;
     private int team;
     private int max_hp;
     private int current_hp;
     private int attack;
-    private int defence;
+    private int attack_type;  //攻击类型整型（0：表示为物理攻击，1：表示魔法攻击）
+    private int physical_defence;
+    private int magic_defence;
     private int movement_point;
-	private ArrayList<Integer> abilities;
+    private ArrayList<Integer> abilities = new ArrayList<Integer>();
     private int state;
     private int hp_growth;
     private int attack_growth;
-    private int defence_growth;
+    private int physical_defence_growth;
+    private int magic_defence_growth;
     private int movement_growth;
     private int x_position;
     private int y_position;
@@ -35,6 +39,13 @@ public class Unit {
       this.type = type;
     }
     
+    public int getGrade() {
+        return grade;
+    }
+    
+    public void setGrade(int grade) {
+        this.grade = grade;
+    }
       public String getUnitCode() {
         return unit_code;
     }
@@ -75,14 +86,36 @@ public class Unit {
         this.attack = attack;
     }
     
-      public int getDefence() {
-        return defence;
+    public int getAttackType() {
+        return attack_type;
     }
     
-    public void setDefence(int defence) {
-        this.defence = defence;
+    public void  setAttackType(int attack_type) {
+        this.attack_type = attack_type;
+    }
+      public int getPhysicalDefence() {
+        return physical_defence;
     }
     
+    public void setPhysicalDefence(int physical_defence) {
+        this.physical_defence = physical_defence;
+    }
+    
+    public int getMagicDefence() {
+        return magic_defence;
+    }
+    
+    public void setMagicDefence(int magic_defence) {
+        this.magic_defence = magic_defence;
+    }
+    
+    public int getMovementGrowth() {
+        return movement_growth;
+    }
+    
+    public void setMovementGrowth(int movement_growth) {
+        this.movement_growth = movement_growth;
+    }
       public int getMovementPoint() {
         return movement_point;
     }
@@ -111,12 +144,20 @@ public class Unit {
 		return attack_growth;
 	}
 	
-	public void setDefenceGrowth(int defence_growth) {
-        this.defence_growth = defence_growth;
+    public int getPhysicalDefenceGrowth() {
+        return physical_defence_growth;
     }
     
-    public int getDefenceGrowth() {
-        return defence_growth;
+    public void setPhysicalDefenceGrowth(int physical_defence_growth) {
+        this.physical_defence_growth = physical_defence_growth;
+    }
+    
+    public int getMagicDefenceGrowth() {
+        return magic_defence_growth;
+    }
+    
+    public void setMagicDefenceGrowth(int magic_defence_growth) {
+        this.magic_defence_growth = magic_defence_growth;
     }
     
     public int getXPosition() {
