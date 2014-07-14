@@ -20,7 +20,7 @@ public class Unit {
     private int physical_defence;
     private int magic_defence;
     private int movement_point;
-    private ArrayList<Integer> abilities = new ArrayList<Integer>();
+    private ArrayList<Integer> abilities;
     private int state;
     private int hp_growth;
     private int attack_growth;
@@ -122,6 +122,14 @@ public class Unit {
     
     public void setMovementPoint(int movement_point) {
         this.movement_point = movement_point;
+    }
+    
+    public ArrayList<Integer> getAbilities() {
+        return abilities;
+    }
+    
+    public void setAbilities(ArrayList<Integer> abilities) {
+        this.abilities = abilities;
     }
     
       public int getState() {
