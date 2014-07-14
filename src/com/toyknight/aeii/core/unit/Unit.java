@@ -29,6 +29,17 @@ public class Unit {
     private int movement_growth;
     private int x_position;
     private int y_position;
+    private Unit unit;         //得到自身变量
+    private int max_spell_range;  //最大施法距离
+    private int min_spell_range;   //最小施法距离
+    
+    public Unit getUnit () {
+        return unit;
+    }
+    
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
      
     public int getType() {
         return type;
@@ -40,6 +51,9 @@ public class Unit {
     }
     
     public int getGrade() {
+        if(grade == 3) {
+            this.getAbilities();
+        }
         return grade;
     }
     
@@ -183,5 +197,20 @@ public class Unit {
     public void setYPosition(int y_position) {
         this.y_position = y_position;
     } 
-	
+
+    public int getMaxSpellRange() {
+        return max_spell_range;
+    }
+    
+    public void setMaxSpellRange(int max_spell_range) {
+        this.max_spell_range = max_spell_range;
+    }
+    
+    public int getMinSpellRange() {
+        return min_spell_range;
+    }
+    
+    public void setMinSpellRange(int min_spell_range) {
+        this.min_spell_range = min_spell_range;
+    }
 }
