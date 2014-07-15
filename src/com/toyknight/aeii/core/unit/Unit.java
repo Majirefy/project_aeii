@@ -6,38 +6,64 @@ import java.util.ArrayList;
  *
  * @author toyknight
  */
-public class Unit {
+public class Unit {   
 
 	public static final int ATTACK_PHYSICAL = 0x1;
 	public static final int ATTACK_MAGICAL = 0x2;
 
 	private int level = 0;     //等级（初始等级为0，最高可以升级到3级）
-	private String unit_code;
-	private int team;
+	
+        private String unit_code;
+        private int team;
+        
 	private int max_hp;
 	private int current_hp;
 	private int attack;
-
-	private int attack_type;  //攻击类型整型（0：表示为物理攻击，1：表示魔法攻击）
+	private int attack_type;  //攻击类型整型（0：表示为物理攻击，1：表示魔法攻击）      
 	private int physical_defence;
 	private int magical_defence;
 	private int movement_point;
 	private int current_movement_point;
+        
 	private ArrayList<Integer> abilities;
 	private ArrayList<Integer> learnable_abilities;
 	private ArrayList<Buff> buff_list;
+        
 	private int hp_growth;
 	private int attack_growth;
 	private int physical_defence_growth;
 	private int magical_defence_growth;
 	private int movement_growth;
+        
 	private int x_position;
 	private int y_position;
+        
 	private int max_attack_range;  //最大攻击距离
 	private int min_attack_range;   //最小攻击距离
 
 	public Unit(Unit unit) {
 		this.abilities = new ArrayList(unit.getAbilities());
+                this.buff_list = new ArrayList(unit.getBuffList());
+                this.learnable_abilities = new ArrayList(unit.getLearnableAbilities());
+                this.unit_code = unit.unit_code;
+                this.team = unit.team;
+                this.max_hp = unit.max_hp;
+                this.current_hp = unit.current_hp;
+                this.attack = unit.attack;
+                this.attack_type = unit.attack_type;
+                this.physical_defence = unit.physical_defence;
+                this.magical_defence = unit.magical_defence;
+                this.movement_point = unit.movement_point;
+                this.current_movement_point = unit.current_movement_point;
+                this.hp_growth = unit.hp_growth;
+                this.attack_growth = unit.attack_growth;
+                this.physical_defence_growth = unit.physical_defence_growth;
+                this.magical_defence_growth = unit.magical_defence_growth;
+                this.movement_growth = unit.movement_growth;
+                this.x_position = unit.x_position;
+                this.y_position = unit.y_position;
+                this.max_attack_range = unit.max_attack_range;
+                this.min_attack_range = unit.min_attack_range;
 	}
 
 	public int getLevel() {
@@ -144,6 +170,22 @@ public class Unit {
 		this.abilities = abilities;
 	}
 
+        public ArrayList<Integer> getLearnableAbilities() {
+            return learnable_abilities;
+        }
+        
+        public void setLearnableAbilities(ArrayList<Integer> learnable_abilities) {
+            this.learnable_abilities = learnable_abilities;
+        }
+        
+        public ArrayList<Buff> getBuffList() {
+            return buff_list;
+        }
+        
+        public void setBuffList(ArrayList<Buff> buff_list) {
+            this.buff_list = buff_list;
+        }
+        
 	public int getHpGrowth() {
 		return hp_growth;
 	}
@@ -206,6 +248,11 @@ public class Unit {
 
 	public void levelUp() {
 		level ++;
+                this.attack += this.getAttackGrowth();
+                this.max_hp += this.getHpGrowth();
+                this.movement_point += this.getMovementGrowth();
+                this.physical_defence += this.getPhysicalDefenceGrowth();
+                this.magical_defence += this.getMagicalDefenceGrowth();
 	}
 
 	public void learnAbility(int ability) {
