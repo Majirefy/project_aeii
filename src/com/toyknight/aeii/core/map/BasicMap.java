@@ -14,7 +14,7 @@ public class BasicMap {
 	
 	public final Unit getUnit(int x, int y) {
 		for(Unit unit: unit_list) {
-			if(unit.getXPosition() == x && unit.getYPosition() == y) {
+			if(unit.getX() == x && unit.getY() == y) {
 				return unit;
 			}
 		}
