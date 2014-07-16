@@ -1,5 +1,6 @@
 package com.toyknight.aeii;
 
+import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.AEIIMainFrame;
 import com.toyknight.aeii.gui.ResManager;
 import com.toyknight.aeii.gui.util.DialogUtil;
@@ -19,12 +20,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Launcher {
 
 	private static AEIIMainFrame MF;
-	
+
 	private static final Object FPS_LOCK = new Object();
 
 	private static boolean isRunning;
-	private static boolean isUpdating;
-	
+
 	private static long inMenuFpsDelay;
 	private static long inGameFpsDelay;
 	private static long currentFpsDelay;
@@ -51,13 +51,13 @@ public class Launcher {
 
 	private static void loadResources() throws IOException {
 		ResManager.init();
+		UnitFactory.init();
 		MF.setResourceLoaded();
 	}
 
 	private static void launch() {
 		try {
 			isRunning = true;
-			isUpdating = true;
 			MF.setVisible(true);
 			currentFpsDelay = inMenuFpsDelay;
 			executor.submit(animation_thread);
@@ -67,28 +67,27 @@ public class Launcher {
 			exit();
 		}
 	}
-	
+
 	public static void setCurrentFpsDelayToGame() {
-		synchronized(FPS_LOCK) {
+		synchronized (FPS_LOCK) {
 			currentFpsDelay = inGameFpsDelay;
 		}
 	}
-	
+
 	public static void setCurrentFpsDelayToMenu() {
-		synchronized(FPS_LOCK) {
+		synchronized (FPS_LOCK) {
 			currentFpsDelay = inMenuFpsDelay;
 		}
 	}
 
 	public static long getCurrentFpsDelay() {
-		synchronized(FPS_LOCK) {
+		synchronized (FPS_LOCK) {
 			return currentFpsDelay;
 		}
 	}
 
 	public static void exit() {
 		isRunning = false;
-		isUpdating = false;
 		executor.shutdown();
 		MF.dispose();
 	}
@@ -119,10 +118,8 @@ public class Launcher {
 		public void run() {
 			while (isRunning) {
 				long start_time = System.currentTimeMillis();
-				if (isUpdating) {
-					MF.getCurrentScreen().update();
-					MF.getCurrentScreen().repaint();
-				}
+				MF.getCurrentScreen().update();
+				MF.getCurrentScreen().repaint();
 				long end_time = System.currentTimeMillis();
 				long current_fps_delay = getCurrentFpsDelay();
 				if (end_time - start_time < current_fps_delay) {
@@ -147,26 +144,6 @@ public class Launcher {
 		@Override
 		public void windowClosing(WindowEvent e) {
 			exit();
-		}
-
-		@Override
-		public void windowIconified(WindowEvent e) {
-			isUpdating = false;
-		}
-
-		@Override
-		public void windowDeiconified(WindowEvent e) {
-			isUpdating = true;
-		}
-
-		@Override
-		public void windowActivated(WindowEvent e) {
-			isUpdating = true;
-		}
-
-		@Override
-		public void windowDeactivated(WindowEvent e) {
-			isUpdating = false;
 		}
 
 	}
