@@ -7,9 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -69,21 +68,44 @@ public class CommandLineWindow extends JDialog {
 		this.dispose();
 		Scanner in = new Scanner(input);
 		if (in.hasNext()) {
-			try {
-				String cmd = in.next();
-				Class command = CommandWrapper.class;
-				Method method = command.getMethod(cmd);
-				method.invoke(command_wrapper);
-			} catch (NoSuchMethodException |
-					SecurityException |
-					IllegalAccessException |
-					IllegalArgumentException |
-					InvocationTargetException ex) {
-				JOptionPane.showMessageDialog(
-						context, 
-						ex.getMessage(), "Error", 
-						JOptionPane.ERROR_MESSAGE);
+			String cmd = in.next();
+			ArrayList<String> arg_generator = new ArrayList();
+			while (in.hasNext()) {
+				arg_generator.add(in.next());
 			}
+			int arg_count = arg_generator.size();
+			String args[];
+			if (arg_count > 0) {
+				args = new String[arg_count];
+				for (int i = 0; i < args.length; i++) {
+					args[i] = arg_generator.get(i);
+				}
+			} else {
+				args = null;
+			}
+			invoke(cmd, args);
+		}
+	}
+
+	private void invoke(String cmd, Object[] args) {
+		Class commands = CommandWrapper.class;
+		try {
+			if (args != null) {
+				Method method = commands.getMethod(cmd, String[].class);
+				method.invoke(command_wrapper, args);
+			} else {
+				Method method = commands.getMethod(cmd);
+				method.invoke(command_wrapper);
+			}
+		} catch (NoSuchMethodException ex) {
+		} catch (SecurityException |
+				IllegalAccessException |
+				IllegalArgumentException |
+				InvocationTargetException ex) {
+			JOptionPane.showMessageDialog(
+					context,
+					ex.getMessage(), ex.getClass().getName(),
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
