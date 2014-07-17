@@ -2,9 +2,14 @@ package com.toyknight.aeii;
 
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.AEIIMainFrame;
+import com.toyknight.aeii.gui.CommandLineWindow;
 import com.toyknight.aeii.gui.ResManager;
 import com.toyknight.aeii.gui.util.DialogUtil;
+import java.awt.AWTEvent;
 import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -20,6 +25,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Launcher {
 
 	private static AEIIMainFrame MF;
+	private static CommandLineWindow cmd_window;
 
 	private static final Object FPS_LOCK = new Object();
 
@@ -47,6 +53,10 @@ public class Launcher {
 		MF = new AEIIMainFrame(title);
 		MF.addWindowListener(new AEIIWindowListener());
 		MF.init();
+		cmd_window = new CommandLineWindow(MF);
+		Toolkit.getDefaultToolkit().addAWTEventListener(
+				new GlobalKeyListener(),
+				AWTEvent.KEY_EVENT_MASK);
 	}
 
 	private static void loadResources() throws IOException {
@@ -144,6 +154,27 @@ public class Launcher {
 		@Override
 		public void windowClosing(WindowEvent e) {
 			exit();
+		}
+
+	}
+
+	private static class GlobalKeyListener implements AWTEventListener {
+
+		@Override
+		public void eventDispatched(AWTEvent event) {
+			if (event.getClass() == KeyEvent.class) {
+				KeyEvent e = (KeyEvent) event;
+				switch (e.getID()) {
+					case KeyEvent.KEY_PRESSED:
+						if (e.getKeyCode() == KeyEvent.VK_F9) {
+							cmd_window.display();
+						}
+						break;
+					case KeyEvent.KEY_RELEASED:
+
+						break;
+				}
+			}
 		}
 
 	}
