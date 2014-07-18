@@ -22,12 +22,12 @@ import javax.swing.KeyStroke;
  */
 public class CommandLineWindow extends JDialog {
 
-	private final AEIIMainFrame context;
+	private final AEIIApplet context;
 	private JTextField tf_command;
 	private CommandWrapper command_wrapper;
 
-	public CommandLineWindow(AEIIMainFrame context) {
-		super(context, "Command Line");
+	public CommandLineWindow(AEIIApplet context) {
+		super(Launcher.getWindow(), "Command Line");
 		this.context = context;
 		this.initComponents();
 		this.pack();
@@ -36,13 +36,13 @@ public class CommandLineWindow extends JDialog {
 	}
 
 	private void initComponents() {
-		this.getContentPane().setPreferredSize(new Dimension(300, 20));
+		this.getContentPane().setPreferredSize(new Dimension(500, 20));
 		this.getContentPane().setLayout(null);
 		tf_command = new JTextField();
-		tf_command.setBounds(0, 0, 230, 20);
+		tf_command.setBounds(0, 0, 430, 20);
 		this.add(tf_command);
 		JButton btn_submit = new JButton("Submit");
-		btn_submit.setBounds(230, 0, 70, 20);
+		btn_submit.setBounds(430, 0, 70, 20);
 		btn_submit.setFocusable(false);
 		ActionListener btn_submit_listener = new ActionListener() {
 			@Override
@@ -60,7 +60,7 @@ public class CommandLineWindow extends JDialog {
 	}
 
 	public void display() {
-		this.setLocationRelativeTo(context);
+		this.setLocationRelativeTo(getOwner());
 		this.setVisible(true);
 	}
 
@@ -103,7 +103,7 @@ public class CommandLineWindow extends JDialog {
 				IllegalArgumentException |
 				InvocationTargetException ex) {
 			JOptionPane.showMessageDialog(
-					context,
+					getOwner(),
 					ex.getMessage(), ex.getClass().getName(),
 					JOptionPane.ERROR_MESSAGE);
 		}

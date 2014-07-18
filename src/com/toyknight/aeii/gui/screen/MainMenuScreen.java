@@ -1,6 +1,6 @@
 package com.toyknight.aeii.gui.screen;
 
-import com.toyknight.aeii.gui.AEIIMainFrame;
+import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.ResManager;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
@@ -17,7 +17,7 @@ public class MainMenuScreen extends Screen {
 
 	private int logoDrapValue = 0;
 
-	public MainMenuScreen(Dimension size, AEIIMainFrame context) {
+	public MainMenuScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
 		this.setBackground(Color.BLACK);
 	}

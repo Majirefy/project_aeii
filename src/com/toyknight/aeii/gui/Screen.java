@@ -10,14 +10,14 @@ import javax.swing.JPanel;
  */
 public abstract class Screen extends JPanel {
 	
-	private final AEIIMainFrame context;
+	private final AEIIApplet context;
 
-	public Screen(Dimension size, AEIIMainFrame context) {
+	public Screen(Dimension size, AEIIApplet context) {
 		this.setPreferredSize(size);
 		this.context = context;
 	}
 	
-	protected final AEIIMainFrame getContext() {
+	protected final AEIIApplet getContext() {
 		return context;
 	}
 	

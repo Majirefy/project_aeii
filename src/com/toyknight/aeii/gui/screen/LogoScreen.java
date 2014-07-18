@@ -1,9 +1,8 @@
 
 package com.toyknight.aeii.gui.screen;
 
-import com.toyknight.aeii.Launcher;
-import com.toyknight.aeii.gui.AEIIMainFrame;
-import static com.toyknight.aeii.gui.AEIIMainFrame.ID_MAIN_MENU_SCREEN;
+import com.toyknight.aeii.gui.AEIIApplet;
+import static com.toyknight.aeii.gui.AEIIApplet.ID_MAIN_MENU_SCREEN;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
 import com.toyknight.aeii.gui.util.ResourceUtil;
@@ -29,7 +28,7 @@ public class LogoScreen extends Screen {
 	private boolean logoShown = false;
 	private boolean resourceLoaded = false;
 
-	public LogoScreen(Dimension size, AEIIMainFrame context) {
+	public LogoScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
 		try {
 			ms_logo = ResourceUtil.getImage("res/ms_logo.png");
@@ -59,7 +58,7 @@ public class LogoScreen extends Screen {
 	public void update() {
 		if(logoDrapValue > 0) {
 			if(wait_time < 1700) {
-				wait_time += Launcher.getCurrentFpsDelay();
+				wait_time += getContext().getCurrentFpsDelay();
 			} else {
 				logoShown = true;
 			}

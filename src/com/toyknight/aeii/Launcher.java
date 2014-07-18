@@ -1,20 +1,13 @@
 package com.toyknight.aeii;
 
-import com.toyknight.aeii.core.unit.UnitFactory;
-import com.toyknight.aeii.gui.AEIIMainFrame;
-import com.toyknight.aeii.gui.CommandLineWindow;
-import com.toyknight.aeii.gui.ResManager;
+import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.util.DialogUtil;
-import java.awt.AWTEvent;
 import java.awt.EventQueue;
-import java.awt.Toolkit;
-import java.awt.event.AWTEventListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -24,18 +17,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class Launcher {
 
-	private static AEIIMainFrame MF;
-	private static CommandLineWindow cmd_window;
-
-	private static final Object FPS_LOCK = new Object();
-
-	private static boolean isRunning;
-
-	private static long inMenuFpsDelay;
-	private static long inGameFpsDelay;
-	private static long currentFpsDelay;
-	private static final Thread animation_thread = new Thread(new Animator());
-	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+	private static JFrame main_frame;
+	private static AEIIApplet aeii_applet;
 
 	private static void init()
 			throws
@@ -47,59 +30,27 @@ public class Launcher {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		Configuration.init();
 		Language.init();
-		inMenuFpsDelay = 1000 / 15;
-		inGameFpsDelay = 1000 / Configuration.getGameSpeed();
 		String title = Language.getText("LB_TITLE");
-		MF = new AEIIMainFrame(title);
-		MF.addWindowListener(new AEIIWindowListener());
-		MF.init();
-		cmd_window = new CommandLineWindow(MF);
-		Toolkit.getDefaultToolkit().addAWTEventListener(
-				new GlobalKeyListener(),
-				AWTEvent.KEY_EVENT_MASK);
+		main_frame = new JFrame(title);
+		main_frame.setIconImage(ImageIO.read(Launcher.class.getResource("gameicon.png")));
+		main_frame.addWindowListener(new AEIIWindowListener());
+		
+		aeii_applet = new AEIIApplet();
+		aeii_applet.init();
+		
+		main_frame.setContentPane(aeii_applet.getContentPane());
+		main_frame.setResizable(false);
+		main_frame.pack();
+		main_frame.setLocationRelativeTo(null);
 	}
-
-	private static void loadResources() throws IOException {
-		ResManager.init();
-		UnitFactory.init();
-		MF.setResourceLoaded();
-	}
-
-	private static void launch() {
-		try {
-			isRunning = true;
-			MF.setVisible(true);
-			currentFpsDelay = inMenuFpsDelay;
-			executor.submit(animation_thread);
-			loadResources();
-		} catch (IOException ex) {
-			DialogUtil.showError(MF, ex.getMessage());
-			exit();
-		}
-	}
-
-	public static void setCurrentFpsDelayToGame() {
-		synchronized (FPS_LOCK) {
-			currentFpsDelay = inGameFpsDelay;
-		}
-	}
-
-	public static void setCurrentFpsDelayToMenu() {
-		synchronized (FPS_LOCK) {
-			currentFpsDelay = inMenuFpsDelay;
-		}
-	}
-
-	public static long getCurrentFpsDelay() {
-		synchronized (FPS_LOCK) {
-			return currentFpsDelay;
-		}
+	
+	public static JFrame getWindow() {
+		return main_frame;
 	}
 
 	public static void exit() {
-		isRunning = false;
-		executor.shutdown();
-		MF.dispose();
+		aeii_applet.stop();
+		main_frame.dispose();
 	}
 
 	public static void main(String[] args) {
@@ -116,37 +67,11 @@ public class Launcher {
 				} catch (IOException ex) {
 					DialogUtil.showError(null, ex.getMessage());
 				} finally {
-					launch();
+					main_frame.setVisible(true);
+					aeii_applet.start();
 				}
 			}
 		});
-	}
-
-	private static final class Animator implements Runnable {
-
-		@Override
-		public void run() {
-			while (isRunning) {
-				long start_time = System.currentTimeMillis();
-				MF.getCurrentScreen().update();
-				MF.getCurrentScreen().repaint();
-				long end_time = System.currentTimeMillis();
-				long current_fps_delay = getCurrentFpsDelay();
-				if (end_time - start_time < current_fps_delay) {
-					waitDelay(current_fps_delay - (end_time - start_time));
-				} else {
-					waitDelay(0);
-				}
-			}
-		}
-
-		private void waitDelay(long time) {
-			try {
-				Thread.sleep(time);
-			} catch (InterruptedException ex) {
-			}
-		}
-
 	}
 
 	private static final class AEIIWindowListener extends WindowAdapter {
@@ -154,27 +79,6 @@ public class Launcher {
 		@Override
 		public void windowClosing(WindowEvent e) {
 			exit();
-		}
-
-	}
-
-	private static class GlobalKeyListener implements AWTEventListener {
-
-		@Override
-		public void eventDispatched(AWTEvent event) {
-			if (event.getClass() == KeyEvent.class) {
-				KeyEvent e = (KeyEvent) event;
-				switch (e.getID()) {
-					case KeyEvent.KEY_PRESSED:
-						if (e.getKeyCode() == KeyEvent.VK_F9) {
-							cmd_window.display();
-						}
-						break;
-					case KeyEvent.KEY_RELEASED:
-
-						break;
-				}
-			}
 		}
 
 	}
