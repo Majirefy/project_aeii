@@ -1,6 +1,6 @@
 package com.toyknight.aeii.core.unit;
 
-import com.toyknight.aeii.core.DataFileFilter;
+import com.toyknight.aeii.core.SuffixFileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class UnitFactory {
 
 	public static void init() throws IOException {
 		File unit_data_base = new File("data\\units");
-		int unit_count = unit_data_base.listFiles(new DataFileFilter()).length;
+		int unit_count = unit_data_base.listFiles(new SuffixFileFilter("dat")).length;
 		units = new Unit[unit_count];
 		for (int i = 0; i < unit_count; i++) {
 			Scanner din = new Scanner(new File("data\\units\\unit_" + i + ".dat"));
