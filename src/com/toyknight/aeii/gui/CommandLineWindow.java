@@ -12,7 +12,6 @@ import java.util.Scanner;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
@@ -30,6 +29,7 @@ public class CommandLineWindow extends JDialog {
 		super(Launcher.getWindow(), "Command Line");
 		this.context = context;
 		this.initComponents();
+		this.setResizable(false);
 		this.pack();
 		this.setModal(true);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -60,8 +60,9 @@ public class CommandLineWindow extends JDialog {
 	}
 
 	public void display() {
-		this.setLocationRelativeTo(getOwner());
-		this.setVisible(true);
+			this.setLocationRelativeTo(getOwner());
+			tf_command.setText("");
+			this.setVisible(true);
 	}
 
 	public void excute(String input) {
@@ -97,15 +98,11 @@ public class CommandLineWindow extends JDialog {
 				Method method = commands.getMethod(cmd);
 				method.invoke(command_wrapper);
 			}
-		} catch (NoSuchMethodException ex) {
-		} catch (SecurityException |
+		} catch (NoSuchMethodException | 
+				SecurityException |
 				IllegalAccessException |
 				IllegalArgumentException |
 				InvocationTargetException ex) {
-			JOptionPane.showMessageDialog(
-					getOwner(),
-					ex.getMessage(), ex.getClass().getName(),
-					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

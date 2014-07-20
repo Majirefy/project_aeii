@@ -18,8 +18,6 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -30,7 +28,7 @@ public class AEIIApplet {
 	public static final String ID_LOGO_SCREEN = "logo";
 	public static final String ID_MAIN_MENU_SCREEN = "main_menu";
 	
-	private CommandLineWindow cmd_window;
+	private CommandLineWindow command_line;
 
 	private final Object FPS_LOCK = new Object();
 
@@ -82,7 +80,7 @@ public class AEIIApplet {
 		this.getContentPane().add(main_menu_screen, ID_MAIN_MENU_SCREEN);
 		setCurrentScreen(ID_LOGO_SCREEN);
 		
-		cmd_window = new CommandLineWindow(this);
+		command_line = new CommandLineWindow(this);
 		
 		Toolkit.getDefaultToolkit().addAWTEventListener(
 				new GlobalKeyListener(),
@@ -196,7 +194,7 @@ public class AEIIApplet {
 				switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
 						if (e.getKeyCode() == KeyEvent.VK_F9) {
-							cmd_window.display();
+							command_line.display();
 						}
 						break;
 					case KeyEvent.KEY_RELEASED:

@@ -19,16 +19,17 @@ public class MainMenuScreen extends Screen {
 
 	public MainMenuScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
-		this.setBackground(Color.BLACK);
 	}
 
 	@Override
 	public void paint(Graphics g) {
-		super.paint(g);
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, getWidth(), getHeight());
 		paintLogo(g);
 		if (isLogoEmerged()) {
 
 		}
+		super.paint(g);
 	}
 
 	private void paintLogo(Graphics g) {

@@ -51,7 +51,7 @@ public class LogoScreen extends Screen {
 		int x = (getWidth() - ms_logo.getWidth())/2;
 		int y = (getHeight() - ms_logo.getHeight())/2;
 		ImageWaveEffect.drawWavedImage(g, logoDrapValue, 40, ms_logo, x, y, 4);
-
+		super.paint(g);
 	}
 	
 	@Override

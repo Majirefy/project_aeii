@@ -1,5 +1,6 @@
 package com.toyknight.aeii.gui.effect;
 
+import com.toyknight.aeii.Launcher;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -30,7 +31,9 @@ public class ImageWaveEffect {
 			g.drawImage(img, x + offset, y, null);
 			angle += anglestep;
 		}
-
+		int screen_width = Launcher.getWindow().getContentPane().getWidth();
+		int screen_height  = Launcher.getWindow().getContentPane().getHeight();
+		g.setClip(0, 0, screen_width, screen_height);
 	}
 
 	public static void createSinTab() {
