@@ -15,6 +15,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -196,9 +197,14 @@ public class AEIIApplet {
 						if (e.getKeyCode() == KeyEvent.VK_F9) {
 							command_line.display();
 						}
+						for(KeyListener listener: current_screen.getKeyListeners()) {
+							listener.keyPressed(e);
+						}
 						break;
 					case KeyEvent.KEY_RELEASED:
-
+						for(KeyListener listener: current_screen.getKeyListeners()) {
+							listener.keyReleased(e);
+						}
 						break;
 				}
 			}

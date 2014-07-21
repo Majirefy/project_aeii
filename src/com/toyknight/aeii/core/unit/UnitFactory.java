@@ -1,6 +1,6 @@
 package com.toyknight.aeii.core.unit;
 
-import com.toyknight.aeii.core.SuffixFileFilter;
+import com.toyknight.aeii.gui.util.SuffixFileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

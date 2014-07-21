@@ -1,4 +1,4 @@
-package com.toyknight.aeii.core;
+package com.toyknight.aeii.gui.util;
 
 import java.io.File;
 import java.io.FileFilter;
