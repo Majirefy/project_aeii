@@ -2,6 +2,7 @@
 package com.toyknight.aeii.gui;
 
 import com.toyknight.aeii.gui.util.ResourceUtil;
+import com.toyknight.aeii.gui.util.SuffixFileFilter;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -16,13 +17,16 @@ public class ResManager {
 	
 	private static BufferedImage img_logo;
 	private static BufferedImage[] borders;
-	private final static Color aeii_panel_bg = new Color(36, 42, 69);
+	private static BufferedImage[] top_tiles;
+	private static Color aeii_panel_bg;
 	
 	private ResManager() {}
 	
-	public static void init() throws IOException {
-		loadBorder();
+	public static void init(int ts) throws IOException {
 		img_logo = ImageIO.read(new File("res\\logo.png"));
+		loadBorder();
+		loadTopTiles(ts);
+		aeii_panel_bg = new Color(36, 42, 69);
 	}
 	
 	private static void loadBorder() throws IOException {
@@ -35,12 +39,27 @@ public class ResManager {
 		}
 	}
 	
+	private static void loadTopTiles(int ts) throws IOException {
+		File img_top_tile_dir = new File("res\\img\\tiles\\top_tiles");
+		int top_tile_count = img_top_tile_dir.listFiles(new SuffixFileFilter("png")).length;
+		top_tiles = new BufferedImage[top_tile_count];
+		for (int i = 0; i < top_tile_count; i++) {
+			File tile = new File("res\\img\\tiles\\top_tiles\\top_tile_" + i + ".png");
+			top_tiles[i] = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
+			top_tiles[i].getGraphics().drawImage(ImageIO.read(tile), 0, 0, ts, ts, null);
+		}
+	}
+	
 	public static BufferedImage getLogoImage() {
 		return img_logo;
 	}
 	
 	public static BufferedImage getBorder(int index) {
 		return borders[index];
+	}
+	
+	public static BufferedImage getTopTile(int index) {
+		return top_tiles[index];
 	}
 	
 	public static Color getAEIIPanelBg() {

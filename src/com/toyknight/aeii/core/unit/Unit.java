@@ -11,6 +11,8 @@ public class Unit {
 	public static final int ATTACK_PHYSICAL = 0;
 	public static final int ATTACK_MAGICAL = 1;
 
+	private int index;
+	
 	private int price;
 
 	private int level;     //等级（初始等级为0，最高可以升级到3级）
@@ -53,6 +55,8 @@ public class Unit {
 		this.abilities = new ArrayList(unit.getAbilities());
 		this.buff_list = new ArrayList(unit.getBuffList());
 		this.learnable_abilities = new ArrayList(unit.getLearnableAbilities());
+		this.index = unit.getIndex();
+		this.price = unit.getPrice();
 		this.unit_code = unit.unit_code;
 		this.team = unit.team;
 		this.max_hp = unit.max_hp;
@@ -72,6 +76,14 @@ public class Unit {
 		this.y_position = unit.y_position;
 		this.max_attack_range = unit.max_attack_range;
 		this.min_attack_range = unit.min_attack_range;
+	}
+	
+	public int getIndex() {
+		return index;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public int getPrice() {

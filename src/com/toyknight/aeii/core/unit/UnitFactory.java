@@ -48,6 +48,7 @@ public class UnitFactory {
 				learnable_ability_list.add(din.nextInt());
 			}
 			Unit unit = new Unit();
+			unit.setIndex(i);
 			unit.setPrice(price);
 			unit.setMaxHp(max_hp);
 			unit.setMovementPoint(mp);

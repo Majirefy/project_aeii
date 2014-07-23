@@ -3,6 +3,7 @@ package com.toyknight.aeii.gui;
 
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.Launcher;
+import com.toyknight.aeii.core.map.TileFactory;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
 import com.toyknight.aeii.gui.screen.LogoScreen;
@@ -11,6 +12,7 @@ import com.toyknight.aeii.gui.util.DialogUtil;
 import java.awt.AWTEvent;
 import java.awt.CardLayout;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
@@ -22,7 +24,7 @@ import java.util.concurrent.Executors;
 
 /**
  *
- * @author st000121
+ * @author toyknight
  */
 public class AEIIApplet {
 	
@@ -44,7 +46,7 @@ public class AEIIApplet {
 	
 	private Container content_pane;
 
-	private final int ROWS = 12;
+	private final int ROWS = 11;
 	private final int COLUMNS = 19;
 	private final int SCREEN_SCALE;
 	private final int BASE_TILE_SIZE;
@@ -106,7 +108,8 @@ public class AEIIApplet {
 	}
 	
 	private void loadResources() throws IOException {
-		ResManager.init();
+		ResManager.init(getTileSize());
+		TileFactory.init();
 		UnitFactory.init();
 		logo_screen.setResourceLoaded(true);
 	}

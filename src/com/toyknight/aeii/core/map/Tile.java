@@ -14,13 +14,13 @@ public class Tile {
 	
 	private int defence_bonus;
 	private int step_cost;
-	private int hp_recovery;
+	private int hp_recovery = 0;
 	private int type;
-	private int top_tile_index;
+	private int top_tile_index = -1;
 	
-	private int team;
+	private int team = -1;
 	
-	private int[] access_tile_list;
+	private int[] access_tile_list = null;
 	
 	private boolean can_be_captured = false;
 	private boolean can_be_destroyed = false;
@@ -30,11 +30,10 @@ public class Tile {
 	private int destroyed_index;
 	private int repaired_index;
 	
-	public Tile(int defence_bonus, int step_cost, int top_tile, int type) {
+	public Tile(int defence_bonus, int step_cost, int type) {
 		this.defence_bonus = defence_bonus;
 		this.step_cost = step_cost;
 		this.type = type;
-		this.top_tile_index = top_tile;
 	}
 	
 	public void setDefenceBonus(int bonus) {

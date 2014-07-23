@@ -44,6 +44,10 @@ public class Launcher {
 		main_frame.setLocationRelativeTo(null);
 	}
 	
+	public static AEIIApplet getApplet() {
+		return aeii_applet;
+	}
+	
 	public static JFrame getWindow() {
 		return main_frame;
 	}
