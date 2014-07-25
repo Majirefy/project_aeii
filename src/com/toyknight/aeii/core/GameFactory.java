@@ -7,4 +7,8 @@ package com.toyknight.aeii.core;
  */
 public class GameFactory {
 	
+	public GameFactory() {
+		
+	}
+	
 }

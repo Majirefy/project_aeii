@@ -69,14 +69,9 @@ public class Map {
 			}
 		}
 	}
-
-	public final Unit getUnit(int x, int y) {
-		for (Unit unit : unit_list) {
-			if (unit.getX() == x && unit.getY() == y) {
-				return unit;
-			}
-		}
-		return null;
+	
+	public final ArrayList<Unit> getUnitList() {
+		return unit_list;
 	}
 
 }

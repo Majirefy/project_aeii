@@ -108,9 +108,9 @@ public class AEIIApplet {
 	}
 	
 	private void loadResources() throws IOException {
-		ResManager.init(getTileSize());
 		TileFactory.init();
 		UnitFactory.init();
+		ResManager.init(getTileSize());
 		logo_screen.setResourceLoaded(true);
 	}
 	
