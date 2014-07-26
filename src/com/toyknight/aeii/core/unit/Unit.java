@@ -11,7 +11,7 @@ public class Unit {
 	public static final int ATTACK_PHYSICAL = 0;
 	public static final int ATTACK_MAGICAL = 1;
 
-	private int index;
+	private final int index;
 	
 	private int price;
 
@@ -19,7 +19,6 @@ public class Unit {
 
 	private String unit_code;
 	private int team;
-	private int head_index;
 
 	private int max_hp;
 	private int current_hp;
@@ -46,8 +45,9 @@ public class Unit {
 	private int max_attack_range;  //最大攻击距离
 	private int min_attack_range;   //最小攻击距离
 
-	public Unit() {
-		level = 0;
+	public Unit(int index) {
+		this.index = index;
+		this.level = 0;
 		buff_list = new ArrayList();
 	}
 
@@ -81,10 +81,6 @@ public class Unit {
 	public int getIndex() {
 		return index;
 	}
-	
-	public void setIndex(int index) {
-		this.index = index;
-	}
 
 	public int getPrice() {
 		return price;
@@ -116,14 +112,6 @@ public class Unit {
 
 	public void setTeam(int team) {
 		this.team = team;
-	}
-
-	public int getHeadIndex() {
-		return head_index;
-	}
-
-	public void setHeadIndex(int index) {
-		this.head_index = index;
 	}
 
 	public int getMaxHp() {

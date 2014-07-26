@@ -17,12 +17,14 @@ public class UnitFactory {
 	private UnitFactory() {
 	}
 
-	public static void init() throws IOException {
-		File unit_data_base = new File("data\\units");
-		int unit_count = unit_data_base.listFiles(new SuffixFileFilter("dat")).length;
+	public static void init(File unit_data_dir) throws IOException {
+		int unit_count = unit_data_dir.listFiles(new SuffixFileFilter("dat")).length;
 		units = new Unit[unit_count];
 		for (int i = 0; i < unit_count; i++) {
-			Scanner din = new Scanner(new File("data\\units\\unit_" + i + ".dat"));
+			File unit_data = new File(
+					unit_data_dir.getAbsolutePath()
+					+ "\\unit_" + i + ".dat");
+			Scanner din = new Scanner(unit_data);
 			int price = din.nextInt();
 			int max_hp = din.nextInt();
 			int mp = din.nextInt();
@@ -47,8 +49,8 @@ public class UnitFactory {
 			for (int n = 0; n < learnable_ability_count; n++) {
 				learnable_ability_list.add(din.nextInt());
 			}
-			Unit unit = new Unit();
-			unit.setIndex(i);
+			din.close();
+			Unit unit = new Unit(i);
 			unit.setPrice(price);
 			unit.setMaxHp(max_hp);
 			unit.setMovementPoint(mp);
@@ -66,11 +68,10 @@ public class UnitFactory {
 			unit.setAbilities(ability_list);
 			unit.setLearnableAbilities(learnable_ability_list);
 			units[i] = unit;
-			din.close();
 		}
 	}
 
-	public static Unit getUnit(int index) {
+	public static Unit createUnit(int index) {
 		return new Unit(units[index]);
 	}
 

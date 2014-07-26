@@ -9,14 +9,21 @@ import java.util.ArrayList;
  */
 public class Map {
 
+	private final String author;
+	
 	private final short[][] map_data;
 	private final ArrayList<Unit> unit_list;
 	private final ArrayList<Tomb> tomb_list;
 
-	public Map(short[][] map_data, ArrayList<Unit> unit_list) {
+	public Map(short[][] map_data, ArrayList<Unit> unit_list, String author) {
 		this.map_data = map_data;
 		this.unit_list = unit_list;
 		this.tomb_list = new ArrayList();
+		this.author = author;
+	}
+	
+	public String getAuthor() {
+		return author;
 	}
 
 	public boolean isWithinMap(int x, int y) {
@@ -31,19 +38,19 @@ public class Map {
 		return map_data[0].length;
 	}
 
-	public final void setTile(short index, int x, int y) {
+	public void setTile(short index, int x, int y) {
 		map_data[x][y] = index;
 	}
 
-	public final short getTileIndex(int x, int y) {
+	public short getTileIndex(int x, int y) {
 		return map_data[x][y];
 	}
 	
-	public final void addTomb(int x, int y) {
+	public void addTomb(int x, int y) {
 		tomb_list.add(new Tomb(x, y));
 	}
 	
-	public final void removeTomb(int x, int y) {
+	public void removeTomb(int x, int y) {
 		for(Tomb tomb: tomb_list) {
 			if(tomb.x == x && tomb.y == y) {
 				tomb_list.remove(tomb);
@@ -52,15 +59,15 @@ public class Map {
 		}
 	}
 	
-	public final ArrayList<Tomb> getTombList() {
+	public ArrayList<Tomb> getTombList() {
 		return tomb_list;
 	}
 
-	public final void addUnit(Unit unit) {
+	public void addUnit(Unit unit) {
 		unit_list.add(unit);
 	}
 
-	public final void removeUnit(int x, int y) {
+	public void removeUnit(int x, int y) {
 		for (int i = 0; i < unit_list.size(); i++) {
 			Unit unit = unit_list.get(i);
 			if (unit.getX() == x && unit.getY() == y) {
@@ -70,7 +77,7 @@ public class Map {
 		}
 	}
 	
-	public final ArrayList<Unit> getUnitList() {
+	public ArrayList<Unit> getUnitList() {
 		return unit_list;
 	}
 

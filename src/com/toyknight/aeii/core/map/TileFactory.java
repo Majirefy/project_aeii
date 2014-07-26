@@ -1,4 +1,3 @@
-
 package com.toyknight.aeii.core.map;
 
 import com.toyknight.aeii.gui.util.SuffixFileFilter;
@@ -11,18 +10,19 @@ import java.util.Scanner;
  * @author toyknight
  */
 public class TileFactory {
-	
+
 	private static Tile[] tile_list;
-	
+
 	private TileFactory() {
 	}
-	
-	public static void init() throws IOException {
-		File tile_data_dir = new File("data\\tiles");
+
+	public static void init(File tile_data_dir) throws IOException {
 		int tile_count = tile_data_dir.listFiles(new SuffixFileFilter("dat")).length;
 		tile_list = new Tile[tile_count];
 		for (int i = 0; i < tile_count; i++) {
-			File tile_data = new File("data\\tiles\\tile_" + i + ".dat");
+			File tile_data = new File(
+					tile_data_dir.getAbsolutePath()
+					+ "\\tile_" + i + ".dat");
 			Scanner din = new Scanner(tile_data);
 			int defence_bonus = din.nextInt();
 			int step_cost = din.nextInt();
@@ -37,7 +37,7 @@ public class TileFactory {
 			int access_tile_count = din.nextInt();
 			if (access_tile_count > 0) {
 				int[] access_tile_list = new int[access_tile_count];
-				for (int n=0;n<access_tile_count;n++) {
+				for (int n = 0; n < access_tile_count; n++) {
 					access_tile_list[n] = din.nextInt();
 				}
 				tile_list[i].setAccessTileList(access_tile_list);
@@ -64,13 +64,13 @@ public class TileFactory {
 			}
 		}
 	}
-	
+
 	public static Tile getTile(int index) {
 		return tile_list[index];
 	}
-	
+
 	public static int getTileCount() {
 		return tile_list.length;
 	}
-	
+
 }

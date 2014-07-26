@@ -1,14 +1,22 @@
 package com.toyknight.aeii.gui;
 
 import com.toyknight.aeii.Launcher;
+import com.toyknight.aeii.core.BasicGame;
+import com.toyknight.aeii.core.GameFactory;
+import com.toyknight.aeii.core.map.Map;
+import com.toyknight.aeii.core.map.MapFactory;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -19,13 +27,13 @@ import javax.swing.KeyStroke;
  *
  * @author toyknight
  */
-public class CommandLineWindow extends JDialog {
+public class CommandLineDialog extends JDialog {
 
 	private final AEIIApplet context;
 	private JTextField tf_command;
 	private CommandWrapper command_wrapper;
 
-	public CommandLineWindow(AEIIApplet context) {
+	public CommandLineDialog(AEIIApplet context) {
 		super(Launcher.getWindow(), "Command Line");
 		this.context = context;
 		this.initComponents();
@@ -60,9 +68,9 @@ public class CommandLineWindow extends JDialog {
 	}
 
 	public void display() {
-			this.setLocationRelativeTo(getOwner());
-			tf_command.setText("");
-			this.setVisible(true);
+		this.setLocationRelativeTo(getOwner());
+		tf_command.setText("");
+		this.setVisible(true);
 	}
 
 	public void excute(String input) {
@@ -70,39 +78,45 @@ public class CommandLineWindow extends JDialog {
 		Scanner in = new Scanner(input);
 		if (in.hasNext()) {
 			String cmd = in.next();
-			ArrayList<String> arg_generator = new ArrayList();
+			ArrayList<Object> args = new ArrayList();
 			while (in.hasNext()) {
-				arg_generator.add(in.next());
-			}
-			int arg_count = arg_generator.size();
-			String args[];
-			if (arg_count > 0) {
-				args = new String[arg_count];
-				for (int i = 0; i < args.length; i++) {
-					args[i] = arg_generator.get(i);
+				if (in.hasNextInt()) {
+					args.add(in.nextInt());
+					continue;
 				}
-			} else {
-				args = null;
+				if (in.hasNextBoolean()) {
+					args.add(in.nextBoolean());
+					continue;
+				}
+				if (in.hasNext()) {
+					args.add(in.next());
+				}
 			}
-			invoke(cmd, args);
+			invoke(cmd, args.toArray());
 		}
 	}
 
-	private void invoke(String cmd, Object[] args) {
-		Class commands = CommandWrapper.class;
+	private Class<?>[] getParamClass(Object[] args) {
+		Class<?>[] param_classes = new Class<?>[args.length];
+		for (int i = 0; i < args.length; i++) {
+			param_classes[i] = args[i].getClass();
+		}
+		return param_classes;
+	}
+
+	private void invoke(String cmd, Object... args) {
 		try {
-			if (args != null) {
-				Method method = commands.getMethod(cmd, String[].class);
+			Class cmd_wrapper = CommandWrapper.class;
+			Method method = cmd_wrapper.getMethod(cmd, getParamClass(args));
+			if (method != null) {
 				method.invoke(command_wrapper, args);
-			} else {
-				Method method = commands.getMethod(cmd);
-				method.invoke(command_wrapper);
 			}
-		} catch (NoSuchMethodException | 
-				SecurityException |
+		} catch (SecurityException |
 				IllegalAccessException |
 				IllegalArgumentException |
-				InvocationTargetException ex) {
+				InvocationTargetException | 
+				NoSuchMethodException ex) {
+			System.err.println(ex.getClass().toString()+": "+ex.getMessage());
 		}
 	}
 
@@ -110,6 +124,27 @@ public class CommandLineWindow extends JDialog {
 
 		public void exit() {
 			Launcher.exit();
+		}
+
+		public void setspeed(Integer speed) {
+			context.setCurrentFpsDelay(1000 / speed);
+		}
+
+		public void cmdtest(String msg) {
+			System.out.println(msg);
+		}
+		
+		public void testmap(String map_name) {
+			try {
+				File map_file = new File("map\\"+map_name);
+				Map map = MapFactory.createMap(map_file);
+				GameFactory game_factory = new GameFactory(map);
+				BasicGame game = game_factory.createBasicGame();
+				context.getGameScreen().setGame(game);
+				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
+			} catch (IOException ex) {
+				
+			}
 		}
 
 	}

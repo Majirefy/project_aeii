@@ -34,12 +34,12 @@ public class Launcher {
 		main_frame = new JFrame(title);
 		main_frame.setIconImage(ImageIO.read(Launcher.class.getResource("gameicon.png")));
 		main_frame.addWindowListener(new AEIIWindowListener());
+		main_frame.setResizable(false);
 		
 		aeii_applet = new AEIIApplet();
 		aeii_applet.init();
-		
 		main_frame.setContentPane(aeii_applet.getContentPane());
-		main_frame.setResizable(false);
+		
 		main_frame.pack();
 		main_frame.setLocationRelativeTo(null);
 	}

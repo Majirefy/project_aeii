@@ -6,18 +6,19 @@ import com.toyknight.aeii.Launcher;
 import com.toyknight.aeii.core.map.TileFactory;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
+import com.toyknight.aeii.gui.screen.GameScreen;
 import com.toyknight.aeii.gui.screen.LogoScreen;
 import com.toyknight.aeii.gui.screen.MainMenuScreen;
 import com.toyknight.aeii.gui.util.DialogUtil;
 import java.awt.AWTEvent;
 import java.awt.CardLayout;
 import java.awt.Container;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,8 +31,9 @@ public class AEIIApplet {
 	
 	public static final String ID_LOGO_SCREEN = "logo";
 	public static final String ID_MAIN_MENU_SCREEN = "main_menu";
+	public static final String ID_GAME_SCREEN = "game";
 	
-	private CommandLineWindow command_line;
+	private CommandLineDialog command_line;
 
 	private final Object FPS_LOCK = new Object();
 
@@ -46,24 +48,20 @@ public class AEIIApplet {
 	
 	private Container content_pane;
 
-	private final int ROWS = 11;
-	private final int COLUMNS = 19;
-	private final int SCREEN_SCALE;
-	private final int BASE_TILE_SIZE;
+	private final int ROWS = 12;
+	private final int COLUMNS = 20;
+	private final int TILE_SIZE = 48;
 	private final Dimension SCREEN_SIZE;
 
 	private Screen current_screen;
 	private LogoScreen logo_screen;
 	private MainMenuScreen main_menu_screen;
+	private GameScreen game_screen;
 
 	private CardLayout screen_container;
 	
 	public AEIIApplet() {
-		SCREEN_SCALE = Configuration.getCanvasScale();
-		BASE_TILE_SIZE = Configuration.getBaseTileSize();
-		SCREEN_SIZE = new Dimension(
-				BASE_TILE_SIZE * COLUMNS * SCREEN_SCALE,
-				BASE_TILE_SIZE * ROWS * SCREEN_SCALE);
+		SCREEN_SIZE = new Dimension(TILE_SIZE * COLUMNS, TILE_SIZE * ROWS);
 		inMenuFpsDelay = 1000 / 15;
 		inGameFpsDelay = 1000 / Configuration.getGameSpeed();
 		animation_thread = new Thread(new Animator());
@@ -81,9 +79,11 @@ public class AEIIApplet {
 		this.getContentPane().add(logo_screen, ID_LOGO_SCREEN);
 		main_menu_screen = new MainMenuScreen(SCREEN_SIZE, this);
 		this.getContentPane().add(main_menu_screen, ID_MAIN_MENU_SCREEN);
+		game_screen = new GameScreen(SCREEN_SIZE, this);
+		this.getContentPane().add(game_screen, ID_GAME_SCREEN);
 		setCurrentScreen(ID_LOGO_SCREEN);
 		
-		command_line = new CommandLineWindow(this);
+		command_line = new CommandLineDialog(this);
 		
 		Toolkit.getDefaultToolkit().addAWTEventListener(
 				new GlobalKeyListener(),
@@ -108,8 +108,10 @@ public class AEIIApplet {
 	}
 	
 	private void loadResources() throws IOException {
-		TileFactory.init();
-		UnitFactory.init();
+		File tile_data_dir = new File("data\\tiles");
+		File unit_data_dir = new File("data\\units");
+		TileFactory.init(tile_data_dir);
+		UnitFactory.init(unit_data_dir);
 		ResManager.init(getTileSize());
 		logo_screen.setResourceLoaded(true);
 	}
@@ -126,6 +128,10 @@ public class AEIIApplet {
 				break;
 			case ID_MAIN_MENU_SCREEN:
 				current_screen = main_menu_screen;
+				break;
+			case ID_GAME_SCREEN:
+				current_screen = game_screen;
+				break;
 			default:
 				break;
 		}
@@ -136,12 +142,20 @@ public class AEIIApplet {
 		return current_screen;
 	}
 	
-	public int getScreenScale() {
-		return SCREEN_SCALE;
+	public GameScreen getGameScreen() {
+		return game_screen;
 	}
 
 	public int getTileSize() {
-		return BASE_TILE_SIZE * SCREEN_SCALE;
+		return TILE_SIZE;
+	}
+	
+	public int getScreenRows() {
+		return ROWS;
+	}
+	
+	public int getScreenColumns() {
+		return COLUMNS;
 	}
 	
 	public void setCurrentFpsDelayToGame() {
@@ -153,6 +167,12 @@ public class AEIIApplet {
 	public void setCurrentFpsDelayToMenu() {
 		synchronized (FPS_LOCK) {
 			currentFpsDelay = inMenuFpsDelay;
+		}
+	}
+	
+	public void setCurrentFpsDelay(long delay) {
+		synchronized (FPS_LOCK) {
+			currentFpsDelay = delay;
 		}
 	}
 

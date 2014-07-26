@@ -15,6 +15,10 @@ public abstract class Player {
 		this.opt_listener = opt_listener;
 	}
 	
+	public OperationListener getOperationListener() {
+		return opt_listener;
+	}
+	
 	abstract public void play();
 	
 }
