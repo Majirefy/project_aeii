@@ -45,7 +45,6 @@ public class TileFactory {
 			boolean is_capturable = din.nextBoolean();
 			tile_list[i].setCapturable(is_capturable);
 			if (is_capturable) {
-				tile_list[i].setTeam(din.nextInt());
 				int[] captured_tile_list = new int[4];
 				for (int t = 0; t < 4; t++) {
 					captured_tile_list[t] = din.nextInt();
@@ -61,6 +60,11 @@ public class TileFactory {
 			tile_list[i].setRepairable(is_repairable);
 			if (is_repairable) {
 				tile_list[i].setRepairedTileIndex(din.nextInt());
+			}
+			boolean is_animated = din.nextBoolean();
+			tile_list[i].setAnimated(is_animated);
+			if(is_animated) {
+				tile_list[i].setAnimationTileIndex(din.nextInt());
 			}
 		}
 	}

@@ -25,10 +25,12 @@ public class Tile {
 	private boolean can_be_captured = false;
 	private boolean can_be_destroyed = false;
 	private boolean can_be_repaired = false;
+	private boolean is_animated = false;
 	
 	private int[] captured_tile_list;
 	private int destroyed_index;
 	private int repaired_index;
+	private int animation_tile_index;
 	
 	public Tile(int defence_bonus, int step_cost, int type) {
 		this.defence_bonus = defence_bonus;
@@ -116,6 +118,14 @@ public class Tile {
 		return can_be_repaired;
 	}
 	
+	public void setAnimated(boolean b) {
+		this.is_animated = b;
+	}
+	
+	public boolean isAnimated() {
+		return is_animated;
+	}
+	
 	public void setCapturedTileList(int[] list) {
 		this.captured_tile_list = list;
 	}
@@ -138,6 +148,15 @@ public class Tile {
 	
 	public int getRepairedTileIndex() {
 		return repaired_index;
+	}
+	
+	public void  setAnimationTileIndex(int index) {
+		this.animation_tile_index = index;
+	
+	}
+	
+	public int getAnimationTileIndex() {
+		return animation_tile_index;
 	}
 	
 }
