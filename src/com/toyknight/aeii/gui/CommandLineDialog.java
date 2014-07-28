@@ -15,8 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -80,43 +78,51 @@ public class CommandLineDialog extends JDialog {
 			String cmd = in.next();
 			ArrayList<Object> args = new ArrayList();
 			while (in.hasNext()) {
-				if (in.hasNextInt()) {
-					args.add(in.nextInt());
-					continue;
-				}
-				if (in.hasNextBoolean()) {
-					args.add(in.nextBoolean());
-					continue;
-				}
-				if (in.hasNext()) {
-					args.add(in.next());
-				}
+				args.add(in.next());
 			}
 			invoke(cmd, args.toArray());
 		}
 	}
 
-	private Class<?>[] getParamClass(Object[] args) {
-		Class<?>[] param_classes = new Class<?>[args.length];
-		for (int i = 0; i < args.length; i++) {
-			param_classes[i] = args[i].getClass();
+	private Object[] convertArgs(Method method, Object[] args) {
+		Class<?>[] param_types = method.getParameterTypes();
+		Object[] converted_args = new Object[param_types.length];
+		for (int i = 0; i < param_types.length; i++) {
+			if (param_types[i].equals(int.class)) {
+				converted_args[i] = Integer.parseInt((String) args[i]);
+			}
+			if(param_types[i].equals(boolean.class)) {
+				converted_args[i] = Boolean.parseBoolean((String) args[i]);
+			}
+			if(param_types[i].equals(String.class)) {
+				converted_args[i] = args[i];
+			}
 		}
-		return param_classes;
+		return converted_args;
+	}
+
+	private Method getMethod(String name, int param_count) {
+		Class cmd_wrapper = CommandWrapper.class;
+		for (Method method : cmd_wrapper.getDeclaredMethods()) {
+			if (method.getName().equals(name)
+					&& method.getParameterTypes().length == param_count) {
+				return method;
+			}
+		}
+		return null;
 	}
 
 	private void invoke(String cmd, Object... args) {
 		try {
-			Class cmd_wrapper = CommandWrapper.class;
-			Method method = cmd_wrapper.getMethod(cmd, getParamClass(args));
+			Method method = getMethod(cmd, args.length);
 			if (method != null) {
-				method.invoke(command_wrapper, args);
+				method.invoke(command_wrapper, convertArgs(method, args));
 			}
 		} catch (SecurityException |
 				IllegalAccessException |
 				IllegalArgumentException |
-				InvocationTargetException | 
-				NoSuchMethodException ex) {
-			System.err.println(ex.getClass().toString()+": "+ex.getMessage());
+				InvocationTargetException ex) {
+			System.err.println(ex.getClass().toString() + ": \n" + ex.getMessage());
 		}
 	}
 
@@ -126,24 +132,24 @@ public class CommandLineDialog extends JDialog {
 			Launcher.exit();
 		}
 
-		public void setspeed(Integer speed) {
+		public void setspeed(int speed) {
 			context.setCurrentFpsDelay(1000 / speed);
 		}
 
 		public void cmdtest(String msg) {
 			System.out.println(msg);
 		}
-		
-		public void testmap(String map_name) {
+
+		public void maptest(String map_name) {
 			try {
-				File map_file = new File("map\\"+map_name);
+				File map_file = new File("map\\" + map_name);
 				Map map = MapFactory.createMap(map_file);
 				GameFactory game_factory = new GameFactory(map);
 				BasicGame game = game_factory.createBasicGame();
 				context.getGameScreen().setGame(game);
 				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
 			} catch (IOException ex) {
-				
+
 			}
 		}
 

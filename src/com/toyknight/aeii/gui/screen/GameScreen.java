@@ -6,7 +6,7 @@ import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileFactory;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
-import com.toyknight.aeii.gui.ResManager;
+import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -75,12 +75,12 @@ public class GameScreen extends Screen implements GameListener {
 			for (int x = view_port_x; x < game.getMap().getMapWidth(); x++) {
 				for (int y = view_port_y; y < game.getMap().getMapHeight(); y++) {
 					int index = game.getMap().getTileIndex(x, y);
-					g.drawImage(ResManager.getTileImage(index), x*ts, y*ts, this);
+					g.drawImage(ResourceManager.getTileImage(index), x*ts, y*ts, this);
 					Tile tile = TileFactory.getTile(index);
 					if(tile.getTopTileIndex() != -1) {
 						int top_tile_index = tile.getTopTileIndex();
 						g.drawImage(
-								ResManager.getTopTileImage(top_tile_index), 
+								ResourceManager.getTopTileImage(top_tile_index), 
 								x*ts, (y-1)*ts, this);
 					}
 				}

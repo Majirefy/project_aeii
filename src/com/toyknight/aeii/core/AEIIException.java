@@ -1,5 +1,5 @@
 
-package com.toyknight.aeii;
+package com.toyknight.aeii.core;
 
 /**
  *

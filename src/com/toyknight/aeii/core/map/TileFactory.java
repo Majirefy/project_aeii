@@ -1,5 +1,6 @@
 package com.toyknight.aeii.core.map;
 
+import com.toyknight.aeii.core.AEIIException;
 import com.toyknight.aeii.gui.util.SuffixFileFilter;
 import java.io.File;
 import java.io.IOException;
@@ -16,13 +17,16 @@ public class TileFactory {
 	private TileFactory() {
 	}
 
-	public static void init(File tile_data_dir) throws IOException {
-		int tile_count = tile_data_dir.listFiles(new SuffixFileFilter("dat")).length;
+	public static void init(File tile_data_dir) 
+			throws IOException, AEIIException {
+		int tile_count = 
+				tile_data_dir.listFiles(new SuffixFileFilter("dat")).length;
 		tile_list = new Tile[tile_count];
 		for (int i = 0; i < tile_count; i++) {
 			File tile_data = new File(
 					tile_data_dir.getAbsolutePath()
 					+ "\\tile_" + i + ".dat");
+			try {
 			Scanner din = new Scanner(tile_data);
 			int defence_bonus = din.nextInt();
 			int step_cost = din.nextInt();
@@ -65,6 +69,9 @@ public class TileFactory {
 			tile_list[i].setAnimated(is_animated);
 			if(is_animated) {
 				tile_list[i].setAnimationTileIndex(din.nextInt());
+			}
+			} catch (java.util.NoSuchElementException ex) {
+				throw new AEIIException("bad tile data");
 			}
 		}
 	}

@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
  *
  * @author toyknight
  */
-public class ResManager {
+public class ResourceManager {
 	
 	private static BufferedImage img_logo;
 	private static BufferedImage[] borders;
@@ -22,7 +22,7 @@ public class ResManager {
 	private static BufferedImage[] top_tiles;
 	private static Color aeii_panel_bg;
 	
-	private ResManager() {}
+	private ResourceManager() {}
 	
 	public static void init(int ts) throws IOException {
 		img_logo = ImageIO.read(new File("res\\logo.png"));

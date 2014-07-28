@@ -1,6 +1,7 @@
 
 package com.toyknight.aeii.gui;
 
+import com.toyknight.aeii.core.AEIIException;
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.Launcher;
 import com.toyknight.aeii.core.map.TileFactory;
@@ -96,7 +97,7 @@ public class AEIIApplet {
 			setCurrentFpsDelayToMenu();
 			executor.submit(animation_thread);
 			loadResources();
-		} catch (IOException ex) {
+		} catch (IOException | AEIIException ex) {
 			DialogUtil.showError(Launcher.getWindow(), ex.getMessage());
 			Launcher.exit();
 		}
@@ -107,12 +108,12 @@ public class AEIIApplet {
 		executor.shutdown();
 	}
 	
-	private void loadResources() throws IOException {
+	private void loadResources() throws IOException, AEIIException {
 		File tile_data_dir = new File("data\\tiles");
 		File unit_data_dir = new File("data\\units");
 		TileFactory.init(tile_data_dir);
 		UnitFactory.init(unit_data_dir);
-		ResManager.init(getTileSize());
+		ResourceManager.init(getTileSize());
 		logo_screen.setResourceLoaded(true);
 	}
 	
