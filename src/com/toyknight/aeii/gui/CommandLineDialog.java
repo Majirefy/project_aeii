@@ -149,7 +149,7 @@ public class CommandLineDialog extends JDialog {
 				context.getGameScreen().setGame(game);
 				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
 			} catch (IOException ex) {
-
+				
 			}
 		}
 

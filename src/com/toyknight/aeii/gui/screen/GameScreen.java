@@ -8,6 +8,7 @@ import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
+import com.toyknight.aeii.gui.animation.TileSprite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -27,6 +28,8 @@ public class GameScreen extends Screen implements GameListener {
 
 	private int view_port_x;
 	private int view_port_y;
+
+	private TileSprite[] tile_sprites;
 
 	public GameScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
@@ -49,6 +52,19 @@ public class GameScreen extends Screen implements GameListener {
 		this.add(action_panel);
 	}
 
+	public void initSprites() {
+		int tile_count = TileFactory.getTileCount();
+		tile_sprites = new TileSprite[tile_count];
+		int tile_size = getContext().getTileSize();
+		for (int i = 0; i < tile_count; i++) {
+			tile_sprites[i] = new TileSprite(tile_size, i);
+			if(TileFactory.getTile(i).isAnimated()) {
+				tile_sprites[i].setAnimationTileIndex(
+						TileFactory.getTile(i).getAnimationTileIndex());
+			}
+		}
+	}
+
 	public void setGame(BasicGame game) {
 		this.game = game;
 		this.game.setGameListener(this);
@@ -58,7 +74,7 @@ public class GameScreen extends Screen implements GameListener {
 
 	@Override
 	public void update() {
-
+		TileSprite.updateFrame();
 	}
 
 	private class MapPanel extends JPanel {
@@ -75,18 +91,17 @@ public class GameScreen extends Screen implements GameListener {
 			for (int x = view_port_x; x < game.getMap().getMapWidth(); x++) {
 				for (int y = view_port_y; y < game.getMap().getMapHeight(); y++) {
 					int index = game.getMap().getTileIndex(x, y);
-					g.drawImage(ResourceManager.getTileImage(index), x*ts, y*ts, this);
+					tile_sprites[index].paint(g, x * ts, y * ts);
 					Tile tile = TileFactory.getTile(index);
-					if(tile.getTopTileIndex() != -1) {
+					if (tile.getTopTileIndex() != -1) {
 						int top_tile_index = tile.getTopTileIndex();
 						g.drawImage(
-								ResourceManager.getTopTileImage(top_tile_index), 
-								x*ts, (y-1)*ts, this);
+								ResourceManager.getTopTileImage(top_tile_index),
+								x * ts, (y - 1) * ts, this);
 					}
 				}
 			}
 		}
-
 	}
 
 	private class StatusPanel extends AEIIPanel {
