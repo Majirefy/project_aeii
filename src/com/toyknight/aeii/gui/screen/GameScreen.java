@@ -12,6 +12,9 @@ import com.toyknight.aeii.gui.animation.TileSprite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 
 /**
@@ -26,10 +29,14 @@ public class GameScreen extends Screen implements GameListener {
 	private StatusPanel status_panel;
 	private ActionPanel action_panel;
 
-	private int view_port_x;
-	private int view_port_y;
+	private Rectangle viewport;
 
 	private TileSprite[] tile_sprites;
+
+	private boolean up_pressed = false;
+	private boolean down_pressed = false;
+	private boolean left_pressed = false;
+	private boolean right_pressed = false;
 
 	public GameScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
@@ -58,7 +65,7 @@ public class GameScreen extends Screen implements GameListener {
 		int tile_size = getContext().getTileSize();
 		for (int i = 0; i < tile_count; i++) {
 			tile_sprites[i] = new TileSprite(tile_size, i);
-			if(TileFactory.getTile(i).isAnimated()) {
+			if (TileFactory.getTile(i).isAnimated()) {
 				tile_sprites[i].setAnimationTileIndex(
 						TileFactory.getTile(i).getAnimationTileIndex());
 			}
@@ -68,13 +75,73 @@ public class GameScreen extends Screen implements GameListener {
 	public void setGame(BasicGame game) {
 		this.game = game;
 		this.game.setGameListener(this);
-		view_port_x = 0;
-		view_port_y = 0;
+		viewport = new Rectangle(
+				0, 0,
+				getContext().getScreenColumns(),
+				getContext().getScreenRows());
+	}
+
+	public void moveViewport(int dest_x, int dest_y) {
+		viewport.x = dest_x;
+		viewport.y = dest_y;
+	}
+
+	@Override
+	public void onKeyPress(KeyEvent e) {
+		if (!isAnimating()) {
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
+				this.up_pressed = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				this.down_pressed = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				this.left_pressed = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				this.right_pressed = true;
+			}
+		}
+	}
+
+	@Override
+	public void onKeyRelease(KeyEvent e) {
+		if (!isAnimating()) {
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
+				this.up_pressed = false;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				this.down_pressed = false;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				this.left_pressed = false;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				this.right_pressed = false;
+			}
+		}
+	}
+
+	private void updateViewport() {
+		if (down_pressed && viewport.y < game.getMap().getMapHeight() - viewport.height) {
+			moveViewport(viewport.x, viewport.y + 1);
+		}
+		if (up_pressed && viewport.y > 0) {
+			moveViewport(viewport.x, viewport.y - 1);
+		}
+		if (left_pressed && viewport.x > 0) {
+			moveViewport(viewport.x - 1, viewport.y);
+		}
+		if (right_pressed && viewport.x < game.getMap().getMapWidth() - viewport.width) {
+			moveViewport(viewport.x + 1, viewport.y);
+		}
 	}
 
 	@Override
 	public void update() {
+		super.update();
 		TileSprite.updateFrame();
+		updateViewport();
 	}
 
 	private class MapPanel extends JPanel {
@@ -88,16 +155,17 @@ public class GameScreen extends Screen implements GameListener {
 
 		private void paintTiles(Graphics g) {
 			int ts = getContext().getTileSize();
-			for (int x = view_port_x; x < game.getMap().getMapWidth(); x++) {
-				for (int y = view_port_y; y < game.getMap().getMapHeight(); y++) {
+			for (int x = viewport.x; x < viewport.x + viewport.width; x++) {
+				for (int y = viewport.y; y < viewport.y + viewport.height; y++) {
 					int index = game.getMap().getTileIndex(x, y);
-					tile_sprites[index].paint(g, x * ts, y * ts);
+					tile_sprites[index].paint(g,
+							(x - viewport.x) * ts, (y - viewport.y) * ts);
 					Tile tile = TileFactory.getTile(index);
 					if (tile.getTopTileIndex() != -1) {
 						int top_tile_index = tile.getTopTileIndex();
 						g.drawImage(
 								ResourceManager.getTopTileImage(top_tile_index),
-								x * ts, (y - 1) * ts, this);
+								(x - viewport.x) * ts, (y - viewport.y - 1), this);
 					}
 				}
 			}

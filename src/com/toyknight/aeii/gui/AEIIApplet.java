@@ -221,15 +221,12 @@ public class AEIIApplet {
 					case KeyEvent.KEY_PRESSED:
 						if (e.getKeyCode() == KeyEvent.VK_F9) {
 							command_line.display();
-						}
-						for(KeyListener listener: current_screen.getKeyListeners()) {
-							listener.keyPressed(e);
+						} else {
+							current_screen.onKeyPress(e);
 						}
 						break;
 					case KeyEvent.KEY_RELEASED:
-						for(KeyListener listener: current_screen.getKeyListeners()) {
-							listener.keyReleased(e);
-						}
+						current_screen.onKeyRelease(e);
 						break;
 				}
 			}
