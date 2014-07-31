@@ -1,5 +1,6 @@
 package com.toyknight.aeii.gui.screen;
 
+import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.map.Tile;
@@ -12,7 +13,6 @@ import com.toyknight.aeii.gui.animation.TileSprite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
@@ -22,8 +22,15 @@ import javax.swing.JPanel;
  * @author toyknight
  */
 public class GameScreen extends Screen implements GameListener {
+	
+	private static final int ST_NORMAL = 0x1;
+	private static final int ST_MOVE = 0x2;
+	private static final int ST_RMOVE = 0x3;
+	private static final int ST_ATTACK = 0x4;
 
 	private BasicGame game;
+	
+	private int state;
 
 	private MapPanel map_panel;
 	private StatusPanel status_panel;
@@ -73,12 +80,31 @@ public class GameScreen extends Screen implements GameListener {
 	}
 
 	public void setGame(BasicGame game) {
+		int ts = getContext().getTileSize();
 		this.game = game;
 		this.game.setGameListener(this);
 		viewport = new Rectangle(
 				0, 0,
-				getContext().getScreenColumns(),
-				getContext().getScreenRows());
+				map_panel.getWidth() / ts,
+				map_panel.getHeight() / ts);
+		state = ST_NORMAL;
+	}
+	
+	private void moveViewport() {
+			if (down_pressed
+					&& viewport.y < game.getMap().getMapHeight() - viewport.height) {
+				moveViewport(viewport.x, viewport.y + 1);
+			}
+			if (up_pressed && viewport.y > 0) {
+				moveViewport(viewport.x, viewport.y - 1);
+			}
+			if (right_pressed
+					&& viewport.x < game.getMap().getMapWidth() - viewport.width) {
+				moveViewport(viewport.x + 1, viewport.y);
+			}
+			if (left_pressed && viewport.x > 0) {
+				moveViewport(viewport.x - 1, viewport.y);
+			}
 	}
 
 	public void moveViewport(int dest_x, int dest_y) {
@@ -89,17 +115,21 @@ public class GameScreen extends Screen implements GameListener {
 	@Override
 	public void onKeyPress(KeyEvent e) {
 		if (!isAnimating()) {
-			if (e.getKeyCode() == KeyEvent.VK_UP) {
+			if (e.getKeyCode() == Configuration.getKeyUp()) {
 				this.up_pressed = true;
+				moveViewport();
 			}
-			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			if (e.getKeyCode() == Configuration.getKeyDown()) {
 				this.down_pressed = true;
+				moveViewport();
 			}
-			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			if (e.getKeyCode() == Configuration.getKeyLeft()) {
 				this.left_pressed = true;
+				moveViewport();
 			}
-			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			if (e.getKeyCode() == Configuration.getKeyRight()) {
 				this.right_pressed = true;
+				moveViewport();
 			}
 		}
 	}
@@ -107,33 +137,18 @@ public class GameScreen extends Screen implements GameListener {
 	@Override
 	public void onKeyRelease(KeyEvent e) {
 		if (!isAnimating()) {
-			if (e.getKeyCode() == KeyEvent.VK_UP) {
+			if (e.getKeyCode() == Configuration.getKeyUp()) {
 				this.up_pressed = false;
 			}
-			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			if (e.getKeyCode() == Configuration.getKeyDown()) {
 				this.down_pressed = false;
 			}
-			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			if (e.getKeyCode() == Configuration.getKeyLeft()) {
 				this.left_pressed = false;
 			}
-			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			if (e.getKeyCode() == Configuration.getKeyRight()) {
 				this.right_pressed = false;
 			}
-		}
-	}
-
-	private void updateViewport() {
-		if (down_pressed && viewport.y < game.getMap().getMapHeight() - viewport.height) {
-			moveViewport(viewport.x, viewport.y + 1);
-		}
-		if (up_pressed && viewport.y > 0) {
-			moveViewport(viewport.x, viewport.y - 1);
-		}
-		if (left_pressed && viewport.x > 0) {
-			moveViewport(viewport.x - 1, viewport.y);
-		}
-		if (right_pressed && viewport.x < game.getMap().getMapWidth() - viewport.width) {
-			moveViewport(viewport.x + 1, viewport.y);
 		}
 	}
 
@@ -141,7 +156,6 @@ public class GameScreen extends Screen implements GameListener {
 	public void update() {
 		super.update();
 		TileSprite.updateFrame();
-		updateViewport();
 	}
 
 	private class MapPanel extends JPanel {
