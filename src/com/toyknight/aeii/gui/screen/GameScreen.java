@@ -9,12 +9,15 @@ import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
+import com.toyknight.aeii.gui.animation.CursorSprite;
 import com.toyknight.aeii.gui.animation.TileSprite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import javax.swing.JPanel;
 
 /**
@@ -38,6 +41,10 @@ public class GameScreen extends Screen implements GameListener {
 	private ActionPanel action_panel;
 
 	private Rectangle viewport;
+
+	private int mouse_x;
+	private int mouse_y;
+	private CursorSprite cursor;
 
 	private TileSprite[] tile_sprites;
 
@@ -63,6 +70,13 @@ public class GameScreen extends Screen implements GameListener {
 		this.add(status_panel);
 		map_panel = new MapPanel();
 		map_panel.setBounds(0, 0, width - ts * apw, height - ts);
+		map_panel.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				mouse_x = e.getX();
+				mouse_y = e.getY();
+			}
+		});
 		this.add(map_panel);
 		action_panel = new ActionPanel();
 		action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
@@ -71,9 +85,9 @@ public class GameScreen extends Screen implements GameListener {
 	}
 
 	public void initSprites() {
+		int tile_size = getContext().getTileSize();
 		int tile_count = TileFactory.getTileCount();
 		tile_sprites = new TileSprite[tile_count];
-		int tile_size = getContext().getTileSize();
 		for (int i = 0; i < tile_count; i++) {
 			tile_sprites[i] = new TileSprite(tile_size, i);
 			if (TileFactory.getTile(i).isAnimated()) {
@@ -81,6 +95,7 @@ public class GameScreen extends Screen implements GameListener {
 						TileFactory.getTile(i).getAnimationTileIndex());
 			}
 		}
+		cursor = new CursorSprite(tile_size);
 	}
 
 	public void setGame(BasicGame game) {
@@ -88,6 +103,12 @@ public class GameScreen extends Screen implements GameListener {
 		this.game.setGameListener(this);
 		state = ST_NORMAL;
 		locateViewport(0, 0);
+		mouse_x = 0;
+		mouse_y = 0;
+	}
+
+	public BasicGame getGame() {
+		return game;
 	}
 
 	public void locateViewport(int center_x, int center_y) {
@@ -136,7 +157,6 @@ public class GameScreen extends Screen implements GameListener {
 				viewport.x -= 16;
 			}
 		}
-
 	}
 
 	@Override
@@ -177,6 +197,7 @@ public class GameScreen extends Screen implements GameListener {
 	public void update() {
 		super.update();
 		TileSprite.updateFrame();
+		cursor.update();
 		updateViewport();
 	}
 
@@ -184,12 +205,6 @@ public class GameScreen extends Screen implements GameListener {
 
 		@Override
 		public void paint(Graphics g) {
-			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, getWidth(), getHeight());
-			paintTiles(g);
-		}
-
-		private void paintTiles(Graphics g) {
 			int ts = getContext().getTileSize();
 			int sx = viewport.x / ts;
 			sx = sx > 0 ? sx : 0;
@@ -201,6 +216,15 @@ public class GameScreen extends Screen implements GameListener {
 			ey = ey < game.getMap().getMapHeight() ? ex : game.getMap().getMapHeight();
 			int x_offset = sx * ts - viewport.x;
 			int y_offset = sy * ts - viewport.y;
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, getWidth(), getHeight());
+			paintTiles(g, ts, sx, ex, sy, ey, x_offset, y_offset);
+			if (getGame().isLocalPlayer()) {
+				paintCursor(g, ts, sx, sy, x_offset, y_offset);
+			}
+		}
+
+		private void paintTiles(Graphics g, int ts, int sx, int ex, int sy, int ey, int x_offset, int y_offset) {
 			for (int x = sx; x < ex; x++) {
 				for (int y = sy; y < ey; y++) {
 					int index = game.getMap().getTileIndex(x, y);
@@ -216,6 +240,13 @@ public class GameScreen extends Screen implements GameListener {
 				}
 			}
 		}
+
+		private void paintCursor(Graphics g, int ts, int sx, int sy, int x_offset, int y_offset) {
+			int x = (mouse_x + viewport.x) / ts;
+			int y = (mouse_y + viewport.y) / ts;
+			cursor.paint(g, (x - sx) * ts + x_offset, (y - sy) * ts + y_offset);
+		}
+
 	}
 
 	private class TilePanel extends AEIIPanel {

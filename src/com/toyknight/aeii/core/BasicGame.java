@@ -1,6 +1,7 @@
 package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.map.Map;
+import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
 
 /**
@@ -26,6 +27,10 @@ public class BasicGame implements OperationListener {
 				break;
 			}
 		}
+	}
+	
+	public boolean isLocalPlayer() {
+		return getCurrentPlayer() instanceof LocalPlayer;
 	}
 
 	public final Player getCurrentPlayer() {
