@@ -22,17 +22,18 @@ import javax.swing.JPanel;
  * @author toyknight
  */
 public class GameScreen extends Screen implements GameListener {
-	
+
 	private static final int ST_NORMAL = 0x1;
 	private static final int ST_MOVE = 0x2;
 	private static final int ST_RMOVE = 0x3;
 	private static final int ST_ATTACK = 0x4;
 
 	private BasicGame game;
-	
+
 	private int state;
 
 	private MapPanel map_panel;
+	private TilePanel tile_panel;
 	private StatusPanel status_panel;
 	private ActionPanel action_panel;
 
@@ -47,23 +48,26 @@ public class GameScreen extends Screen implements GameListener {
 
 	public GameScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
-		initComponents();
+		initComponents(size.width, size.height);
 	}
 
-	private void initComponents() {
+	private void initComponents(int width, int height) {
 		this.setLayout(null);
+		int apw = 3; //action panel width(in column)
 		int ts = getContext().getTileSize();
-		int rows = getContext().getScreenRows();
-		int columns = getContext().getScreenColumns();
+		tile_panel = new TilePanel();
+		tile_panel.setBounds(0, height - ts, ts, ts);
+		this.add(tile_panel);
 		status_panel = new StatusPanel();
-		status_panel.setBounds(0, (rows - 1) * ts, (columns - 3) * ts, ts);
+		status_panel.setBounds(ts, height - ts, width - ts * (apw + 1), ts);
 		this.add(status_panel);
 		map_panel = new MapPanel();
-		map_panel.setBounds(0, 0, (columns - 3) * ts, (rows - 1) * ts);
+		map_panel.setBounds(0, 0, width - ts * apw, height - ts);
 		this.add(map_panel);
 		action_panel = new ActionPanel();
-		action_panel.setBounds((columns - 3) * ts, 0, 3 * ts, rows * ts);
+		action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
 		this.add(action_panel);
+		viewport = new Rectangle(0, 0, map_panel.getWidth(), map_panel.getHeight());
 	}
 
 	public void initSprites() {
@@ -80,57 +84,74 @@ public class GameScreen extends Screen implements GameListener {
 	}
 
 	public void setGame(BasicGame game) {
-		int ts = getContext().getTileSize();
 		this.game = game;
 		this.game.setGameListener(this);
-		viewport = new Rectangle(
-				0, 0,
-				map_panel.getWidth() / ts,
-				map_panel.getHeight() / ts);
 		state = ST_NORMAL;
-	}
-	
-	private void moveViewport() {
-			if (down_pressed
-					&& viewport.y < game.getMap().getMapHeight() - viewport.height) {
-				moveViewport(viewport.x, viewport.y + 1);
-			}
-			if (up_pressed && viewport.y > 0) {
-				moveViewport(viewport.x, viewport.y - 1);
-			}
-			if (right_pressed
-					&& viewport.x < game.getMap().getMapWidth() - viewport.width) {
-				moveViewport(viewport.x + 1, viewport.y);
-			}
-			if (left_pressed && viewport.x > 0) {
-				moveViewport(viewport.x - 1, viewport.y);
-			}
+		locateViewport(0, 0);
 	}
 
-	public void moveViewport(int dest_x, int dest_y) {
-		viewport.x = dest_x;
-		viewport.y = dest_y;
+	public void locateViewport(int center_x, int center_y) {
+		int ts = getContext().getTileSize();
+		int map_width = game.getMap().getMapWidth() * ts;
+		int map_height = game.getMap().getMapHeight() * ts;
+		if (viewport.width < map_width) {
+			viewport.x = center_x - (viewport.width - ts) / 2;
+			if (viewport.x < 0) {
+				viewport.x = 0;
+			}
+			if (viewport.x > map_width - viewport.width) {
+				viewport.x = map_width - viewport.width;
+			}
+		} else {
+			viewport.x = (map_width - viewport.width) / 2;
+		}
+		if (viewport.height < map_height) {
+			viewport.y = center_y - (viewport.height - ts) / 2;
+			if (viewport.y < 0) {
+				viewport.y = 0;
+			}
+			if (viewport.y > map_height - viewport.height) {
+				viewport.y = map_height - viewport.height;
+			}
+		} else {
+			viewport.y = (map_height - viewport.height) / 2;
+		}
+	}
+
+	private void updateViewport() {
+		if (!isAnimating()) {
+			int ts = getContext().getTileSize();
+			int map_width = game.getMap().getMapWidth() * ts;
+			int map_height = game.getMap().getMapHeight() * ts;
+			if (down_pressed && viewport.y < map_height - viewport.height) {
+				viewport.y += 16;
+			}
+			if (up_pressed && viewport.y > 0) {
+				viewport.y -= 16;
+			}
+			if (right_pressed && viewport.x < map_width - viewport.width) {
+				viewport.x += 16;
+			}
+			if (left_pressed && viewport.x > 0) {
+				viewport.x -= 16;
+			}
+		}
+
 	}
 
 	@Override
 	public void onKeyPress(KeyEvent e) {
-		if (!isAnimating()) {
-			if (e.getKeyCode() == Configuration.getKeyUp()) {
-				this.up_pressed = true;
-				moveViewport();
-			}
-			if (e.getKeyCode() == Configuration.getKeyDown()) {
-				this.down_pressed = true;
-				moveViewport();
-			}
-			if (e.getKeyCode() == Configuration.getKeyLeft()) {
-				this.left_pressed = true;
-				moveViewport();
-			}
-			if (e.getKeyCode() == Configuration.getKeyRight()) {
-				this.right_pressed = true;
-				moveViewport();
-			}
+		if (e.getKeyCode() == Configuration.getKeyUp()) {
+			this.up_pressed = true;
+		}
+		if (e.getKeyCode() == Configuration.getKeyDown()) {
+			this.down_pressed = true;
+		}
+		if (e.getKeyCode() == Configuration.getKeyLeft()) {
+			this.left_pressed = true;
+		}
+		if (e.getKeyCode() == Configuration.getKeyRight()) {
+			this.right_pressed = true;
 		}
 	}
 
@@ -156,6 +177,7 @@ public class GameScreen extends Screen implements GameListener {
 	public void update() {
 		super.update();
 		TileSprite.updateFrame();
+		updateViewport();
 	}
 
 	private class MapPanel extends JPanel {
@@ -169,21 +191,35 @@ public class GameScreen extends Screen implements GameListener {
 
 		private void paintTiles(Graphics g) {
 			int ts = getContext().getTileSize();
-			for (int x = viewport.x; x < viewport.x + viewport.width; x++) {
-				for (int y = viewport.y; y < viewport.y + viewport.height; y++) {
+			int sx = viewport.x / ts;
+			sx = sx > 0 ? sx : 0;
+			int ex = (viewport.x + viewport.width) / ts + 1;
+			ex = ex < game.getMap().getMapWidth() ? ex : game.getMap().getMapWidth();
+			int sy = viewport.y / ts;
+			sy = sy > 0 ? sy : 0;
+			int ey = (viewport.y + viewport.height) / ts + 1;
+			ey = ey < game.getMap().getMapHeight() ? ex : game.getMap().getMapHeight();
+			int x_offset = sx * ts - viewport.x;
+			int y_offset = sy * ts - viewport.y;
+			for (int x = sx; x < ex; x++) {
+				for (int y = sy; y < ey; y++) {
 					int index = game.getMap().getTileIndex(x, y);
 					tile_sprites[index].paint(g,
-							(x - viewport.x) * ts, (y - viewport.y) * ts);
+							(x - sx) * ts + x_offset, (y - sy) * ts + y_offset);
 					Tile tile = TileFactory.getTile(index);
 					if (tile.getTopTileIndex() != -1) {
 						int top_tile_index = tile.getTopTileIndex();
 						g.drawImage(
 								ResourceManager.getTopTileImage(top_tile_index),
-								(x - viewport.x) * ts, (y - viewport.y - 1), this);
+								(x - sx) * ts + x_offset, (y - sy - 1) * ts + y_offset, this);
 					}
 				}
 			}
 		}
+	}
+
+	private class TilePanel extends AEIIPanel {
+
 	}
 
 	private class StatusPanel extends AEIIPanel {

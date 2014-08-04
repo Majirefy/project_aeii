@@ -18,7 +18,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -49,9 +48,7 @@ public class AEIIApplet {
 	
 	private Container content_pane;
 
-	private final int ROWS = 12;
-	private final int COLUMNS = 20;
-	private final int TILE_SIZE = 48;
+	private final int TILE_SIZE;
 	private final Dimension SCREEN_SIZE;
 
 	private Screen current_screen;
@@ -61,8 +58,9 @@ public class AEIIApplet {
 
 	private CardLayout screen_container;
 	
-	public AEIIApplet() {
-		SCREEN_SIZE = new Dimension(TILE_SIZE * COLUMNS, TILE_SIZE * ROWS);
+	public AEIIApplet(int ts, int width, int height) {
+		this.TILE_SIZE = ts;
+		SCREEN_SIZE = new Dimension(width, height);
 		inMenuFpsDelay = 1000 / 15;
 		inGameFpsDelay = 1000 / Configuration.getGameSpeed();
 		animation_thread = new Thread(new Animator());
@@ -150,14 +148,6 @@ public class AEIIApplet {
 
 	public int getTileSize() {
 		return TILE_SIZE;
-	}
-	
-	public int getScreenRows() {
-		return ROWS;
-	}
-	
-	public int getScreenColumns() {
-		return COLUMNS;
 	}
 	
 	public void setCurrentFpsDelayToGame() {
