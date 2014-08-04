@@ -140,7 +140,7 @@ public class GameScreen extends Screen implements GameListener {
 	}
 
 	private void updateViewport() {
-		if (!isAnimating()) {
+		if (!isAnimating() && getGame().isLocalPlayer()) {
 			int ts = getContext().getTileSize();
 			int map_width = game.getMap().getMapWidth() * ts;
 			int map_height = game.getMap().getMapHeight() * ts;
