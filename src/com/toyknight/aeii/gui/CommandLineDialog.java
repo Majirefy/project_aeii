@@ -148,6 +148,7 @@ public class CommandLineDialog extends JDialog {
 				BasicGame game = game_factory.createBasicGame();
 				context.getGameScreen().setGame(game);
 				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
+				context.setCurrentFpsDelayToGame();
 			} catch (IOException ex) {
 				
 			}
