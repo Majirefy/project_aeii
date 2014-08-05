@@ -213,7 +213,7 @@ public class GameScreen extends Screen implements GameListener {
 			int sy = viewport.y / ts;
 			sy = sy > 0 ? sy : 0;
 			int ey = (viewport.y + viewport.height) / ts + 1;
-			ey = ey < game.getMap().getMapHeight() ? ex : game.getMap().getMapHeight();
+			ey = ey < game.getMap().getMapHeight() ? ey : game.getMap().getMapHeight();
 			int x_offset = sx * ts - viewport.x;
 			int y_offset = sy * ts - viewport.y;
 			g.setColor(Color.BLACK);
