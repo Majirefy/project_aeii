@@ -12,7 +12,7 @@ public class BasicGame implements OperationListener {
 
 	private final Map map;
 	private final Player[] player_list;
-	private int current_player_index;
+	private int current_team;
 	private GameListener game_listener;
 
 	public BasicGame(Map map) {
@@ -21,9 +21,9 @@ public class BasicGame implements OperationListener {
 	}
 
 	public void init() {
-		for (int i = 0; i < player_list.length; i++) {
-			if(player_list[i] != null) {
-				current_player_index = i;
+		for (int team = 0; team < player_list.length; team++) {
+			if(player_list[team] != null) {
+				current_team = team;
 				break;
 			}
 		}
@@ -34,7 +34,11 @@ public class BasicGame implements OperationListener {
 	}
 
 	public final Player getCurrentPlayer() {
-		return player_list[current_player_index];
+		return player_list[current_team];
+	}
+	
+	public final int getCurrentTeam() {
+		return current_team;
 	}
 
 	public final void setPlayer(int index, Player player) {
@@ -54,7 +58,7 @@ public class BasicGame implements OperationListener {
 	}
 
 	public void endTurn() {
-
+		
 	}
 
 }

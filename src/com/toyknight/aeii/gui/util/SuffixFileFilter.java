@@ -20,11 +20,7 @@ public class SuffixFileFilter implements FileFilter {
 		if (f.isDirectory()) {
 			return false;
 		} else {
-			if (f.isFile() && f.getName().endsWith("." + suffix)) {
-				return true;
-			} else {
-				return false;
-			}
+			return f.isFile() && f.getName().endsWith("." + suffix);
 		}
 	}
 
