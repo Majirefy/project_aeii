@@ -139,6 +139,37 @@ public class GameScreen extends Screen implements GameListener {
 		}
 	}
 
+	private boolean isWithinScreen(int sx, int sy) {
+		int ts = getContext().getTileSize();
+		return -ts < sx && sx < viewport.width && -ts < sy && sy < viewport.height;
+	}
+	
+	private int getCursorXOnMap() {
+		int ts = getContext().getTileSize();
+		return (mouse_x + viewport.x) / ts;
+	}
+	
+	private int getCursorYOnMap() {
+		int ts = getContext().getTileSize();
+		return (mouse_y + viewport.y) / ts;
+	}
+
+	private int getXOnScreen(int map_x) {
+		int ts = getContext().getTileSize();
+		int sx = viewport.x / ts;
+		sx = sx > 0 ? sx : 0;
+		int x_offset = sx * ts - viewport.x;
+		return (map_x - sx) * ts + x_offset;
+	}
+
+	private int getYOnScreen(int map_y) {
+		int ts = getContext().getTileSize();
+		int sy = viewport.y / ts;
+		sy = sy > 0 ? sy : 0;
+		int y_offset = sy * ts - viewport.y;
+		return (map_y - sy) * ts + y_offset;
+	}
+
 	private void updateViewport() {
 		if (!isAnimating() && getGame().isLocalPlayer()) {
 			int ts = getContext().getTileSize();
@@ -206,45 +237,40 @@ public class GameScreen extends Screen implements GameListener {
 		@Override
 		public void paint(Graphics g) {
 			int ts = getContext().getTileSize();
-			int sx = viewport.x / ts;
-			sx = sx > 0 ? sx : 0;
-			int ex = (viewport.x + viewport.width) / ts + 1;
-			ex = ex < game.getMap().getMapWidth() ? ex : game.getMap().getMapWidth();
-			int sy = viewport.y / ts;
-			sy = sy > 0 ? sy : 0;
-			int ey = (viewport.y + viewport.height) / ts + 1;
-			ey = ey < game.getMap().getMapHeight() ? ey : game.getMap().getMapHeight();
-			int x_offset = sx * ts - viewport.x;
-			int y_offset = sy * ts - viewport.y;
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, getWidth(), getHeight());
-			paintTiles(g, ts, sx, ex, sy, ey, x_offset, y_offset);
+			paintTiles(g, ts);
 			if (getGame().isLocalPlayer()) {
-				paintCursor(g, ts, sx, sy, x_offset, y_offset);
+				paintCursor(g, ts);
 			}
 		}
 
-		private void paintTiles(Graphics g, int ts, int sx, int ex, int sy, int ey, int x_offset, int y_offset) {
-			for (int x = sx; x < ex; x++) {
-				for (int y = sy; y < ey; y++) {
-					int index = game.getMap().getTileIndex(x, y);
-					tile_sprites[index].paint(g,
-							(x - sx) * ts + x_offset, (y - sy) * ts + y_offset);
-					Tile tile = TileFactory.getTile(index);
-					if (tile.getTopTileIndex() != -1) {
-						int top_tile_index = tile.getTopTileIndex();
-						g.drawImage(
-								ResourceManager.getTopTileImage(top_tile_index),
-								(x - sx) * ts + x_offset, (y - sy - 1) * ts + y_offset, this);
+		private void paintTiles(Graphics g, int ts) {
+			for (int x = 0; x < getGame().getMap().getMapWidth(); x++) {
+				for (int y = 0; y < getGame().getMap().getMapHeight(); y++) {
+					int sx = getXOnScreen(x);
+					int sy = getYOnScreen(y);
+					if (isWithinScreen(sx, sy)) {
+						int index = game.getMap().getTileIndex(x, y);
+						tile_sprites[index].paint(g, sx, sy);
+						Tile tile = TileFactory.getTile(index);
+						if (tile.getTopTileIndex() != -1) {
+							int top_tile_index = tile.getTopTileIndex();
+							g.drawImage(
+									ResourceManager.getTopTileImage(top_tile_index),
+									sx, sy - ts, this);
+						}
 					}
 				}
 			}
 		}
 
-		private void paintCursor(Graphics g, int ts, int sx, int sy, int x_offset, int y_offset) {
-			int x = (mouse_x + viewport.x) / ts;
-			int y = (mouse_y + viewport.y) / ts;
-			cursor.paint(g, (x - sx) * ts + x_offset, (y - sy) * ts + y_offset);
+		private void paintCursor(Graphics g, int ts) {
+			int mx = getCursorXOnMap();
+			int my = getCursorYOnMap();
+			int sx = getXOnScreen(mx);
+			int sy = getYOnScreen(my);
+			cursor.paint(g, sx, sy);
 		}
 
 	}
