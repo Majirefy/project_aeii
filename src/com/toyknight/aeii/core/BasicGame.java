@@ -3,6 +3,7 @@ package com.toyknight.aeii.core;
 import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
+import com.toyknight.aeii.core.unit.Unit;
 
 /**
  *
@@ -52,9 +53,34 @@ public class BasicGame implements OperationListener {
 	public final void setGameListener(GameListener listener) {
 		this.game_listener = listener;
 	}
-
-	public final Map getMap() {
-		return map;
+	
+	public int getMapWidth() {
+		return map.getMapWidth();
+	}
+	
+	public int getMapHeight() {
+		return map.getMapHeight();
+	}
+	
+	public int getTileIndex(int x, int y) {
+		return map.getTileIndex(x, y);
+	}
+	
+	public int getUnitCount() {
+		return map.getUnitList().size();
+	}
+	
+	public Unit getUnit(int index) {
+		return map.getUnitList().get(index);
+	}
+	
+	public Unit getUnit(int x, int y) {
+		for(Unit unit: map.getUnitList()) {
+			if(unit.getX() == x && unit.getY() == y) {
+				return unit;
+			}
+		}
+		return null;
 	}
 
 	public void endTurn() {
