@@ -77,6 +77,10 @@ public class UnitFactory {
 			}
 		}
 	}
+	
+	public static int getUnitCount() {
+		return units.length;
+	}
 
 	public static Unit createUnit(int index) {
 		return new Unit(units[index]);

@@ -10,11 +10,11 @@ import java.util.Scanner;
  *
  * @author toyknight
  */
-public class TileFactory {
+public class TileEntitySet {
 
 	private static Tile[] tile_list;
 
-	private TileFactory() {
+	private TileEntitySet() {
 	}
 
 	public static void init(File tile_data_dir) 

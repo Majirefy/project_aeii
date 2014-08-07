@@ -4,7 +4,7 @@ package com.toyknight.aeii.gui;
 import com.toyknight.aeii.core.AEIIException;
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.Launcher;
-import com.toyknight.aeii.core.map.TileFactory;
+import com.toyknight.aeii.core.map.TileEntitySet;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
 import com.toyknight.aeii.gui.screen.GameScreen;
@@ -109,7 +109,7 @@ public class AEIIApplet {
 	private void loadResources() throws IOException, AEIIException {
 		File tile_data_dir = new File("data\\tiles");
 		File unit_data_dir = new File("data\\units");
-		TileFactory.init(tile_data_dir);
+		TileEntitySet.init(tile_data_dir);
 		UnitFactory.init(unit_data_dir);
 		ResourceManager.init(getTileSize());
 		game_screen.initSprites();
@@ -180,8 +180,8 @@ public class AEIIApplet {
 		public void run() {
 			while (isRunning) {
 				long start_time = System.currentTimeMillis();
-				getCurrentScreen().update();
 				getCurrentScreen().repaint();
+				getCurrentScreen().update();
 				long end_time = System.currentTimeMillis();
 				long current_fps_delay = getCurrentFpsDelay();
 				if (end_time - start_time < current_fps_delay) {

@@ -4,13 +4,17 @@ import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.map.Tile;
-import com.toyknight.aeii.core.map.TileFactory;
+import com.toyknight.aeii.core.map.TileEntitySet;
+import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.CursorSprite;
 import com.toyknight.aeii.gui.animation.TileSprite;
+import com.toyknight.aeii.gui.animation.UnitMovementAnimation;
+import com.toyknight.aeii.gui.animation.UnitSprite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -47,6 +51,7 @@ public class GameScreen extends Screen implements GameListener {
 	private CursorSprite cursor;
 
 	private TileSprite[] tile_sprites;
+	private UnitSprite[][] unit_sprites;
 
 	private boolean up_pressed = false;
 	private boolean down_pressed = false;
@@ -75,6 +80,7 @@ public class GameScreen extends Screen implements GameListener {
 			public void mouseMoved(MouseEvent e) {
 				mouse_x = e.getX();
 				mouse_y = e.getY();
+				tile_panel.update();
 			}
 		});
 		this.add(map_panel);
@@ -85,17 +91,24 @@ public class GameScreen extends Screen implements GameListener {
 	}
 
 	public void initSprites() {
-		int tile_size = getContext().getTileSize();
-		int tile_count = TileFactory.getTileCount();
+		int ts = getContext().getTileSize();
+		int tile_count = TileEntitySet.getTileCount();
 		tile_sprites = new TileSprite[tile_count];
 		for (int i = 0; i < tile_count; i++) {
-			tile_sprites[i] = new TileSprite(tile_size, i);
-			if (TileFactory.getTile(i).isAnimated()) {
+			tile_sprites[i] = new TileSprite(ts, i);
+			if (TileEntitySet.getTile(i).isAnimated()) {
 				tile_sprites[i].setAnimationTileIndex(
-						TileFactory.getTile(i).getAnimationTileIndex());
+						TileEntitySet.getTile(i).getAnimationTileIndex());
 			}
 		}
-		cursor = new CursorSprite(tile_size);
+		int unit_count = UnitFactory.getUnitCount();
+		unit_sprites = new UnitSprite[4][unit_count];
+		for (int team = 0; team < 4; team++) {
+			for (int index = 0; index < unit_count; index++) {
+				unit_sprites[team][index] = new UnitSprite(team, index, ts, ts);
+			}
+		}
+		cursor = new CursorSprite(ts);
 	}
 
 	public void setGame(BasicGame game) {
@@ -105,6 +118,7 @@ public class GameScreen extends Screen implements GameListener {
 		locateViewport(0, 0);
 		mouse_x = 0;
 		mouse_y = 0;
+		tile_panel.update();
 	}
 
 	public BasicGame getGame() {
@@ -113,8 +127,8 @@ public class GameScreen extends Screen implements GameListener {
 
 	public void locateViewport(int center_x, int center_y) {
 		int ts = getContext().getTileSize();
-		int map_width = game.getMap().getMapWidth() * ts;
-		int map_height = game.getMap().getMapHeight() * ts;
+		int map_width = game.getMapWidth() * ts;
+		int map_height = game.getMapHeight() * ts;
 		if (viewport.width < map_width) {
 			viewport.x = center_x - (viewport.width - ts) / 2;
 			if (viewport.x < 0) {
@@ -143,12 +157,12 @@ public class GameScreen extends Screen implements GameListener {
 		int ts = getContext().getTileSize();
 		return -ts < sx && sx < viewport.width && -ts < sy && sy < viewport.height;
 	}
-	
+
 	private int getCursorXOnMap() {
 		int ts = getContext().getTileSize();
 		return (mouse_x + viewport.x) / ts;
 	}
-	
+
 	private int getCursorYOnMap() {
 		int ts = getContext().getTileSize();
 		return (mouse_y + viewport.y) / ts;
@@ -173,19 +187,19 @@ public class GameScreen extends Screen implements GameListener {
 	private void updateViewport() {
 		if (!isAnimating() && getGame().isLocalPlayer()) {
 			int ts = getContext().getTileSize();
-			int map_width = game.getMap().getMapWidth() * ts;
-			int map_height = game.getMap().getMapHeight() * ts;
+			int map_width = game.getMapWidth() * ts;
+			int map_height = game.getMapHeight() * ts;
 			if (down_pressed && viewport.y < map_height - viewport.height) {
-				viewport.y += 16;
+				viewport.y += ts / 3;
 			}
 			if (up_pressed && viewport.y > 0) {
-				viewport.y -= 16;
+				viewport.y -= ts / 3;
 			}
 			if (right_pressed && viewport.x < map_width - viewport.width) {
-				viewport.x += 16;
+				viewport.x += ts / 3;
 			}
 			if (left_pressed && viewport.x > 0) {
-				viewport.x -= 16;
+				viewport.x -= ts / 3;
 			}
 		}
 	}
@@ -226,10 +240,11 @@ public class GameScreen extends Screen implements GameListener {
 
 	@Override
 	public void update() {
-		super.update();
 		TileSprite.updateFrame();
+		UnitSprite.updateFrame();
 		cursor.update();
 		updateViewport();
+		updateAnimation();
 	}
 
 	private class MapPanel extends JPanel {
@@ -240,20 +255,21 @@ public class GameScreen extends Screen implements GameListener {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, getWidth(), getHeight());
 			paintTiles(g, ts);
+			paintUnits(g, ts);
 			if (getGame().isLocalPlayer()) {
 				paintCursor(g, ts);
 			}
 		}
 
 		private void paintTiles(Graphics g, int ts) {
-			for (int x = 0; x < getGame().getMap().getMapWidth(); x++) {
-				for (int y = 0; y < getGame().getMap().getMapHeight(); y++) {
+			for (int x = 0; x < getGame().getMapWidth(); x++) {
+				for (int y = 0; y < getGame().getMapHeight(); y++) {
 					int sx = getXOnScreen(x);
 					int sy = getYOnScreen(y);
 					if (isWithinScreen(sx, sy)) {
-						int index = game.getMap().getTileIndex(x, y);
+						int index = game.getTileIndex(x, y);
 						tile_sprites[index].paint(g, sx, sy);
-						Tile tile = TileFactory.getTile(index);
+						Tile tile = TileEntitySet.getTile(index);
 						if (tile.getTopTileIndex() != -1) {
 							int top_tile_index = tile.getTopTileIndex();
 							g.drawImage(
@@ -265,18 +281,52 @@ public class GameScreen extends Screen implements GameListener {
 			}
 		}
 
+		private void paintUnits(Graphics g, int ts) {
+			for (int i = 0; i < game.getUnitCount(); i++) {
+				Unit unit = game.getUnit(i);
+				int unit_x = unit.getX();
+				int unit_y = unit.getY();
+				//if this unit isn't animating, then paint it. otherwise, let animation paint it
+				if (!(getAnimation(unit_x, unit_y) instanceof UnitMovementAnimation)) {
+					int team = unit.getTeam();
+					int index = unit.getIndex();
+					int sx = getXOnScreen(unit_x);
+					int sy = getYOnScreen(unit_y);
+					if (isWithinScreen(sx, sy)) {
+						unit_sprites[team][index].paint(g, sx, sy);
+					}
+				}
+			}
+		}
+
 		private void paintCursor(Graphics g, int ts) {
 			int mx = getCursorXOnMap();
 			int my = getCursorYOnMap();
 			int sx = getXOnScreen(mx);
 			int sy = getYOnScreen(my);
-			cursor.paint(g, sx, sy);
+			if (isWithinScreen(sx, sy)) {
+				cursor.paint(g, sx, sy);
+			}
 		}
 
 	}
 
 	private class TilePanel extends AEIIPanel {
-
+		
+		private int tile_index;
+		
+		public void update() {
+			int mx = getCursorXOnMap();
+			int my = getCursorYOnMap();
+			tile_index = getGame().getTileIndex(mx, my);
+		}
+		
+		@Override
+		public void paintComponent(Graphics g) {
+			int ts = getContext().getTileSize();
+			g.drawImage(ResourceManager.getTileImage(tile_index), 0, 0, ts, ts, this);
+		}
+		
 	}
 
 	private class StatusPanel extends AEIIPanel {
