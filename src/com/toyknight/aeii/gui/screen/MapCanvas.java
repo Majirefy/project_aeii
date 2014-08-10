@@ -9,10 +9,10 @@ import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.animation.Animation;
 import com.toyknight.aeii.gui.animation.AnimationListener;
-import com.toyknight.aeii.gui.animation.CursorSprite;
-import com.toyknight.aeii.gui.animation.TileSprite;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
-import com.toyknight.aeii.gui.animation.UnitSprite;
+import com.toyknight.aeii.gui.sprite.CursorSprite;
+import com.toyknight.aeii.gui.sprite.TileSprite;
+import com.toyknight.aeii.gui.sprite.UnitSprite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -116,7 +116,7 @@ public class MapCanvas extends JPanel {
 	public boolean isAnimating() {
 		return current_animation != null;
 	}
-	
+
 	private boolean isUnitAnimating(Unit unit) {
 		return isAnimating()
 				&& unit.getX() == current_animation.getX()
@@ -191,7 +191,7 @@ public class MapCanvas extends JPanel {
 		UnitSprite.updateFrame();
 		cursor.update();
 		updateViewport();
-		if(current_animation != null) {
+		if (current_animation != null) {
 			current_animation.update();
 		}
 	}

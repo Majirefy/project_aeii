@@ -1,5 +1,5 @@
 
-package com.toyknight.aeii.gui.animation;
+package com.toyknight.aeii.gui.sprite;
 
 import com.toyknight.aeii.gui.ResourceManager;
 import java.awt.Graphics;

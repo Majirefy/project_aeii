@@ -1,6 +1,8 @@
 
 package com.toyknight.aeii.gui.animation;
 
+import com.toyknight.aeii.gui.sprite.UnitSprite;
+
 /**
  *
  * @author toyknight
