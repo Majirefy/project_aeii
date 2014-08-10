@@ -20,8 +20,12 @@ public abstract class Animation {
 		listeners = new ArrayList();
 	}
 	
-	public final Point getLocation() {
-		return new Point(x, y);
+	public final int getX() {
+		return x;
+	}
+	
+	public final int getY() {
+		return y;
 	}
 	
 	public final void addAnimationListener(AnimationListener listener) {

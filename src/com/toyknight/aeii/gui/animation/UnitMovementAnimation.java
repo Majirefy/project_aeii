@@ -5,13 +5,10 @@ package com.toyknight.aeii.gui.animation;
  *
  * @author toyknight
  */
-public class UnitMovementAnimation extends Animation {
-	
-	private final UnitSprite unit;
+public class UnitMovementAnimation extends UnitAnimation {
 
-	public UnitMovementAnimation(UnitSprite unit, int x, int y) {
-		super(x, y);
-		this.unit = unit;
+	public UnitMovementAnimation(UnitSprite sprite, int x, int y) {
+		super(sprite, x, y);
 	}
 
 	@Override

@@ -112,7 +112,7 @@ public class AEIIApplet {
 		TileEntitySet.init(tile_data_dir);
 		UnitFactory.init(unit_data_dir);
 		ResourceManager.init(getTileSize());
-		game_screen.initSprites();
+		game_screen.getCanvas().init();
 		logo_screen.setResourceLoaded(true);
 	}
 	
