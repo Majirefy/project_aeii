@@ -17,8 +17,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.util.PriorityQueue;
 import javax.swing.JPanel;
 
@@ -28,17 +28,17 @@ import javax.swing.JPanel;
  */
 public class MapCanvas extends JPanel {
 
-	private static final int ST_NORMAL = 0x1;
-	private static final int ST_MOVE = 0x2;
-	private static final int ST_RMOVE = 0x3;
-	private static final int ST_ATTACK = 0x4;
+	public static final int ST_NORMAL = 0x1;
+	public static final int ST_MOVE = 0x2;
+	public static final int ST_RMOVE = 0x3;
+	public static final int ST_ATTACK = 0x4;
 
 	private final int ts;
 	private BasicGame game;
 	private int state;
 
 	private final PriorityQueue<Animation> animation_dispatcher;
-	private Animation current_animation = null;
+	private Animation current_animation;
 
 	private Rectangle viewport;
 
@@ -46,6 +46,8 @@ public class MapCanvas extends JPanel {
 	private int mouse_y;
 	private CursorSprite cursor;
 
+	private final int sprite_delay = 5;
+	private int current_sprite_delay = 0;
 	private TileSprite[] tile_sprites;
 	private UnitSprite[][] unit_sprites;
 
@@ -56,13 +58,20 @@ public class MapCanvas extends JPanel {
 
 	public MapCanvas(int ts) {
 		this.ts = ts;
-		this.addMouseMotionListener(new MouseMotionAdapter() {
+		this.setOpaque(false);
+		MouseAdapter mouse_adapter = new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				onMouseClick(e);
+			}
+
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				mouse_x = e.getX();
-				mouse_y = e.getY();
+				onMouseMove(e);
 			}
-		});
+		};
+		this.addMouseMotionListener(mouse_adapter);
+		this.addMouseListener(mouse_adapter);
 		this.animation_dispatcher = new PriorityQueue();
 	}
 
@@ -93,6 +102,11 @@ public class MapCanvas extends JPanel {
 		locateViewport(0, 0);
 		mouse_x = 0;
 		mouse_y = 0;
+		current_animation = null;
+	}
+
+	public int getState() {
+		return state;
 	}
 
 	public void submitAnimation(Animation animation) {
@@ -122,6 +136,17 @@ public class MapCanvas extends JPanel {
 				&& unit.getX() == current_animation.getX()
 				&& unit.getY() == current_animation.getY()
 				&& current_animation instanceof UnitAnimation;
+	}
+
+	public void onMouseClick(MouseEvent e) {
+		switch (state) {
+			
+		}
+	}
+
+	public void onMouseMove(MouseEvent e) {
+		mouse_x = e.getX();
+		mouse_y = e.getY();
 	}
 
 	public void onKeyPress(KeyEvent e) {
@@ -168,14 +193,14 @@ public class MapCanvas extends JPanel {
 		return (mouse_y + viewport.y) / ts;
 	}
 
-	public int getXOnScreen(int map_x) {
+	public int getXOnCanvas(int map_x) {
 		int sx = viewport.x / ts;
 		sx = sx > 0 ? sx : 0;
 		int x_offset = sx * ts - viewport.x;
 		return (map_x - sx) * ts + x_offset;
 	}
 
-	public int getYOnScreen(int map_y) {
+	public int getYOnCanvas(int map_y) {
 		int sy = viewport.y / ts;
 		sy = sy > 0 ? sy : 0;
 		int y_offset = sy * ts - viewport.y;
@@ -187,9 +212,15 @@ public class MapCanvas extends JPanel {
 	}
 
 	public void update() {
-		TileSprite.updateFrame();
-		UnitSprite.updateFrame();
-		cursor.update();
+		if (current_sprite_delay < sprite_delay) {
+			current_sprite_delay++;
+		} else {
+			current_sprite_delay = 0;
+			TileSprite.updateFrame();
+			UnitSprite.updateFrame();
+			cursor.update();
+		}
+
 		updateViewport();
 		if (current_animation != null) {
 			current_animation.update();
@@ -251,13 +282,14 @@ public class MapCanvas extends JPanel {
 		if (getGame().isLocalPlayer()) {
 			paintCursor(g, ts);
 		}
+		super.paint(g);
 	}
 
 	private void paintTiles(Graphics g, int ts) {
 		for (int x = 0; x < getGame().getMapWidth(); x++) {
 			for (int y = 0; y < getGame().getMapHeight(); y++) {
-				int sx = getXOnScreen(x);
-				int sy = getYOnScreen(y);
+				int sx = getXOnCanvas(x);
+				int sy = getYOnCanvas(y);
 				if (isWithinScreen(sx, sy)) {
 					int index = getGame().getTileIndex(x, y);
 					tile_sprites[index].paint(g, sx, sy);
@@ -282,8 +314,8 @@ public class MapCanvas extends JPanel {
 				int unit_y = unit.getY();
 				int team = unit.getTeam();
 				int index = unit.getIndex();
-				int sx = getXOnScreen(unit_x);
-				int sy = getYOnScreen(unit_y);
+				int sx = getXOnCanvas(unit_x);
+				int sy = getYOnCanvas(unit_y);
 				if (isWithinScreen(sx, sy)) {
 					unit_sprites[team][index].paint(g, sx, sy);
 				}
@@ -294,8 +326,8 @@ public class MapCanvas extends JPanel {
 	private void paintCursor(Graphics g, int ts) {
 		int mx = getCursorXOnMap();
 		int my = getCursorYOnMap();
-		int sx = getXOnScreen(mx);
-		int sy = getYOnScreen(my);
+		int sx = getXOnCanvas(mx);
+		int sy = getYOnCanvas(my);
 		if (isWithinScreen(sx, sy)) {
 			cursor.paint(g, sx, sy);
 		}

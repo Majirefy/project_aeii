@@ -83,7 +83,11 @@ public class UnitFactory {
 	}
 
 	public static Unit createUnit(int index) {
-		return new Unit(units[index]);
+		Unit unit = new Unit(units[index]);
+		unit.setAvailable(true);
+		unit.setCurrentHp(unit.getMaxHp());
+		unit.setCurrentMovementPoint(unit.getMovementPoint());
+		return unit;
 	}
 
 }

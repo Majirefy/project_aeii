@@ -44,6 +44,8 @@ public class Unit {
 
 	private int max_attack_range;  //最大攻击距离
 	private int min_attack_range;   //最小攻击距离
+	
+	private boolean is_available;
 
 	public Unit(int index) {
 		this.index = index;
@@ -272,6 +274,14 @@ public class Unit {
 
 	public void setMinAttackRange(int min_attack_range) {
 		this.min_attack_range = min_attack_range;
+	}
+	
+	public void setAvailable(boolean b) {
+		this.is_available = b;
+	}
+	
+	public boolean isAvailable() {
+		return is_available;
 	}
 
 	public void levelUp() {

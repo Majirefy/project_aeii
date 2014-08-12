@@ -11,8 +11,6 @@ import java.awt.Graphics;
 public class CursorSprite extends Sprite {
 	
 	private int current_frame = 0;
-	private final static int delay = 3;
-	private int current_delay = 0;
 
 	public CursorSprite(int tile_size) {
 		super(tile_size, tile_size);
@@ -20,12 +18,7 @@ public class CursorSprite extends Sprite {
 	
 	@Override
 	public void update() {
-		if(current_delay < delay) {
-			current_delay ++;
-		} else {
-			current_delay = 0;
-			current_frame = current_frame == 0 ? 1 : 0;
-		}
+		current_frame = current_frame == 0 ? 1 : 0;
 	}
 	
 	@Override

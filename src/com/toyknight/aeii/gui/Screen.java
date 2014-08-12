@@ -19,6 +19,10 @@ public class Screen extends JDesktopPane {
 		this.setOpaque(false);
 	}
 	
+	public void initComponents(int ts) {
+		
+	}
+	
 	protected final AEIIApplet getContext() {
 		return context;
 	}
@@ -32,6 +36,7 @@ public class Screen extends JDesktopPane {
 	}
 	
 	public void update() {
+		
 	}
 
 }

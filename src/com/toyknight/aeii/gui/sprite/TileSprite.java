@@ -12,8 +12,6 @@ public class TileSprite extends Sprite {
 	private final int[] frames = new int[2];
 	private boolean is_animated = false;
 	private static int current_frame_index = 0;
-	private final static int delay = 3;
-	private static int current_delay = 0;
 
 	public TileSprite(int tile_size, int index) {
 		super(tile_size, tile_size);
@@ -26,12 +24,7 @@ public class TileSprite extends Sprite {
 	}
 
 	public static void updateFrame() {
-		if(current_delay < delay) {
-			current_delay ++;
-		} else {
-			current_delay = 0;
-			current_frame_index = current_frame_index == 0 ? 1 : 0;
-		}
+		current_frame_index = current_frame_index == 0 ? 1 : 0;
 	}
 
 	@Override

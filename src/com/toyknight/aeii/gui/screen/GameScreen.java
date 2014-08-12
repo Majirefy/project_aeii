@@ -25,13 +25,14 @@ public class GameScreen extends Screen implements GameListener {
 
 	public GameScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
-		initComponents(size.width, size.height);
 	}
 
-	private void initComponents(int width, int height) {
+	@Override
+	public void initComponents(int ts) {
 		this.setLayout(null);
 		int apw = 3; //action panel width(in column)
-		int ts = getContext().getTileSize();
+		int width = getPreferredSize().width;
+		int height = getPreferredSize().height;
 		tile_panel = new TilePanel();
 		tile_panel.setBounds(0, height - ts, ts, ts);
 		this.add(tile_panel);
@@ -41,8 +42,9 @@ public class GameScreen extends Screen implements GameListener {
 		map_canvas = new MapCanvas(ts);
 		map_canvas.setBounds(0, 0, width - ts * apw, height - ts);
 		this.add(map_canvas);
-		action_panel = new ActionPanel();
+		action_panel = new ActionPanel(map_canvas);
 		action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
+		action_panel.initComponents(ts);
 		this.add(action_panel);
 	}
 
@@ -50,6 +52,7 @@ public class GameScreen extends Screen implements GameListener {
 		this.game = game;
 		this.game.setGameListener(this);
 		map_canvas.setGame(game);
+		action_panel.setGame(game);
 		tile_panel.update();
 	}
 	
@@ -96,11 +99,7 @@ public class GameScreen extends Screen implements GameListener {
 	}
 
 	private class StatusPanel extends AEIIPanel {
-
-	}
-
-	private class ActionPanel extends AEIIPanel {
-
+		
 	}
 
 }
