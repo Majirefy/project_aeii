@@ -25,6 +25,7 @@ public class GameFactory {
 	}
 	
 	public BasicGame createBasicGame() {
+		basic_game.init();
 		return basic_game;
 	}
 	

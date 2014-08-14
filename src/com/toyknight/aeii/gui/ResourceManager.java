@@ -22,6 +22,8 @@ public class ResourceManager {
 	private static BufferedImage[] top_tiles;
 	private static BufferedImage[][][] units;
 	private static BufferedImage[] cursor;
+	private static BufferedImage move_alpha;
+	private static BufferedImage attack_alpha;
 	private static Color aeii_panel_bg;
 
 	private ResourceManager() {
@@ -34,6 +36,7 @@ public class ResourceManager {
 		loadTopTiles(ts);
 		loadCursor(ts);
 		loadUnits(ts);
+		loadAlpha(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 	}
 
@@ -104,9 +107,18 @@ public class ResourceManager {
 		cursor = new BufferedImage[2];
 		for (int i = 0; i < 2; i++) {
 			File cursor_file = new File("res\\img\\cursor_" + i + ".png");
+			ts = ts / 24 * 26;
 			cursor[i] = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 			cursor[i].getGraphics().drawImage(ImageIO.read(cursor_file), 0, 0, ts, ts, null);
 		}
+	}
+
+	private static void loadAlpha(int ts) throws IOException {
+		File alpha_file = new File("res\\img\\alpha.png");
+		BufferedImage img_alpha = new BufferedImage(ts * 2, ts, BufferedImage.TYPE_INT_ARGB);
+		img_alpha.getGraphics().drawImage(ImageIO.read(alpha_file), 0, 0, ts * 2, ts, null);
+		move_alpha = ResourceUtil.getImageClip(img_alpha, ts, 0, ts, ts);
+		attack_alpha = ResourceUtil.getImageClip(img_alpha, 0, 0, ts, ts);
 	}
 
 	public static BufferedImage getLogoImage() {
@@ -131,6 +143,14 @@ public class ResourceManager {
 
 	public static BufferedImage getCursorImage(int index) {
 		return cursor[index];
+	}
+
+	public static BufferedImage getAttackAlpha() {
+		return attack_alpha;
+	}
+
+	public static BufferedImage getMoveAlpha() {
+		return move_alpha;
 	}
 
 	public static Color getAEIIPanelBg() {

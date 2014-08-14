@@ -42,7 +42,7 @@ public class GameScreen extends Screen implements GameListener {
 		map_canvas = new MapCanvas(ts);
 		map_canvas.setBounds(0, 0, width - ts * apw, height - ts);
 		this.add(map_canvas);
-		action_panel = new ActionPanel(map_canvas);
+		action_panel = new ActionPanel();
 		action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
 		action_panel.initComponents(ts);
 		this.add(action_panel);
@@ -87,7 +87,7 @@ public class GameScreen extends Screen implements GameListener {
 		public void update() {
 			int mx = getCanvas().getCursorXOnMap();
 			int my = getCanvas().getCursorYOnMap();
-			tile_index = getGame().getTileIndex(mx, my);
+			tile_index = getGame().getMap().getTileIndex(mx, my);
 		}
 		
 		@Override

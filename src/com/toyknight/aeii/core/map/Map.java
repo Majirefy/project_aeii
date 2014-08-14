@@ -27,14 +27,14 @@ public class Map {
 	}
 
 	public boolean isWithinMap(int x, int y) {
-		return 0 <= x && x < getMapWidth() && 0 <= y && y < getMapHeight();
+		return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
 	}
 
-	public int getMapWidth() {
+	public int getWidth() {
 		return map_data.length;
 	}
 
-	public int getMapHeight() {
+	public int getHeight() {
 		return map_data[0].length;
 	}
 

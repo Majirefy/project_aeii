@@ -15,10 +15,12 @@ import com.toyknight.aeii.gui.sprite.TileSprite;
 import com.toyknight.aeii.gui.sprite.UnitSprite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 import javax.swing.JPanel;
 
@@ -28,14 +30,8 @@ import javax.swing.JPanel;
  */
 public class MapCanvas extends JPanel {
 
-	public static final int ST_NORMAL = 0x1;
-	public static final int ST_MOVE = 0x2;
-	public static final int ST_RMOVE = 0x3;
-	public static final int ST_ATTACK = 0x4;
-
 	private final int ts;
 	private BasicGame game;
-	private int state;
 
 	private final PriorityQueue<Animation> animation_dispatcher;
 	private Animation current_animation;
@@ -98,15 +94,10 @@ public class MapCanvas extends JPanel {
 
 	public void setGame(BasicGame game) {
 		this.game = game;
-		state = ST_NORMAL;
 		locateViewport(0, 0);
 		mouse_x = 0;
 		mouse_y = 0;
 		current_animation = null;
-	}
-
-	public int getState() {
-		return state;
 	}
 
 	public void submitAnimation(Animation animation) {
@@ -139,8 +130,17 @@ public class MapCanvas extends JPanel {
 	}
 
 	public void onMouseClick(MouseEvent e) {
-		switch (state) {
-			
+		int x = getCursorXOnMap();
+		int y = getCursorYOnMap();
+		switch (game.getState()) {
+			case BasicGame.ST_NORMAL:
+				getGame().selectUnit(x, y);
+				break;
+			case BasicGame.ST_MOVE:
+				getGame().moveUnit(x, y);
+				break;
+			default:
+			//do nothing
 		}
 	}
 
@@ -228,8 +228,8 @@ public class MapCanvas extends JPanel {
 	}
 
 	public void locateViewport(int center_x, int center_y) {
-		int map_width = game.getMapWidth() * ts;
-		int map_height = game.getMapHeight() * ts;
+		int map_width = getGame().getMap().getWidth() * ts;
+		int map_height = getGame().getMap().getHeight() * ts;
 		if (viewport.width < map_width) {
 			viewport.x = center_x - (viewport.width - ts) / 2;
 			if (viewport.x < 0) {
@@ -256,8 +256,8 @@ public class MapCanvas extends JPanel {
 
 	private void updateViewport() {
 		if (!isAnimating() && getGame().isLocalPlayer()) {
-			int map_width = game.getMapWidth() * ts;
-			int map_height = game.getMapHeight() * ts;
+			int map_width = getGame().getMap().getWidth() * ts;
+			int map_height = getGame().getMap().getHeight() * ts;
 			if (down_pressed && viewport.y < map_height - viewport.height) {
 				viewport.y += ts / 3;
 			}
@@ -278,6 +278,10 @@ public class MapCanvas extends JPanel {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		paintTiles(g, ts);
+		if (getGame().getState() == BasicGame.ST_MOVE || getGame().getState() == BasicGame.ST_RMOVE) {
+			paintMoveAlpha(g);
+			paintMovePath(g, ts);
+		}
 		paintUnits(g, ts);
 		if (getGame().isLocalPlayer()) {
 			paintCursor(g, ts);
@@ -286,12 +290,12 @@ public class MapCanvas extends JPanel {
 	}
 
 	private void paintTiles(Graphics g, int ts) {
-		for (int x = 0; x < getGame().getMapWidth(); x++) {
-			for (int y = 0; y < getGame().getMapHeight(); y++) {
+		for (int x = 0; x < getGame().getMap().getWidth(); x++) {
+			for (int y = 0; y < getGame().getMap().getHeight(); y++) {
 				int sx = getXOnCanvas(x);
 				int sy = getYOnCanvas(y);
 				if (isWithinScreen(sx, sy)) {
-					int index = getGame().getTileIndex(x, y);
+					int index = getGame().getMap().getTileIndex(x, y);
 					tile_sprites[index].paint(g, sx, sy);
 					Tile tile = TileEntitySet.getTile(index);
 					if (tile.getTopTileIndex() != -1) {
@@ -300,6 +304,44 @@ public class MapCanvas extends JPanel {
 								ResourceManager.getTopTileImage(top_tile_index),
 								sx, sy - ts, this);
 					}
+				}
+			}
+		}
+	}
+
+	private void paintMoveAlpha(Graphics g) {
+		ArrayList<Point> movable_positions = getGame().getMovablePositions();
+		for (Point position : movable_positions) {
+			int sx = getXOnCanvas(position.x);
+			int sy = getYOnCanvas(position.y);
+			if (isWithinScreen(sx, sy)) {
+				g.drawImage(ResourceManager.getMoveAlpha(), sx, sy, this);
+			}
+		}
+	}
+
+	private void paintMovePath(Graphics g, int ts) {
+		g.setColor(Color.RED);
+		int dx = getCursorXOnMap();
+		int dy = getCursorYOnMap();
+		ArrayList<Point> move_path = getGame().getMovePath(dx, dy);
+		for (int i = 0; i < move_path.size(); i++) {
+			if (i < move_path.size() - 1) {
+				Point p1 = move_path.get(i);
+				Point p2 = move_path.get(i + 1);
+				if (p1.x == p2.x) {
+					int x = p1.x;
+					int y = p1.y < p2.y ? p1.y : p2.y;
+					int sx = getYOnCanvas(x);
+					int sy = getYOnCanvas(y);
+					g.fillRect(sx + ts / 3, sy + ts / 3, ts / 3, ts / 3 * 4);
+				}
+				if (p1.y == p2.y) {
+					int x = p1.x < p2.x ? p1.x : p2.x;
+					int y = p1.y;
+					int sx = getYOnCanvas(x);
+					int sy = getYOnCanvas(y);
+					g.fillRect(sx + ts / 3, sy + ts / 3, ts / 3 * 4, ts / 3);
 				}
 			}
 		}
@@ -328,8 +370,9 @@ public class MapCanvas extends JPanel {
 		int my = getCursorYOnMap();
 		int sx = getXOnCanvas(mx);
 		int sy = getYOnCanvas(my);
+		int delta = -ts / 24;
 		if (isWithinScreen(sx, sy)) {
-			cursor.paint(g, sx, sy);
+			cursor.paint(g, delta + sx, delta + sy);
 		}
 	}
 
