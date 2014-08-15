@@ -1,7 +1,9 @@
 package com.toyknight.aeii.core.map;
 
 import com.toyknight.aeii.core.unit.Unit;
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -12,14 +14,15 @@ public class Map {
 	private final String author;
 	
 	private final short[][] map_data;
-	private final ArrayList<Unit> unit_list;
+	private ArrayList<Unit> unit_list;
+	private final HashMap<Point, Unit> unit_map;
 	private final ArrayList<Tomb> tomb_list;
 
-	public Map(short[][] map_data, ArrayList<Unit> unit_list, String author) {
+	public Map(short[][] map_data, String author) {
 		this.map_data = map_data;
-		this.unit_list = unit_list;
-		this.tomb_list = new ArrayList();
 		this.author = author;
+		this.unit_map = new HashMap();
+		this.tomb_list = new ArrayList();
 	}
 	
 	public String getAuthor() {
@@ -50,13 +53,8 @@ public class Map {
 		tomb_list.add(new Tomb(x, y));
 	}
 	
-	public void removeTomb(int x, int y) {
-		for(Tomb tomb: tomb_list) {
-			if(tomb.x == x && tomb.y == y) {
-				tomb_list.remove(tomb);
-				break;
-			}
-		}
+	public void removeTomb(Tomb tomb) {
+		tomb_list.remove(tomb);
 	}
 	
 	public ArrayList<Tomb> getTombList() {
@@ -64,17 +62,18 @@ public class Map {
 	}
 
 	public void addUnit(Unit unit) {
-		unit_list.add(unit);
+		Point position = new Point(unit.getX(), unit.getY());
+		unit_map.put(position, unit);
+		unit_list = new ArrayList(unit_map.values());
+	}
+	
+	public Unit getUnit(int x, int y) {
+		return unit_map.get(new Point(x, y));
 	}
 
 	public void removeUnit(int x, int y) {
-		for (int i = 0; i < unit_list.size(); i++) {
-			Unit unit = unit_list.get(i);
-			if (unit.getX() == x && unit.getY() == y) {
-				unit_list.remove(i);
-				break;
-			}
-		}
+		unit_map.remove(new Point(x, y));
+		unit_list = new ArrayList(unit_map.values());
 	}
 	
 	public ArrayList<Unit> getUnitList() {

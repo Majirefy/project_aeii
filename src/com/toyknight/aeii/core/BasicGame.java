@@ -52,13 +52,15 @@ public class BasicGame implements OperationListener {
 			}
 		}
 	}
-	
+
 	public ArrayList<Point> getMovePath(int dest_x, int dest_y) {
 		Point dest = new Point(dest_x, dest_y);
 		if (move_path.isEmpty()) {
 			move_path = unit_toolkit.createMovePath(selected_unit, dest_x, dest_y, movable_positions);
-		} else if (!move_path.get(move_path.size() - 1).equals(dest)) {
-			move_path = unit_toolkit.createMovePath(selected_unit, dest_x, dest_y, movable_positions);
+		} else {
+			if (!move_path.get(move_path.size() - 1).equals(dest)) {
+				move_path = unit_toolkit.createMovePath(selected_unit, dest_x, dest_y, movable_positions);
+			}
 		}
 		return move_path;
 	}
@@ -106,7 +108,7 @@ public class BasicGame implements OperationListener {
 
 	@Override
 	public void selectUnit(int x, int y) {
-		selected_unit = getUnit(x, y);
+		selected_unit = getMap().getUnit(x, y);
 	}
 
 	public Unit getSelectedUnit() {
@@ -122,23 +124,6 @@ public class BasicGame implements OperationListener {
 
 	public Map getMap() {
 		return map;
-	}
-
-	public int getUnitCount() {
-		return map.getUnitList().size();
-	}
-
-	public Unit getUnit(int index) {
-		return map.getUnitList().get(index);
-	}
-
-	public Unit getUnit(int x, int y) {
-		for (Unit unit : map.getUnitList()) {
-			if (unit.getX() == x && unit.getY() == y) {
-				return unit;
-			}
-		}
-		return null;
 	}
 
 	public void endTurn() {

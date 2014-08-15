@@ -5,6 +5,7 @@ import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileEntitySet;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  *
@@ -13,98 +14,118 @@ import java.util.ArrayList;
 public class UnitToolkit {
 
 	private final BasicGame game;
-	private ArrayList<Point> movable_positions;
-	private final int[] x_dir = {1, 0, -1, 0};
-	private final int[] y_dir = {0, 1, 0, -1};
+	private HashSet<Point> movable_positions;
+	private ArrayList<Point> move_path;
+	private final int[] x_dir = {1, -1, 0, 0};
+	private final int[] y_dir = {0, 0, 1, -1};
+
+	private PathNode shortest_path_node;
 
 	public UnitToolkit(BasicGame game) {
 		this.game = game;
 	}
 
 	public ArrayList<Point> createMovablePositions(Unit unit) {
-		movable_positions = new ArrayList();
-		createMovablePositions(unit, unit.getX(), unit.getY(), unit.getCurrentMovementPoint());
-		return movable_positions;
+		movable_positions = new HashSet();
+		Point start_position = new Point(unit.getX(), unit.getY());
+		createMovablePositions(unit, start_position, unit.getCurrentMovementPoint());
+		return new ArrayList(movable_positions);
 	}
 
 	public ArrayList<Point> createMovePath(Unit unit, int dx, int dy, ArrayList<Point> movable_positions) {
-		Point dest = new Point(dx, dy);
-		if(movable_positions.contains(dest)) {
-			ArrayList<Point> path = createMovePath(unit.getX(), unit.getY(), dx, dy, movable_positions, new ArrayList());
-			if(path != null) {
-				return path;
-			} else {
-				return new ArrayList();
-			}
+		Point dest_position = new Point(dx, dy);
+		if (!movable_positions.contains(dest_position)) {
+			return new ArrayList();
+		}
+		shortest_path_node = null;
+		HashSet<Point> movable_set = new HashSet(movable_positions);
+		Point start_position = new Point(unit.getX(), unit.getY());
+		createShortestPathNode(start_position, dest_position, null, movable_set);
+		if (shortest_path_node != null) {
+			move_path = new ArrayList();
+			createMovePath(shortest_path_node);
+			return move_path;
 		} else {
 			return new ArrayList();
 		}
 	}
 
-	private ArrayList<Point> createMovePath(
-			int cx, int cy, int dx, int dy,
-			ArrayList<Point> movable_positions, ArrayList<Point> moved_positions) {
-		ArrayList<Point> path = new ArrayList();
-		ArrayList<Point> new_moved_positions = (ArrayList<Point>)moved_positions.clone();
-		Point current_position = new Point(cx, cy);
-		path.add(current_position);
-		new_moved_positions.add(current_position);
-		ArrayList<ArrayList<Point>> available_paths = new ArrayList();
-		for (int i = 0; i < 4; i++) {
-			int new_x = cx + x_dir[i];
-			int new_y = cy + y_dir[i];
-			Point new_position = new Point(new_x, new_y);
-			if (game.getMap().isWithinMap(new_x, new_y) 
-					&& movable_positions.contains(new_position)
-					&& !moved_positions.contains(new_position)) {
-				ArrayList<Point> new_path = createMovePath(new_x, new_y, dx, dy, movable_positions, new_moved_positions);
-				if (new_path != null) {
-					available_paths.add(new_path);
-				}
-			}
+	private void createShortestPathNode(Point current, Point dest, PathNode parent, HashSet<Point> movable) {
+		PathNode current_node;
+		if (parent != null) {
+			current_node = new PathNode(current, parent, parent.getDepth() + 1);
+		} else {
+			current_node = new PathNode(current, parent, 0);
 		}
-		if (available_paths.isEmpty()) {
-			if (cx == dx && cy == dy) {
-				return path;
+		if (current.equals(dest)) {
+			if (shortest_path_node == null) {
+				shortest_path_node = current_node;
 			} else {
-				return null;
+				if (current_node.getDepth() < shortest_path_node.getDepth()) {
+					shortest_path_node = current_node;
+				}
 			}
 		} else {
-			int min_len = Integer.MAX_VALUE;
-			int min_index = 0;
-			for (int i = 0; i < available_paths.size(); i++) {
-				if (available_paths.get(i).size() < min_len) {
-					min_len = available_paths.get(i).size();
-					min_index = i;
+			for (int i = 0; i < 4; i++) {
+				int next_x = current.x + x_dir[i];
+				int next_y = current.y + y_dir[i];
+				if (game.getMap().isWithinMap(next_x, next_y)) {
+					Point next = new Point(next_x, next_y);
+					if (parent != null) {
+						if (movable.contains(next) && !isMovedPosition(parent, next)) {
+							createShortestPathNode(next, dest, current_node, movable);
+						}
+					} else {
+						if (movable.contains(next)) {
+							createShortestPathNode(next, dest, current_node, movable);
+						}
+					}
+
 				}
 			}
-			path.addAll(available_paths.get(min_index));
-			return path;
 		}
 	}
 
-	private void createMovablePositions(Unit unit, int x, int y, int mp_left) {
-		Point position = new Point(x, y);
-		if (!movable_positions.contains(position) && game.getUnit(x, y) == null) {
-			movable_positions.add(position);
+	private void createMovePath(PathNode node) {
+		move_path.add(0, node.getPosition());
+		PathNode parent = node.getParent();
+		if (parent != null) {
+			createMovePath(parent);
 		}
-		if (mp_left <= 0) {
+	}
+
+	private boolean isMovedPosition(PathNode node, Point position) {
+		if (node != null) {
+			if (node.getPosition().equals(position)) {
+				return true;
+			} else {
+				return isMovedPosition(node.getParent(), position);
+			}
+		} else {
+			return false;
+		}
+	}
+
+	private void createMovablePositions(Unit unit, Point current, int mp) {
+		if(game.getMap().getUnit(current.x, current.y) == null) {
+			movable_positions.add(current);
+		}
+		if (mp <= 0) {
 			return;
 		}
 		for (int i = 0; i < 4; i++) {
-			int new_x = x + x_dir[i];
-			int new_y = y + y_dir[i];
-			if (game.getMap().isWithinMap(new_x, new_y)) {
-				int tile_index = game.getMap().getTileIndex(new_x, new_y);
-				Tile tile = TileEntitySet.getTile(tile_index);
-				int mp_cost = getMovementPointCost(unit, tile);
-				if (mp_cost <= mp_left) {
-					Unit target_unit = game.getUnit(new_x, new_y);
+			int next_x = current.x + x_dir[i];
+			int next_y = current.y + y_dir[i];
+			Point next = new Point(next_x, next_y);
+			if (game.getMap().isWithinMap(next_x, next_y)) {
+				int mp_cost = getMovementPointCost(unit, next_x, next_y);
+				if (mp_cost <= mp) {
+					Unit target_unit = game.getMap().getUnit(next_x, next_y);
 					if (target_unit == null) {
-						createMovablePositions(unit, new_x, new_y, mp_left - mp_cost);
+						createMovablePositions(unit, next, mp - mp_cost);
 					} else {
 						if (target_unit.getTeam() == unit.getTeam()) {
-							createMovablePositions(unit, new_x, new_y, mp_left - mp_cost);
+							createMovablePositions(unit, next, mp - mp_cost);
 						}
 					}
 				}
@@ -112,7 +133,9 @@ public class UnitToolkit {
 		}
 	}
 
-	public int getMovementPointCost(Unit unit, Tile tile) {
+	public int getMovementPointCost(Unit unit, int x, int y) {
+		int tile_index = game.getMap().getTileIndex(x, y);
+		Tile tile = TileEntitySet.getTile(tile_index);
 		int mp_cost = tile.getStepCost();
 		int tile_type = tile.getType();
 		ArrayList<Integer> abilities = unit.getAbilities();
@@ -136,6 +159,43 @@ public class UnitToolkit {
 			mp_cost = 1;
 		}
 		return mp_cost;
+	}
+
+	private class PathNode {
+
+		private final PathNode parent;
+		private final ArrayList<PathNode> childs;
+
+		private final int depth;
+		private final Point position;
+
+		public PathNode(Point position, PathNode parent, int depth) {
+			this.parent = parent;
+			this.position = position;
+			childs = new ArrayList();
+			this.depth = depth;
+		}
+
+		public int getDepth() {
+			return depth;
+		}
+
+		public Point getPosition() {
+			return position;
+		}
+
+		public PathNode getParent() {
+			return parent;
+		}
+
+		public void appendChild(PathNode node) {
+			childs.add(node);
+		}
+
+		public ArrayList<PathNode> getChilds() {
+			return childs;
+		}
+
 	}
 
 }

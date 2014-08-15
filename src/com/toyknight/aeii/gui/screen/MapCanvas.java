@@ -282,7 +282,7 @@ public class MapCanvas extends JPanel {
 			paintMoveAlpha(g);
 			paintMovePath(g, ts);
 		}
-		paintUnits(g, ts);
+		paintUnits(g);
 		if (getGame().isLocalPlayer()) {
 			paintCursor(g, ts);
 		}
@@ -347,9 +347,9 @@ public class MapCanvas extends JPanel {
 		}
 	}
 
-	private void paintUnits(Graphics g, int ts) {
-		for (int i = 0; i < game.getUnitCount(); i++) {
-			Unit unit = game.getUnit(i);
+	private void paintUnits(Graphics g) {
+		ArrayList<Unit> unit_list = getGame().getMap().getUnitList();
+		for (Unit unit : unit_list) {
 			//if this unit isn't animating, then paint it. otherwise, let animation paint it
 			if (!isUnitAnimating(unit)) {
 				int unit_x = unit.getX();
@@ -372,7 +372,7 @@ public class MapCanvas extends JPanel {
 		int sy = getYOnCanvas(my);
 		int delta = -ts / 24;
 		if (isWithinScreen(sx, sy)) {
-			cursor.paint(g, delta + sx, delta + sy);
+			cursor.paint(g, sx, sy);
 		}
 	}
 

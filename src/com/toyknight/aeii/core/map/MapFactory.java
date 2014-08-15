@@ -29,7 +29,7 @@ public class MapFactory {
 				map_data[i][j] = fis.readShort();
 			}
 		}
-		ArrayList<Unit> unit_list = new ArrayList();
+		Map map = new Map(map_data, author_name);
 		int unit_count = fis.readInt();
 		for (int i = 0; i < unit_count; i++) {
 			int team = fis.readInt();
@@ -40,9 +40,10 @@ public class MapFactory {
 			unit.setTeam(team);
 			unit.setX(x);
 			unit.setY(y);
-			unit_list.add(unit);
+			map.addUnit(unit);
 		}
-		return new Map(map_data, unit_list, author_name);
+		fis.close();
+		return map;
 	}
 	
 }
