@@ -118,7 +118,7 @@ public class BasicGame implements OperationListener {
 	@Override
 	public void moveUnit(int dest_x, int dest_y) {
 		if (selected_unit != null && selected_unit.isAvailable()) {
-
+			
 		}
 	}
 

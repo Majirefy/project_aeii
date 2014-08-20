@@ -6,6 +6,9 @@ import com.toyknight.aeii.core.map.TileEntitySet;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  *
@@ -14,7 +17,7 @@ import java.util.HashSet;
 public class UnitToolkit {
 
 	private final BasicGame game;
-	private HashSet<Point> movable_positions;
+	private Set<Point> movable_positions;
 	private ArrayList<Point> move_path;
 	private final int[] x_dir = {1, -1, 0, 0};
 	private final int[] y_dir = {0, 0, 1, -1};
@@ -28,8 +31,45 @@ public class UnitToolkit {
 	public ArrayList<Point> createMovablePositions(Unit unit) {
 		movable_positions = new HashSet();
 		Point start_position = new Point(unit.getX(), unit.getY());
-		createMovablePositions(unit, start_position, unit.getCurrentMovementPoint());
+		Step start_step = new Step(start_position, unit.getCurrentMovementPoint());
+		Queue<Step> start_list = new LinkedList();
+		start_list.add(start_step);
+		createMovablePisitions(start_list, unit);
 		return new ArrayList(movable_positions);
+	}
+
+	private void createMovablePisitions(Queue<Step> parent, Unit unit) {
+		Queue<Step> children = new LinkedList();
+		while (!parent.isEmpty()) {
+			Step current_step = parent.poll();
+			if(game.getMap().getUnit(current_step.getPosition().x, current_step.getPosition().y) == null) {
+				movable_positions.add(current_step.getPosition());
+			}
+			for (int i = 0; i < 4; i++) {
+				int next_x = current_step.getPosition().x + x_dir[i];
+				int next_y = current_step.getPosition().y + y_dir[i];
+				Point next = new Point(next_x, next_y);
+				if (game.getMap().isWithinMap(next_x, next_y) && !movable_positions.contains(next)) {
+					int mp = current_step.getMp();
+					int mp_cost = getMovementPointCost(unit, next_x, next_y);
+					if (mp_cost <= mp) {
+						Unit target_unit = game.getMap().getUnit(next_x, next_y);
+						if (target_unit == null) {
+							Step next_step = new Step(next, mp - mp_cost);
+							children.add(next_step);
+						} else {
+							if (target_unit.getTeam() == unit.getTeam()) {
+								Step next_step = new Step(next, mp - mp_cost);
+								children.add(next_step);
+							}
+						}
+					}
+				}
+			}
+		}
+		if (!children.isEmpty()) {
+			createMovablePisitions(children, unit);
+		}
 	}
 
 	public ArrayList<Point> createMovePath(Unit unit, int dx, int dy, ArrayList<Point> movable_positions) {
@@ -106,33 +146,6 @@ public class UnitToolkit {
 		}
 	}
 
-	private void createMovablePositions(Unit unit, Point current, int mp) {
-		if(game.getMap().getUnit(current.x, current.y) == null) {
-			movable_positions.add(current);
-		}
-		if (mp <= 0) {
-			return;
-		}
-		for (int i = 0; i < 4; i++) {
-			int next_x = current.x + x_dir[i];
-			int next_y = current.y + y_dir[i];
-			Point next = new Point(next_x, next_y);
-			if (game.getMap().isWithinMap(next_x, next_y)) {
-				int mp_cost = getMovementPointCost(unit, next_x, next_y);
-				if (mp_cost <= mp) {
-					Unit target_unit = game.getMap().getUnit(next_x, next_y);
-					if (target_unit == null) {
-						createMovablePositions(unit, next, mp - mp_cost);
-					} else {
-						if (target_unit.getTeam() == unit.getTeam()) {
-							createMovablePositions(unit, next, mp - mp_cost);
-						}
-					}
-				}
-			}
-		}
-	}
-
 	public int getMovementPointCost(Unit unit, int x, int y) {
 		int tile_index = game.getMap().getTileIndex(x, y);
 		Tile tile = TileEntitySet.getTile(tile_index);
@@ -159,6 +172,26 @@ public class UnitToolkit {
 			mp_cost = 1;
 		}
 		return mp_cost;
+	}
+
+	private class Step {
+
+		private final int mp;
+		private final Point position;
+
+		public Step(Point position, int mp) {
+			this.mp = mp;
+			this.position = position;
+		}
+
+		public Point getPosition() {
+			return position;
+		}
+
+		public int getMp() {
+			return mp;
+		}
+
 	}
 
 	private class PathNode {

@@ -66,7 +66,7 @@ public class Launcher implements Runnable {
 			aeii_applet = new AEIIApplet(TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT);
 			aeii_applet.init();
 			main_frame.setContentPane(aeii_applet.getContentPane());
-
+			
 			main_frame.pack();
 			main_frame.setLocationRelativeTo(null);
 			main_frame.setVisible(true);

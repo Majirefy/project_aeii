@@ -132,15 +132,27 @@ public class MapCanvas extends JPanel {
 	public void onMouseClick(MouseEvent e) {
 		int x = getCursorXOnMap();
 		int y = getCursorYOnMap();
-		switch (game.getState()) {
-			case BasicGame.ST_NORMAL:
-				getGame().selectUnit(x, y);
-				break;
-			case BasicGame.ST_MOVE:
-				getGame().moveUnit(x, y);
-				break;
-			default:
-			//do nothing
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			switch (game.getState()) {
+				case BasicGame.ST_NORMAL:
+					getGame().selectUnit(x, y);
+					break;
+				case BasicGame.ST_MOVE:
+					getGame().moveUnit(x, y);
+					break;
+				default:
+				//do nothing
+			}
+		}
+		if(e.getButton() == MouseEvent.BUTTON3) {
+			switch (game.getState()) {
+				case BasicGame.ST_NORMAL:
+					break;
+				case BasicGame.ST_MOVE:
+					break;
+				default:
+				//do nothing
+			}
 		}
 	}
 
@@ -370,7 +382,6 @@ public class MapCanvas extends JPanel {
 		int my = getCursorYOnMap();
 		int sx = getXOnCanvas(mx);
 		int sy = getYOnCanvas(my);
-		int delta = -ts / 24;
 		if (isWithinScreen(sx, sy)) {
 			cursor.paint(g, sx, sy);
 		}
