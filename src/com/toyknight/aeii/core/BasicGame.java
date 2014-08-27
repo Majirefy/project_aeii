@@ -74,7 +74,7 @@ public class BasicGame implements OperationListener {
 	}
 
 	public void beginMovePhase() {
-		if (selected_unit != null) {
+		if (selected_unit != null && selected_unit.getTeam() == current_team) {
 			movable_positions = unit_toolkit.createMovablePositions(selected_unit);
 			this.state = ST_MOVE;
 		}
