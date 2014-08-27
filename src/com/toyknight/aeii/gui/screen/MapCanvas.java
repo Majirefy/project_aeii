@@ -5,14 +5,13 @@ import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileEntitySet;
 import com.toyknight.aeii.core.unit.Unit;
-import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.animation.Animation;
 import com.toyknight.aeii.gui.animation.AnimationListener;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
 import com.toyknight.aeii.gui.sprite.CursorSprite;
-import com.toyknight.aeii.gui.sprite.TileSprite;
-import com.toyknight.aeii.gui.sprite.UnitSprite;
+import com.toyknight.aeii.gui.sprite.TilePainter;
+import com.toyknight.aeii.gui.sprite.UnitPainter;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -44,8 +43,6 @@ public class MapCanvas extends JPanel {
 
 	private final int sprite_delay = 5;
 	private int current_sprite_delay = 0;
-	private TileSprite[] tile_sprites;
-	private UnitSprite[][] unit_sprites;
 
 	private boolean up_pressed = false;
 	private boolean down_pressed = false;
@@ -72,22 +69,6 @@ public class MapCanvas extends JPanel {
 	}
 
 	public void init() {
-		int tile_count = TileEntitySet.getTileCount();
-		tile_sprites = new TileSprite[tile_count];
-		for (int i = 0; i < tile_count; i++) {
-			tile_sprites[i] = new TileSprite(ts, i);
-			if (TileEntitySet.getTile(i).isAnimated()) {
-				tile_sprites[i].setAnimationTileIndex(
-						TileEntitySet.getTile(i).getAnimationTileIndex());
-			}
-		}
-		int unit_count = UnitFactory.getUnitCount();
-		unit_sprites = new UnitSprite[4][unit_count];
-		for (int team = 0; team < 4; team++) {
-			for (int index = 0; index < unit_count; index++) {
-				unit_sprites[team][index] = new UnitSprite(team, index, ts, ts);
-			}
-		}
 		cursor = new CursorSprite(ts);
 		viewport = new Rectangle(0, 0, getWidth(), getHeight());
 	}
@@ -144,11 +125,12 @@ public class MapCanvas extends JPanel {
 				//do nothing
 			}
 		}
-		if(e.getButton() == MouseEvent.BUTTON3) {
+		if (e.getButton() == MouseEvent.BUTTON3) {
 			switch (game.getState()) {
-				case BasicGame.ST_NORMAL:
-					break;
 				case BasicGame.ST_MOVE:
+					getGame().cancelMovePhase();
+					break;
+				case BasicGame.ST_ACTION:
 					break;
 				default:
 				//do nothing
@@ -228,8 +210,8 @@ public class MapCanvas extends JPanel {
 			current_sprite_delay++;
 		} else {
 			current_sprite_delay = 0;
-			TileSprite.updateFrame();
-			UnitSprite.updateFrame();
+			TilePainter.updateFrame();
+			UnitPainter.updateFrame();
 			cursor.update();
 		}
 
@@ -290,11 +272,19 @@ public class MapCanvas extends JPanel {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		paintTiles(g, ts);
-		if (getGame().getState() == BasicGame.ST_MOVE || getGame().getState() == BasicGame.ST_RMOVE) {
-			paintMoveAlpha(g);
-			paintMovePath(g, ts);
+		if (!isAnimating()) {
+			switch (getGame().getState()) {
+				case BasicGame.ST_MOVE:
+				case BasicGame.ST_RMOVE:
+					paintMoveAlpha(g);
+					paintMovePath(g, ts);
+					break;
+				default:
+					//do nothing
+			}
 		}
 		paintUnits(g);
+		paintAnimation(g);
 		if (getGame().isLocalPlayer()) {
 			paintCursor(g, ts);
 		}
@@ -308,7 +298,7 @@ public class MapCanvas extends JPanel {
 				int sy = getYOnCanvas(y);
 				if (isWithinScreen(sx, sy)) {
 					int index = getGame().getMap().getTileIndex(x, y);
-					tile_sprites[index].paint(g, sx, sy);
+					TilePainter.paint(g, index, sx, sy, ts);
 					Tile tile = TileEntitySet.getTile(index);
 					if (tile.getTopTileIndex() != -1) {
 						int top_tile_index = tile.getTopTileIndex();
@@ -333,7 +323,7 @@ public class MapCanvas extends JPanel {
 	}
 
 	private void paintMovePath(Graphics g, int ts) {
-		g.setColor(Color.RED);
+		g.setColor(ResourceManager.getMovePathColor());
 		int dx = getCursorXOnMap();
 		int dy = getCursorYOnMap();
 		ArrayList<Point> move_path = getGame().getMovePath(dx, dy);
@@ -344,17 +334,22 @@ public class MapCanvas extends JPanel {
 				if (p1.x == p2.x) {
 					int x = p1.x;
 					int y = p1.y < p2.y ? p1.y : p2.y;
-					int sx = getYOnCanvas(x);
+					int sx = getXOnCanvas(x);
 					int sy = getYOnCanvas(y);
 					g.fillRect(sx + ts / 3, sy + ts / 3, ts / 3, ts / 3 * 4);
 				}
 				if (p1.y == p2.y) {
 					int x = p1.x < p2.x ? p1.x : p2.x;
 					int y = p1.y;
-					int sx = getYOnCanvas(x);
+					int sx = getXOnCanvas(x);
 					int sy = getYOnCanvas(y);
 					g.fillRect(sx + ts / 3, sy + ts / 3, ts / 3 * 4, ts / 3);
 				}
+			} else {
+				Point dest = move_path.get(i);
+				int sx = getXOnCanvas(dest.x);
+				int sy = getYOnCanvas(dest.y);
+				g.drawImage(ResourceManager.getMoveTargetCursorImage(), sx, sy, this);
 			}
 		}
 	}
@@ -366,14 +361,18 @@ public class MapCanvas extends JPanel {
 			if (!isUnitAnimating(unit)) {
 				int unit_x = unit.getX();
 				int unit_y = unit.getY();
-				int team = unit.getTeam();
-				int index = unit.getIndex();
 				int sx = getXOnCanvas(unit_x);
 				int sy = getYOnCanvas(unit_y);
 				if (isWithinScreen(sx, sy)) {
-					unit_sprites[team][index].paint(g, sx, sy);
+					UnitPainter.paint(g, unit, sx, sy, ts);
 				}
 			}
+		}
+	}
+	
+	private void paintAnimation(Graphics g) {
+		if(isAnimating()) {
+			current_animation.paint(g, this);
 		}
 	}
 

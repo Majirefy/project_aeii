@@ -11,4 +11,6 @@ public interface OperationListener {
 	
 	public void moveUnit(int dest_x, int dest_y);
 	
+	public void endTurn();
+	
 }

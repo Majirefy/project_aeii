@@ -1,7 +1,7 @@
 
 package com.toyknight.aeii.gui.animation;
 
-import com.toyknight.aeii.gui.sprite.UnitSprite;
+import com.toyknight.aeii.core.unit.Unit;
 
 /**
  *
@@ -9,19 +9,15 @@ import com.toyknight.aeii.gui.sprite.UnitSprite;
  */
 public class UnitAnimation extends Animation {
 	
-	private final UnitSprite sprite;
+	private final Unit unit;
 
-	public UnitAnimation(UnitSprite sprite, int x, int y) {
+	public UnitAnimation(Unit unit, int x, int y) {
 		super(x, y);
-		this.sprite = sprite;
+		this.unit = unit;
 	}
 	
-	public UnitSprite getSprite() {
-		return sprite;
-	}
-
-	@Override
-	public void update() {
+	public Unit getUnit() {
+		return unit;
 	}
 	
 }

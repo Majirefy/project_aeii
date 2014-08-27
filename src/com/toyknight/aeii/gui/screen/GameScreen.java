@@ -2,13 +2,17 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.GameListener;
+import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
+import com.toyknight.aeii.gui.animation.UnitMovementAnimation;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 /**
  *
@@ -41,6 +45,7 @@ public class GameScreen extends Screen implements GameListener {
 		this.add(status_panel);
 		map_canvas = new MapCanvas(ts);
 		map_canvas.setBounds(0, 0, width - ts * apw, height - ts);
+		map_canvas.init();
 		this.add(map_canvas);
 		action_panel = new ActionPanel();
 		action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
@@ -72,6 +77,16 @@ public class GameScreen extends Screen implements GameListener {
 	@Override
 	public void onKeyRelease(KeyEvent e) {
 		map_canvas.onKeyRelease(e);
+	}
+	
+	@Override
+	public void onUnitMove(Unit unit, ArrayList<Point> path) {
+		Point dest = path.get(path.size() - 1);
+		int x = dest.x;
+		int y = dest.y;
+		int ts = getContext().getTileSize();
+		UnitMovementAnimation animation = new UnitMovementAnimation(unit, x, y, path, ts);
+		getCanvas().submitAnimation(animation);
 	}
 
 	@Override

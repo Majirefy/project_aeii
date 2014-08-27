@@ -22,9 +22,11 @@ public class ResourceManager {
 	private static BufferedImage[] top_tiles;
 	private static BufferedImage[][][] units;
 	private static BufferedImage[] cursor;
+	private static BufferedImage move_target;
 	private static BufferedImage move_alpha;
 	private static BufferedImage attack_alpha;
 	private static Color aeii_panel_bg;
+	private static Color move_path_color;
 
 	private ResourceManager() {
 	}
@@ -34,10 +36,11 @@ public class ResourceManager {
 		loadBorder();
 		loadTiles(ts);
 		loadTopTiles(ts);
-		loadCursor(ts);
+		loadCursors(ts);
 		loadUnits(ts);
 		loadAlpha(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
+		move_path_color = new Color(225, 0, 82);
 	}
 
 	private static void loadBorder() throws IOException {
@@ -103,14 +106,17 @@ public class ResourceManager {
 		}
 	}
 
-	private static void loadCursor(int ts) throws IOException {
+	private static void loadCursors(int ts) throws IOException {
+		ts = ts / 24 * 26;
 		cursor = new BufferedImage[2];
 		for (int i = 0; i < 2; i++) {
 			File cursor_file = new File("res\\img\\cursor_" + i + ".png");
-			ts = ts / 24 * 26;
 			cursor[i] = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 			cursor[i].getGraphics().drawImage(ImageIO.read(cursor_file), 0, 0, ts, ts, null);
 		}
+		File move_target_file = new File("res\\img\\move_target_cursor.png");
+		move_target = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
+		move_target.getGraphics().drawImage(ImageIO.read(move_target_file), 0, 0, ts, ts, null);
 	}
 
 	private static void loadAlpha(int ts) throws IOException {
@@ -144,6 +150,10 @@ public class ResourceManager {
 	public static BufferedImage getCursorImage(int index) {
 		return cursor[index];
 	}
+	
+	public static BufferedImage getMoveTargetCursorImage() {
+		return move_target;
+	}
 
 	public static BufferedImage getAttackAlpha() {
 		return attack_alpha;
@@ -155,6 +165,10 @@ public class ResourceManager {
 
 	public static Color getAEIIPanelBg() {
 		return aeii_panel_bg;
+	}
+	
+	public static Color getMovePathColor() {
+		return move_path_color;
 	}
 
 }

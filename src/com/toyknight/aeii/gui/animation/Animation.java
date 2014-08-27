@@ -1,14 +1,15 @@
 
 package com.toyknight.aeii.gui.animation;
 
-import java.awt.Point;
+import com.toyknight.aeii.gui.screen.MapCanvas;
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 /**
  *
  * @author toyknight
  */
-public abstract class Animation {
+public class Animation {
 	
 	private final int x;
 	private final int y;
@@ -38,6 +39,10 @@ public abstract class Animation {
 		}
 	}
 	
-	abstract public void update();
+	public void update() {
+	}
+	
+	public void paint(Graphics g, MapCanvas canvas) {
+	}
 	
 }

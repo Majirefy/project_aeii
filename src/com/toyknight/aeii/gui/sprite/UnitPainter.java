@@ -1,6 +1,7 @@
 
 package com.toyknight.aeii.gui.sprite;
 
+import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.ResourceManager;
 import java.awt.Graphics;
 
@@ -8,27 +9,22 @@ import java.awt.Graphics;
  *
  * @author toyknight
  */
-public class UnitSprite extends Sprite {
-	
-	private final int team;
-	private final int index;
+public class UnitPainter {
 	
 	private static int current_frame = 0;
 
-	public UnitSprite(int team, int index, int width, int height) {
-		super(width, height);
-		this.team = team;
-		this.index = index;
+	private UnitPainter() {
 	}
 	
 	public static void updateFrame() {
 		current_frame = current_frame == 0 ? 1 : 0;
 	}
 	
-	@Override
-	public void paint(Graphics g, int x, int y) {
+	public static void paint(Graphics g, Unit unit, int x, int y, int ts) {
+		int team = unit.getTeam();
+		int index = unit.getIndex();
 		g.drawImage(ResourceManager.getUnitImage(team, index, current_frame), 
-				x, y, getWidth(), getHeight(), null);
+				x, y, ts, ts, null);
 	}
 	
 }
