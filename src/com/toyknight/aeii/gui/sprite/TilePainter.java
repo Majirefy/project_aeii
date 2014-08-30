@@ -1,7 +1,7 @@
 package com.toyknight.aeii.gui.sprite;
 
 import com.toyknight.aeii.core.map.Tile;
-import com.toyknight.aeii.core.map.TileEntitySet;
+import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.gui.ResourceManager;
 import java.awt.Graphics;
 
@@ -21,7 +21,7 @@ public class TilePainter {
 	}
 
 	public static void paint(Graphics g, int index, int x, int y, int ts) {
-		Tile tile = TileEntitySet.getTile(index);
+		Tile tile = TileRepository.getTile(index);
 		if (tile.isAnimated()) {
 			if (current_frame_index == 0) {
 				g.drawImage(

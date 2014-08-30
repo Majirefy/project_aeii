@@ -2,7 +2,7 @@ package com.toyknight.aeii.core.unit;
 
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.map.Tile;
-import com.toyknight.aeii.core.map.TileEntitySet;
+import com.toyknight.aeii.core.map.TileRepository;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -135,7 +135,7 @@ public class UnitToolkit {
 
 	public int getMovementPointCost(Unit unit, int x, int y) {
 		int tile_index = game.getMap().getTileIndex(x, y);
-		Tile tile = TileEntitySet.getTile(tile_index);
+		Tile tile = TileRepository.getTile(tile_index);
 		int mp_cost = tile.getStepCost();
 		int tile_type = tile.getType();
 		ArrayList<Integer> abilities = unit.getAbilities();

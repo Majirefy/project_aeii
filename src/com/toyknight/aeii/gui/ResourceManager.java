@@ -1,6 +1,6 @@
 package com.toyknight.aeii.gui;
 
-import com.toyknight.aeii.core.map.TileEntitySet;
+import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.util.ResourceUtil;
 import com.toyknight.aeii.gui.util.SuffixFileFilter;
@@ -54,7 +54,7 @@ public class ResourceManager {
 	}
 
 	private static void loadTiles(int ts) throws IOException {
-		int tile_count = TileEntitySet.getTileCount();
+		int tile_count = TileRepository.getTileCount();
 		tiles = new BufferedImage[tile_count];
 		for (int i = 0; i < tile_count; i++) {
 			File tile = new File("res\\img\\tiles\\tile_" + i + ".png");

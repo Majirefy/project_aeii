@@ -4,7 +4,7 @@ package com.toyknight.aeii.gui;
 import com.toyknight.aeii.core.AEIIException;
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.Launcher;
-import com.toyknight.aeii.core.map.TileEntitySet;
+import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
 import com.toyknight.aeii.gui.screen.GameScreen;
@@ -111,7 +111,7 @@ public class AEIIApplet {
 	private void loadResources() throws IOException, AEIIException {
 		File tile_data_dir = new File("data\\tiles");
 		File unit_data_dir = new File("data\\units");
-		TileEntitySet.init(tile_data_dir);
+		TileRepository.init(tile_data_dir);
 		UnitFactory.init(unit_data_dir);
 		ResourceManager.init(getTileSize());
 		logo_screen.setResourceLoaded(true);

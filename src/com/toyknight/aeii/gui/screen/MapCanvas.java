@@ -3,7 +3,7 @@ package com.toyknight.aeii.gui.screen;
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.map.Tile;
-import com.toyknight.aeii.core.map.TileEntitySet;
+import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.animation.Animation;
@@ -299,7 +299,7 @@ public class MapCanvas extends JPanel {
 				if (isWithinScreen(sx, sy)) {
 					int index = getGame().getMap().getTileIndex(x, y);
 					TilePainter.paint(g, index, sx, sy, ts);
-					Tile tile = TileEntitySet.getTile(index);
+					Tile tile = TileRepository.getTile(index);
 					if (tile.getTopTileIndex() != -1) {
 						int top_tile_index = tile.getTopTileIndex();
 						g.drawImage(
