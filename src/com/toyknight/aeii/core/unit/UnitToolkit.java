@@ -18,6 +18,7 @@ public class UnitToolkit {
 	private final BasicGame game;
 	private HashSet<Point> movable_positions;
 	private ArrayList<Point> move_path;
+	private HashSet<Point> attackable_positions;
 	private int[][] move_mark_map;
 	private final int[] x_dir = {1, -1, 0, 0};
 	private final int[] y_dir = {0, 0, 1, -1};
@@ -159,6 +160,24 @@ public class UnitToolkit {
 			mp_cost = 1;
 		}
 		return mp_cost;
+	}
+
+	public ArrayList<Point> createAttackablePositions(Unit unit) {
+		int unit_x = unit.getX();
+		int unit_y = unit.getY();
+		int min_ar = unit.getMinAttackRange();
+		int max_ar = unit.getMaxAttackRange();
+		attackable_positions = new HashSet();
+		for (int ar = min_ar; ar <= max_ar; ar++) {
+			for (int dx = -ar; dx <= ar; dx++) {
+				int dy = dx >= 0 ? ar - dx : -ar - dx;
+				attackable_positions.add(new Point(unit_x + dx, unit_y + dy));
+				if (dy != 0) {
+					attackable_positions.add(new Point(unit_x + dx, unit_y - dy));
+				}
+			}
+		}
+		return new ArrayList(attackable_positions);
 	}
 
 	private class Step {

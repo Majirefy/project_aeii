@@ -52,6 +52,7 @@ public class ActionPanel extends AEIIPanel {
 		btn_move.addActionListener(btn_move_listener);
 		this.add(btn_move);
 		btn_attack.setBounds(ts / 2, getHeight() - ts * 7, getWidth() - ts, ts / 2);
+		btn_attack.addActionListener(btn_attack_listener);
 		this.add(btn_attack);
 	}
 
@@ -67,6 +68,13 @@ public class ActionPanel extends AEIIPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			getGame().beginMovePhase();
+		}
+	};
+	
+	private final ActionListener btn_attack_listener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			getGame().beginAttackPhase();
 		}
 	};
 

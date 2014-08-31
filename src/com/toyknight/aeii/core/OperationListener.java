@@ -7,9 +7,9 @@ package com.toyknight.aeii.core;
  */
 public interface OperationListener {
 	
-	public void selectUnit(int x, int y);
+	public void moveUnit(int unit_x, int unit_y, int dest_x, int dest_y);
 	
-	public void moveUnit(int dest_x, int dest_y);
+	public void reverseMove();
 	
 	public void endTurn();
 	

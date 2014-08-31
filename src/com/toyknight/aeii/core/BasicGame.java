@@ -14,12 +14,14 @@ import java.util.ArrayList;
  */
 public class BasicGame implements OperationListener {
 
-	public static final int ST_NORMAL = 0x1;
-	public static final int ST_MOVE = 0x2;
-	public static final int ST_RMOVE = 0x3;
-	public static final int ST_ACTION = 0x4;
+	public static final int STATE_NORMAL = 0x1;
+	public static final int STATE_MOVE = 0x2;
+	public static final int STATE_RMOVE = 0x3;
+	public static final int STATE_ACTION = 0x4;
+	public static final int STATE_ATTACK = 0x5;
 
 	private int state;
+	private int last_state;
 
 	private final Map map;
 	private final Player[] player_list;
@@ -30,6 +32,8 @@ public class BasicGame implements OperationListener {
 	private Unit selected_unit;
 	private ArrayList<Point> movable_positions;
 	private ArrayList<Point> move_path;
+	private Point last_position;
+	private ArrayList<Point> attackable_positions;
 
 	public BasicGame(Map map) {
 		this.map = map;
@@ -37,7 +41,7 @@ public class BasicGame implements OperationListener {
 	}
 
 	public void init() {
-		state = ST_NORMAL;
+		state = STATE_NORMAL;
 		selected_unit = null;
 		unit_toolkit = new UnitToolkit(this);
 		movable_positions = new ArrayList();
@@ -64,6 +68,10 @@ public class BasicGame implements OperationListener {
 		return move_path;
 	}
 
+	public ArrayList<Point> getAttackablePositions() {
+		return attackable_positions;
+	}
+
 	private boolean needNewMovePath(int dest_x, int dest_y) {
 		Point dest = new Point(dest_x, dest_y);
 		if (move_path.isEmpty()) {
@@ -74,14 +82,26 @@ public class BasicGame implements OperationListener {
 	}
 
 	public void beginMovePhase() {
-		if (selected_unit != null && selected_unit.getTeam() == current_team) {
+		if (isUnitAccessible(selected_unit) && state == STATE_NORMAL) {
 			movable_positions = unit_toolkit.createMovablePositions(selected_unit);
-			this.state = ST_MOVE;
+			this.state = STATE_MOVE;
 		}
 	}
 
 	public void cancelMovePhase() {
-		this.state = ST_NORMAL;
+		this.state = STATE_NORMAL;
+	}
+
+	public void beginAttackPhase() {
+		if (isUnitAccessible(selected_unit) && (state == STATE_ACTION || state == STATE_NORMAL)) {
+			this.attackable_positions = unit_toolkit.createAttackablePositions(selected_unit);
+			this.last_state = state;
+			this.state = STATE_ATTACK;
+		}
+	}
+
+	public void cancelAttackPhase() {
+		this.state = last_state;
 	}
 
 	protected void setState(int state) {
@@ -116,7 +136,6 @@ public class BasicGame implements OperationListener {
 		this.game_listener = listener;
 	}
 
-	@Override
 	public void selectUnit(int x, int y) {
 		selected_unit = getMap().getUnit(x, y);
 	}
@@ -126,18 +145,39 @@ public class BasicGame implements OperationListener {
 	}
 
 	@Override
-	public void moveUnit(int dest_x, int dest_y) {
-		if (selected_unit != null && selected_unit.isAvailable()) {
-			move_path = unit_toolkit.createMovePath(selected_unit, dest_x, dest_y);
+	public void moveUnit(int unit_x, int unit_y, int dest_x, int dest_y) {
+		Unit unit = getMap().getUnit(unit_x, unit_y);
+		if (isUnitAccessible(unit)) {
+			move_path = unit_toolkit.createMovePath(unit, dest_x, dest_y);
 			if (!move_path.isEmpty()) {
-				getMap().removeUnit(selected_unit.getX(), selected_unit.getY());
-				selected_unit.setX(dest_x);
-				selected_unit.setY(dest_y);
-				getMap().addUnit(selected_unit);
-				this.state = ST_ACTION;
-				game_listener.onUnitMove(selected_unit, move_path);
+				last_position = new Point(unit.getX(), unit.getY());
+				setUnitPosition(unit, dest_x, dest_y);
+				this.state = STATE_ACTION;
+				game_listener.onUnitMove(unit, move_path);
 			}
 		}
+	}
+
+	@Override
+	public void reverseMove() {
+		if (state == STATE_ACTION) {
+			int last_x = last_position.x;
+			int last_y = last_position.y;
+			setUnitPosition(selected_unit, last_x, last_y);
+			this.state = STATE_MOVE;
+			beginMovePhase();
+		}
+	}
+
+	protected void setUnitPosition(Unit unit, int x, int y) {
+		getMap().removeUnit(unit.getX(), unit.getY());
+		unit.setX(x);
+		unit.setY(y);
+		getMap().addUnit(unit);
+	}
+
+	protected boolean isUnitAccessible(Unit unit) {
+		return unit != null && unit.getTeam() == current_team && unit.isAvailable();
 	}
 
 	public Map getMap() {

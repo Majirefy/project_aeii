@@ -99,6 +99,10 @@ public class MapCanvas extends JPanel {
 		return current_animation;
 	}
 
+	public boolean isOperatable() {
+		return getGame().isLocalPlayer() && !isAnimating();
+	}
+
 	public boolean isAnimating() {
 		return current_animation != null;
 	}
@@ -111,29 +115,36 @@ public class MapCanvas extends JPanel {
 	}
 
 	public void onMouseClick(MouseEvent e) {
-		int x = getCursorXOnMap();
-		int y = getCursorYOnMap();
-		if (e.getButton() == MouseEvent.BUTTON1) {
-			switch (game.getState()) {
-				case BasicGame.ST_NORMAL:
-					getGame().selectUnit(x, y);
-					break;
-				case BasicGame.ST_MOVE:
-					getGame().moveUnit(x, y);
-					break;
-				default:
-				//do nothing
+		if (isOperatable()) {
+			int x = getCursorXOnMap();
+			int y = getCursorYOnMap();
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				switch (game.getState()) {
+					case BasicGame.STATE_NORMAL:
+						getGame().selectUnit(x, y);
+						break;
+					case BasicGame.STATE_MOVE:
+						int unit_x = getGame().getSelectedUnit().getX();
+						int unit_y = getGame().getSelectedUnit().getY();
+						getGame().moveUnit(unit_x, unit_y, x, y);
+						break;
+					default:
+					//do nothing
+				}
 			}
-		}
-		if (e.getButton() == MouseEvent.BUTTON3) {
-			switch (game.getState()) {
-				case BasicGame.ST_MOVE:
-					getGame().cancelMovePhase();
-					break;
-				case BasicGame.ST_ACTION:
-					break;
-				default:
-				//do nothing
+			if (e.getButton() == MouseEvent.BUTTON3) {
+				switch (game.getState()) {
+					case BasicGame.STATE_MOVE:
+						getGame().cancelMovePhase();
+						break;
+					case BasicGame.STATE_ACTION:
+						getGame().reverseMove();
+						break;
+					case BasicGame.STATE_ATTACK:
+						getGame().cancelAttackPhase();
+					default:
+					//do nothing
+				}
 			}
 		}
 	}
@@ -214,8 +225,9 @@ public class MapCanvas extends JPanel {
 			UnitPainter.updateFrame();
 			cursor.update();
 		}
-
-		updateViewport();
+		if (isOperatable()) {
+			updateViewport();
+		}
 		if (current_animation != null) {
 			current_animation.update();
 		}
@@ -249,21 +261,19 @@ public class MapCanvas extends JPanel {
 	}
 
 	private void updateViewport() {
-		if (!isAnimating() && getGame().isLocalPlayer()) {
-			int map_width = getGame().getMap().getWidth() * ts;
-			int map_height = getGame().getMap().getHeight() * ts;
-			if (down_pressed && viewport.y < map_height - viewport.height) {
-				viewport.y += ts / 3;
-			}
-			if (up_pressed && viewport.y > 0) {
-				viewport.y -= ts / 3;
-			}
-			if (right_pressed && viewport.x < map_width - viewport.width) {
-				viewport.x += ts / 3;
-			}
-			if (left_pressed && viewport.x > 0) {
-				viewport.x -= ts / 3;
-			}
+		int map_width = getGame().getMap().getWidth() * ts;
+		int map_height = getGame().getMap().getHeight() * ts;
+		if (down_pressed && viewport.y < map_height - viewport.height) {
+			viewport.y += ts / 3;
+		}
+		if (up_pressed && viewport.y > 0) {
+			viewport.y -= ts / 3;
+		}
+		if (right_pressed && viewport.x < map_width - viewport.width) {
+			viewport.x += ts / 3;
+		}
+		if (left_pressed && viewport.x > 0) {
+			viewport.x -= ts / 3;
 		}
 	}
 
@@ -274,13 +284,16 @@ public class MapCanvas extends JPanel {
 		paintTiles(g, ts);
 		if (!isAnimating()) {
 			switch (getGame().getState()) {
-				case BasicGame.ST_MOVE:
-				case BasicGame.ST_RMOVE:
+				case BasicGame.STATE_MOVE:
+				case BasicGame.STATE_RMOVE:
 					paintMoveAlpha(g);
 					paintMovePath(g, ts);
 					break;
+				case BasicGame.STATE_ATTACK:
+					paintAttackAlpha(g);
+					break;
 				default:
-					//do nothing
+				//do nothing
 			}
 		}
 		paintUnits(g);
@@ -353,6 +366,17 @@ public class MapCanvas extends JPanel {
 			}
 		}
 	}
+	
+	private void paintAttackAlpha(Graphics g) {
+		ArrayList<Point> attackable_positions = getGame().getAttackablePositions();
+		for (Point position : attackable_positions) {
+			int sx = getXOnCanvas(position.x);
+			int sy = getYOnCanvas(position.y);
+			if (isWithinScreen(sx, sy)) {
+				g.drawImage(ResourceManager.getAttackAlpha(), sx, sy, this);
+			}
+		}
+	}
 
 	private void paintUnits(Graphics g) {
 		ArrayList<Unit> unit_list = getGame().getMap().getUnitList();
@@ -369,9 +393,9 @@ public class MapCanvas extends JPanel {
 			}
 		}
 	}
-	
+
 	private void paintAnimation(Graphics g) {
-		if(isAnimating()) {
+		if (isAnimating()) {
 			current_animation.paint(g, this);
 		}
 	}
