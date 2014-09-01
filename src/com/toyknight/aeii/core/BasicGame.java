@@ -112,6 +112,19 @@ public class BasicGame implements OperationListener {
 		return state;
 	}
 
+	public boolean canAttack(int x, int y) {
+		if (attackable_positions != null && attackable_positions.contains(new Point(x, y))) {
+			Unit unit = getMap().getUnit(x, y);
+			if (unit != null) {
+				return unit.getTeam() != current_team;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
 	public boolean isLocalPlayer() {
 		return getCurrentPlayer() instanceof LocalPlayer;
 	}

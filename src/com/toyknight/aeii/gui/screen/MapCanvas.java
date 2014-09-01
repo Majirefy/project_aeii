@@ -9,6 +9,7 @@ import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.animation.Animation;
 import com.toyknight.aeii.gui.animation.AnimationListener;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
+import com.toyknight.aeii.gui.sprite.AttackCursorSprite;
 import com.toyknight.aeii.gui.sprite.CursorSprite;
 import com.toyknight.aeii.gui.sprite.TilePainter;
 import com.toyknight.aeii.gui.sprite.UnitPainter;
@@ -40,6 +41,7 @@ public class MapCanvas extends JPanel {
 	private int mouse_x;
 	private int mouse_y;
 	private CursorSprite cursor;
+	private AttackCursorSprite attack_cursor;
 
 	private final int sprite_delay = 5;
 	private int current_sprite_delay = 0;
@@ -70,6 +72,7 @@ public class MapCanvas extends JPanel {
 
 	public void init() {
 		cursor = new CursorSprite(ts);
+		attack_cursor = new AttackCursorSprite(ts);
 		viewport = new Rectangle(0, 0, getWidth(), getHeight());
 	}
 
@@ -224,6 +227,7 @@ public class MapCanvas extends JPanel {
 			TilePainter.updateFrame();
 			UnitPainter.updateFrame();
 			cursor.update();
+			attack_cursor.update();
 		}
 		if (isOperatable()) {
 			updateViewport();
@@ -366,7 +370,7 @@ public class MapCanvas extends JPanel {
 			}
 		}
 	}
-	
+
 	private void paintAttackAlpha(Graphics g) {
 		ArrayList<Point> attackable_positions = getGame().getAttackablePositions();
 		for (Point position : attackable_positions) {
@@ -406,7 +410,11 @@ public class MapCanvas extends JPanel {
 		int sx = getXOnCanvas(mx);
 		int sy = getYOnCanvas(my);
 		if (isWithinScreen(sx, sy)) {
-			cursor.paint(g, sx, sy);
+			if (getGame().getState() == BasicGame.STATE_ATTACK && getGame().canAttack(mx, my)) {
+				attack_cursor.paint(g, sx, sy);
+			} else {
+				cursor.paint(g, sx, sy);
+			}
 		}
 	}
 

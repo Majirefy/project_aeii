@@ -12,8 +12,8 @@ public class CursorSprite extends Sprite {
 	
 	private int current_frame = 0;
 
-	public CursorSprite(int tile_size) {
-		super(tile_size, tile_size);
+	public CursorSprite(int ts ){
+		super(ts, ts);
 	}
 	
 	@Override
