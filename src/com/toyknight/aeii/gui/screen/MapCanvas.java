@@ -32,6 +32,7 @@ public class MapCanvas extends JPanel {
 
 	private final int ts;
 	private BasicGame game;
+	private final GameScreen game_screen;
 
 	private final PriorityQueue<Animation> animation_dispatcher;
 	private Animation current_animation;
@@ -51,8 +52,9 @@ public class MapCanvas extends JPanel {
 	private boolean left_pressed = false;
 	private boolean right_pressed = false;
 
-	public MapCanvas(int ts) {
+	public MapCanvas(GameScreen game_screen, int ts) {
 		this.ts = ts;
+		this.game_screen = game_screen;
 		this.setOpaque(false);
 		MouseAdapter mouse_adapter = new MouseAdapter() {
 			@Override
@@ -89,6 +91,7 @@ public class MapCanvas extends JPanel {
 			@Override
 			public void animationCompleted(Animation animation) {
 				current_animation = animation_dispatcher.poll();
+				game_screen.getActionPanel().updateButtons();
 			}
 		});
 		if (current_animation == null) {
@@ -123,7 +126,7 @@ public class MapCanvas extends JPanel {
 			int y = getCursorYOnMap();
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				switch (game.getState()) {
-					case BasicGame.STATE_NORMAL:
+					case BasicGame.STATE_ACTION:
 						getGame().selectUnit(x, y);
 						break;
 					case BasicGame.STATE_MOVE:
@@ -150,6 +153,7 @@ public class MapCanvas extends JPanel {
 				}
 			}
 		}
+		game_screen.getActionPanel().updateButtons();
 	}
 
 	public void onMouseMove(MouseEvent e) {

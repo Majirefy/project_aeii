@@ -96,6 +96,7 @@ public class AEIIApplet {
 			isRunning = true;
 			setCurrentFpsDelayToMenu();
 			executor.submit(animation_thread);
+			current_screen.repaint();
 			loadResources();
 		} catch (IOException | AEIIException ex) {
 			DialogUtil.showError(Launcher.getWindow(), ex.getMessage());

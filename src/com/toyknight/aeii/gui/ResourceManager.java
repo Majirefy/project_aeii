@@ -21,6 +21,7 @@ public class ResourceManager {
 	private static BufferedImage[] tiles;
 	private static BufferedImage[] top_tiles;
 	private static BufferedImage[][][] units;
+	private static BufferedImage[][] standby_units;
 	private static BufferedImage[] cursor;
 	private static BufferedImage move_target;
 	private static BufferedImage[] attack_cursor;
@@ -79,6 +80,7 @@ public class ResourceManager {
 	private static void loadUnits(int ts) throws IOException {
 		int unit_count = UnitFactory.getUnitCount();
 		units = new BufferedImage[4][unit_count][2];
+		standby_units = new BufferedImage[4][unit_count];
 		for (int team = 0; team < 4; team++) {
 			File unit_team = new File("res\\img\\units\\unit_icons_" + team + ".png");
 			BufferedImage img_units
@@ -103,6 +105,7 @@ public class ResourceManager {
 						null);
 				units[team][index][0] = unit_f0;
 				units[team][index][1] = unit_f1;
+				standby_units[team][index] = ResourceUtil.getGrayScaledImage(unit_f0);
 			}
 		}
 	}
@@ -154,6 +157,10 @@ public class ResourceManager {
 
 	public static BufferedImage getUnitImage(int team, int index, int frame) {
 		return units[team][index][frame];
+	}
+	
+	public static BufferedImage getStandbyUnitImage(int team, int index) {
+		return standby_units[team][index];
 	}
 
 	public static BufferedImage getCursorImage(int index) {

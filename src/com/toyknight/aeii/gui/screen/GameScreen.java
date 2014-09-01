@@ -43,11 +43,11 @@ public class GameScreen extends Screen implements GameListener {
 		status_panel = new StatusPanel();
 		status_panel.setBounds(ts, height - ts, width - ts * (apw + 1), ts);
 		this.add(status_panel);
-		map_canvas = new MapCanvas(ts);
+		map_canvas = new MapCanvas(this, ts);
 		map_canvas.setBounds(0, 0, width - ts * apw, height - ts);
 		map_canvas.init();
 		this.add(map_canvas);
-		action_panel = new ActionPanel();
+		action_panel = new ActionPanel(this);
 		action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
 		action_panel.initComponents(ts);
 		this.add(action_panel);
@@ -59,6 +59,10 @@ public class GameScreen extends Screen implements GameListener {
 		map_canvas.setGame(game);
 		action_panel.setGame(game);
 		tile_panel.update();
+	}
+	
+	public ActionPanel getActionPanel() {
+		return action_panel;
 	}
 	
 	public MapCanvas getCanvas() {

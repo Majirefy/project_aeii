@@ -84,7 +84,7 @@ public class UnitFactory {
 
 	public static Unit createUnit(int index) {
 		Unit unit = new Unit(units[index]);
-		unit.setAvailable(true);
+		unit.setStandby(false);
 		unit.setCurrentHp(unit.getMaxHp());
 		unit.setCurrentMovementPoint(unit.getMovementPoint());
 		return unit;
