@@ -206,7 +206,7 @@ public class AEIIApplet {
 
 		@Override
 		public void eventDispatched(AWTEvent event) {
-			if (event.getClass() == KeyEvent.class) {
+			if (event instanceof KeyEvent) {
 				KeyEvent e = (KeyEvent) event;
 				switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
