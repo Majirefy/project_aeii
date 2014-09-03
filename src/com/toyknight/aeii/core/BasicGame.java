@@ -1,8 +1,11 @@
 package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.map.Map;
+import com.toyknight.aeii.core.map.Tile;
+import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
+import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitToolkit;
 import java.awt.Point;
@@ -50,7 +53,7 @@ public class BasicGame implements OperationListener {
 				current_team = team;
 				break;
 			} else {
-
+				
 			}
 		}
 	}
@@ -110,21 +113,28 @@ public class BasicGame implements OperationListener {
 	}
 
 	public boolean canAttack(int x, int y) {
-		if (attackable_positions != null && attackable_positions.contains(new Point(x, y))) {
+		if (selected_unit != null && attackable_positions != null && 
+				attackable_positions.contains(new Point(x, y))) {
 			Unit unit = getMap().getUnit(x, y);
 			if (unit != null) {
-				return isEnemy(unit);
+				return isEnemy(selected_unit, unit);
 			} else {
-				return false;
+				if(selected_unit.getAbilities().contains(Ability.DESTROYER)) {
+					int tile_index = getMap().getTileIndex(x, y);
+					Tile tile = TileRepository.getTile(tile_index);
+					return tile.isDestroyable();
+				} else {
+					return false;
+				}
 			}
 		} else {
 			return false;
 		}
 	}
 
-	public boolean isEnemy(Unit unit) {
-		if (unit != null) {
-			return unit.getTeam() != current_team;
+	public boolean isEnemy(Unit unit, Unit target_unit) {
+		if (unit != null && target_unit != null) {
+			return unit.getTeam() != target_unit.getTeam();
 		} else {
 			return false;
 		}
@@ -226,6 +236,10 @@ public class BasicGame implements OperationListener {
 
 	public Map getMap() {
 		return map;
+	}
+	
+	public void startTurn() {
+		
 	}
 
 	@Override

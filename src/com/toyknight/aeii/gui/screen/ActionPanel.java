@@ -4,9 +4,15 @@ import com.toyknight.aeii.Language;
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIPanel;
+import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.control.AEIIButton;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 /**
  *
@@ -15,8 +21,9 @@ import java.awt.event.ActionListener;
 public class ActionPanel extends AEIIPanel {
 
 	private int ts;
-	private BasicGame game;
 	private final GameScreen game_screen;
+
+	private final JLabel lb_unit_icon;
 
 	private final AEIIButton btn_standby;
 	private final AEIIButton btn_attack;
@@ -26,7 +33,7 @@ public class ActionPanel extends AEIIPanel {
 	private final AEIIButton btn_summon;
 	private final AEIIButton btn_mini_map;
 	private final AEIIButton btn_end_turn;
-	
+
 	public ActionPanel(GameScreen game_screen) {
 		this.game_screen = game_screen;
 		btn_end_turn = new AEIIButton(Language.getText("LB_END_TURN"));
@@ -37,6 +44,7 @@ public class ActionPanel extends AEIIPanel {
 		btn_repair = new AEIIButton(Language.getText("LB_REPAIR"));
 		btn_summon = new AEIIButton(Language.getText("LB_SUMMON"));
 		btn_standby = new AEIIButton(Language.getText("LB_STANDBY"));
+		lb_unit_icon = new JLabel();
 	}
 
 	public void initComponents(int ts) {
@@ -62,9 +70,23 @@ public class ActionPanel extends AEIIPanel {
 		btn_standby.setBounds(ts / 2, getHeight() - ts * 8, getWidth() - ts, ts / 2);
 		btn_standby.addActionListener(btn_standby_listener);
 		this.add(btn_standby);
+
+		lb_unit_icon.setBounds(ts / 2, ts / 2, ts, ts);
+		lb_unit_icon.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		this.add(lb_unit_icon);
 	}
-	
-	public void updateButtons() {
+
+	public void update() {
+		updateButtons();
+		Unit unit = getGame().getSelectedUnit();
+		if (unit != null) {
+			BufferedImage unit_image
+					= ResourceManager.getUnitImage(unit.getTeam(), unit.getIndex(), 0);
+			lb_unit_icon.setIcon(new ImageIcon(unit_image));
+		}
+	}
+
+	private void updateButtons() {
 		btn_standby.setEnabled(false);
 		btn_attack.setEnabled(false);
 		btn_move.setEnabled(false);
@@ -73,29 +95,24 @@ public class ActionPanel extends AEIIPanel {
 		btn_summon.setEnabled(false);
 		btn_end_turn.setEnabled(false);
 		Unit unit = getGame().getSelectedUnit();
-		if(getGame().isUnitAccessible(unit) && !game_screen.getCanvas().isAnimating()) {
-			if(getGame().getState() == BasicGame.STATE_ACTION) {
+		if (getGame().isUnitAccessible(unit) && !game_screen.getCanvas().isAnimating()) {
+			if (getGame().getState() == BasicGame.STATE_ACTION) {
 				btn_standby.setEnabled(true);
 				btn_attack.setEnabled(true);
-				if(!getGame().canReverseMove()) {
+				if (!getGame().canReverseMove()) {
 					btn_move.setEnabled(true);
 				}
 			}
-			if(getGame().isLocalPlayer()) {
-				btn_end_turn.setEnabled(true);
-			}
+		}
+		if (getGame().isLocalPlayer() && !game_screen.getCanvas().isAnimating()) {
+			btn_end_turn.setEnabled(true);
 		}
 	}
 
-	public void setGame(BasicGame game) {
-		this.game = game;
-		updateButtons();
-	}
-	
 	public BasicGame getGame() {
-		return game;
+		return game_screen.getGame();
 	}
-	
+
 	private final ActionListener btn_move_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -103,7 +120,7 @@ public class ActionPanel extends AEIIPanel {
 			updateButtons();
 		}
 	};
-	
+
 	private final ActionListener btn_attack_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -111,7 +128,7 @@ public class ActionPanel extends AEIIPanel {
 			updateButtons();
 		}
 	};
-	
+
 	private final ActionListener btn_standby_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {

@@ -74,7 +74,7 @@ public class UnitToolkit {
 								move_mark_map[next_x][next_y] = current_mp - mp_cost;
 								next_steps.add(next_step);
 							} else {
-								if (target_unit.getTeam() == unit.getTeam()) {
+								if (game.isEnemy(unit, target_unit) || unit.getAbilities().contains(Ability.AIR_FORCE)) {
 									Step next_step = new Step(next, current_mp - mp_cost);
 									move_mark_map[next_x][next_y] = current_mp - mp_cost;
 									next_steps.add(next_step);

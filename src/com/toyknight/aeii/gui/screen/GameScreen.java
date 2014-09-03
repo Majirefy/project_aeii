@@ -37,7 +37,7 @@ public class GameScreen extends Screen implements GameListener {
 		int apw = 3; //action panel width(in column)
 		int width = getPreferredSize().width;
 		int height = getPreferredSize().height;
-		tile_panel = new TilePanel();
+		tile_panel = new TilePanel(this, ts);
 		tile_panel.setBounds(0, height - ts, ts, ts);
 		this.add(tile_panel);
 		status_panel = new StatusPanel();
@@ -56,13 +56,18 @@ public class GameScreen extends Screen implements GameListener {
 	public void setGame(BasicGame game) {
 		this.game = game;
 		this.game.setGameListener(this);
-		map_canvas.setGame(game);
-		action_panel.setGame(game);
+		map_canvas.newGame();
+		action_panel.update();
 		tile_panel.update();
+		this.game.startTurn();
 	}
 	
 	public ActionPanel getActionPanel() {
 		return action_panel;
+	}
+	
+	public TilePanel getTilePanel() {
+		return tile_panel;
 	}
 	
 	public MapCanvas getCanvas() {
@@ -97,24 +102,6 @@ public class GameScreen extends Screen implements GameListener {
 	public void update() {
 		map_canvas.update();
 		tile_panel.update();
-	}
-
-	private class TilePanel extends AEIIPanel {
-		
-		private int tile_index;
-		
-		public void update() {
-			int mx = getCanvas().getCursorXOnMap();
-			int my = getCanvas().getCursorYOnMap();
-			tile_index = getGame().getMap().getTileIndex(mx, my);
-		}
-		
-		@Override
-		public void paintComponent(Graphics g) {
-			int ts = getContext().getTileSize();
-			g.drawImage(ResourceManager.getTileImage(tile_index), 0, 0, ts, ts, this);
-		}
-		
 	}
 
 	private class StatusPanel extends AEIIPanel {

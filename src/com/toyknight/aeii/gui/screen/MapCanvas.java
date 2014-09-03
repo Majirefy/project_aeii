@@ -31,7 +31,6 @@ import javax.swing.JPanel;
 public class MapCanvas extends JPanel {
 
 	private final int ts;
-	private BasicGame game;
 	private final GameScreen game_screen;
 
 	private final PriorityQueue<Animation> animation_dispatcher;
@@ -78,12 +77,12 @@ public class MapCanvas extends JPanel {
 		viewport = new Rectangle(0, 0, getWidth(), getHeight());
 	}
 
-	public void setGame(BasicGame game) {
-		this.game = game;
+	public void newGame() {
 		locateViewport(0, 0);
 		mouse_x = 0;
 		mouse_y = 0;
 		current_animation = null;
+		animation_dispatcher.clear();
 	}
 
 	public void submitAnimation(Animation animation) {
@@ -91,7 +90,7 @@ public class MapCanvas extends JPanel {
 			@Override
 			public void animationCompleted(Animation animation) {
 				current_animation = animation_dispatcher.poll();
-				game_screen.getActionPanel().updateButtons();
+				game_screen.getActionPanel().update();
 			}
 		});
 		if (current_animation == null) {
@@ -125,7 +124,7 @@ public class MapCanvas extends JPanel {
 			int x = getCursorXOnMap();
 			int y = getCursorYOnMap();
 			if (e.getButton() == MouseEvent.BUTTON1) {
-				switch (game.getState()) {
+				switch (getGame().getState()) {
 					case BasicGame.STATE_ACTION:
 						getGame().selectUnit(x, y);
 						break;
@@ -139,7 +138,7 @@ public class MapCanvas extends JPanel {
 				}
 			}
 			if (e.getButton() == MouseEvent.BUTTON3) {
-				switch (game.getState()) {
+				switch (getGame().getState()) {
 					case BasicGame.STATE_MOVE:
 						getGame().cancelMovePhase();
 						break;
@@ -153,7 +152,7 @@ public class MapCanvas extends JPanel {
 				}
 			}
 		}
-		game_screen.getActionPanel().updateButtons();
+		game_screen.getActionPanel().update();
 	}
 
 	public void onMouseMove(MouseEvent e) {
@@ -219,8 +218,8 @@ public class MapCanvas extends JPanel {
 		return (map_y - sy) * ts + y_offset;
 	}
 
-	public BasicGame getGame() {
-		return game;
+	private BasicGame getGame() {
+		return game_screen.getGame();
 	}
 
 	public void update() {
@@ -409,12 +408,13 @@ public class MapCanvas extends JPanel {
 	}
 
 	private void paintCursor(Graphics g, int ts) {
-		int mx = getCursorXOnMap();
-		int my = getCursorYOnMap();
-		int sx = getXOnCanvas(mx);
-		int sy = getYOnCanvas(my);
+		int cursor_x = getCursorXOnMap();
+		int cursor_y = getCursorYOnMap();
+		int sx = getXOnCanvas(cursor_x);
+		int sy = getYOnCanvas(cursor_y);
 		if (isWithinScreen(sx, sy)) {
-			if (getGame().getState() == BasicGame.STATE_ATTACK && getGame().canAttack(mx, my)) {
+			if (getGame().getState() == BasicGame.STATE_ATTACK && 
+					getGame().canAttack(cursor_x, cursor_y)) {
 				attack_cursor.paint(g, sx, sy);
 			} else {
 				cursor.paint(g, sx, sy);
