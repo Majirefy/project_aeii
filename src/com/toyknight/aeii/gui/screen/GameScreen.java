@@ -5,11 +5,10 @@ import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
-import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
+import com.toyknight.aeii.gui.animation.UnitAttackedAnimation;
 import com.toyknight.aeii.gui.animation.UnitMovementAnimation;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -86,6 +85,14 @@ public class GameScreen extends Screen implements GameListener {
 	@Override
 	public void onKeyRelease(KeyEvent e) {
 		map_canvas.onKeyRelease(e);
+	}
+	
+	@Override
+	public void onUnitAttack(Unit target, int damage) {
+		int ts = getContext().getTileSize();
+		UnitAttackedAnimation animation = new UnitAttackedAnimation(target, damage, ts);
+		animation.setInterval(2);
+		getCanvas().submitAnimation(animation);
 	}
 	
 	@Override

@@ -30,7 +30,7 @@ public class UnitMovementAnimation extends UnitAnimation {
 	}
 
 	@Override
-	public void update() {
+	public void doUpdate() {
 		if (current_location < path.size() - 1) {
 			Point current = path.get(current_location);
 			Point next = path.get(current_location + 1);

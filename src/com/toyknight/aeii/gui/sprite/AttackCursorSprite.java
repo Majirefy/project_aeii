@@ -16,7 +16,7 @@ public class AttackCursorSprite extends Sprite {
 	}
 
 	@Override
-	public void update() {
+	public void doUpdate() {
 		current_frame = current_frame < 2 ? current_frame + 1 : 0;
 	}
 

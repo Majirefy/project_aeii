@@ -69,16 +69,10 @@ public class UnitToolkit {
 					if (current_mp - mp_cost > move_mark_map[next_x][next_y]) {
 						if (mp_cost <= current_mp) {
 							Unit target_unit = game.getMap().getUnit(next_x, next_y);
-							if (target_unit == null) {
+							if(canMoveThrough(unit, target_unit)) {
 								Step next_step = new Step(next, current_mp - mp_cost);
 								move_mark_map[next_x][next_y] = current_mp - mp_cost;
 								next_steps.add(next_step);
-							} else {
-								if (game.isEnemy(unit, target_unit) || unit.getAbilities().contains(Ability.AIR_FORCE)) {
-									Step next_step = new Step(next, current_mp - mp_cost);
-									move_mark_map[next_x][next_y] = current_mp - mp_cost;
-									next_steps.add(next_step);
-								}
 							}
 						}
 					}
@@ -178,6 +172,20 @@ public class UnitToolkit {
 			}
 		}
 		return new ArrayList(attackable_positions);
+	}
+
+	private boolean canMoveThrough(Unit unit, Unit target_unit) {
+		if (target_unit == null) {
+			return true;
+		} else {
+			if (!game.isEnemy(unit, target_unit) || 
+					(unit.getAbilities().contains(Ability.AIR_FORCE) && 
+					!target_unit.getAbilities().contains(Ability.AIR_FORCE))) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
 	private class Step {

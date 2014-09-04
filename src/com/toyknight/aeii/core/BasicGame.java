@@ -174,6 +174,17 @@ public class BasicGame implements OperationListener {
 	public Unit getSelectedUnit() {
 		return selected_unit;
 	}
+	
+	@Override
+	public void doAttack(int unit_x, int unit_y, int target_x, int target_y) {
+		Unit unit = getMap().getUnit(unit_x, unit_y);
+		Unit target = getMap().getUnit(target_x, target_y);
+		if(unit != null && target != null) {
+			unit.setStandby(true);
+			this.state = STATE_ACTION;
+			game_listener.onUnitAttack(target, 0);
+		}
+	}
 
 	@Override
 	public void standbyUnit(int unit_x, int unit_y) {

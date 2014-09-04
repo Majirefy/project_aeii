@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 public class MapCanvas extends JPanel {
 
 	private final int ts;
+	private final int SPRITE_INTERVAL = 5;
 	private final GameScreen game_screen;
 
 	private final PriorityQueue<Animation> animation_dispatcher;
@@ -38,13 +39,12 @@ public class MapCanvas extends JPanel {
 
 	private Rectangle viewport;
 
+	private int current_delay;
+
 	private int mouse_x;
 	private int mouse_y;
 	private CursorSprite cursor;
 	private AttackCursorSprite attack_cursor;
-
-	private final int sprite_delay = 5;
-	private int current_sprite_delay = 0;
 
 	private boolean up_pressed = false;
 	private boolean down_pressed = false;
@@ -73,7 +73,9 @@ public class MapCanvas extends JPanel {
 
 	public void init() {
 		cursor = new CursorSprite(ts);
+		cursor.setInterval(SPRITE_INTERVAL);
 		attack_cursor = new AttackCursorSprite(ts);
+		attack_cursor.setInterval(SPRITE_INTERVAL);
 		viewport = new Rectangle(0, 0, getWidth(), getHeight());
 	}
 
@@ -83,6 +85,7 @@ public class MapCanvas extends JPanel {
 		mouse_y = 0;
 		current_animation = null;
 		animation_dispatcher.clear();
+		current_delay = 0;
 	}
 
 	public void submitAnimation(Animation animation) {
@@ -121,6 +124,8 @@ public class MapCanvas extends JPanel {
 
 	public void onMouseClick(MouseEvent e) {
 		if (isOperatable()) {
+			int unit_x;
+			int unit_y;
 			int x = getCursorXOnMap();
 			int y = getCursorYOnMap();
 			if (e.getButton() == MouseEvent.BUTTON1) {
@@ -129,9 +134,14 @@ public class MapCanvas extends JPanel {
 						getGame().selectUnit(x, y);
 						break;
 					case BasicGame.STATE_MOVE:
-						int unit_x = getGame().getSelectedUnit().getX();
-						int unit_y = getGame().getSelectedUnit().getY();
+						unit_x = getGame().getSelectedUnit().getX();
+						unit_y = getGame().getSelectedUnit().getY();
 						getGame().moveUnit(unit_x, unit_y, x, y);
+						break;
+					case BasicGame.STATE_ATTACK:
+						unit_x = getGame().getSelectedUnit().getX();
+						unit_y = getGame().getSelectedUnit().getY();
+						getGame().doAttack(unit_x, unit_y, x, y);
 						break;
 					default:
 					//do nothing
@@ -223,15 +233,15 @@ public class MapCanvas extends JPanel {
 	}
 
 	public void update() {
-		if (current_sprite_delay < sprite_delay) {
-			current_sprite_delay++;
+		if (current_delay < SPRITE_INTERVAL) {
+			current_delay++;
 		} else {
-			current_sprite_delay = 0;
+			current_delay = 0;
 			TilePainter.updateFrame();
 			UnitPainter.updateFrame();
-			cursor.update();
-			attack_cursor.update();
 		}
+		cursor.update();
+		attack_cursor.update();
 		if (isOperatable()) {
 			updateViewport();
 		}
@@ -413,8 +423,8 @@ public class MapCanvas extends JPanel {
 		int sx = getXOnCanvas(cursor_x);
 		int sy = getYOnCanvas(cursor_y);
 		if (isWithinScreen(sx, sy)) {
-			if (getGame().getState() == BasicGame.STATE_ATTACK && 
-					getGame().canAttack(cursor_x, cursor_y)) {
+			if (getGame().getState() == BasicGame.STATE_ATTACK
+					&& getGame().canAttack(cursor_x, cursor_y)) {
 				attack_cursor.paint(g, sx, sy);
 			} else {
 				cursor.paint(g, sx, sy);

@@ -17,7 +17,7 @@ public class CursorSprite extends Sprite {
 	}
 	
 	@Override
-	public void update() {
+	public void doUpdate() {
 		current_frame = current_frame == 0 ? 1 : 0;
 	}
 	

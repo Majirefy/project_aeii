@@ -11,6 +11,8 @@ import java.util.ArrayList;
  */
 public interface GameListener {
 	
+	public void onUnitAttack(Unit target, int damage);
+	
 	public void onUnitMove(Unit unit, ArrayList<Point> path);
 	
 }

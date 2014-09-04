@@ -25,6 +25,7 @@ public class ResourceManager {
 	private static BufferedImage[] cursor;
 	private static BufferedImage move_target;
 	private static BufferedImage[] attack_cursor;
+	private static BufferedImage[] p_attack_spark;
 	private static BufferedImage move_alpha;
 	private static BufferedImage attack_alpha;
 	private static Color aeii_panel_bg;
@@ -40,6 +41,7 @@ public class ResourceManager {
 		loadTopTiles(ts);
 		loadCursors(ts);
 		loadUnits(ts);
+		loadSparks(ts);
 		loadAlpha(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		move_path_color = new Color(225, 0, 82);
@@ -131,6 +133,17 @@ public class ResourceManager {
 		}
 	}
 
+	private static void loadSparks(int ts) throws IOException {
+		ts = ts / 24 * 20;
+		p_attack_spark = new BufferedImage[6];
+		File p_attack_spark_file = new File("res\\img\\physical_attack_spark.png");
+		BufferedImage p_attack_sparks = new BufferedImage(ts * 6, ts, BufferedImage.TYPE_INT_ARGB);
+		p_attack_sparks.getGraphics().drawImage(ImageIO.read(p_attack_spark_file), 0, 0, ts * 6, ts, null);
+		for (int i = 0; i < 6; i++) {
+			p_attack_spark[i] = ResourceUtil.getImageClip(p_attack_sparks, ts*i, 0, ts, ts);
+		}
+	}
+
 	private static void loadAlpha(int ts) throws IOException {
 		File alpha_file = new File("res\\img\\alpha.png");
 		BufferedImage img_alpha = new BufferedImage(ts * 2, ts, BufferedImage.TYPE_INT_ARGB);
@@ -158,7 +171,7 @@ public class ResourceManager {
 	public static BufferedImage getUnitImage(int team, int index, int frame) {
 		return units[team][index][frame];
 	}
-	
+
 	public static BufferedImage getStandbyUnitImage(int team, int index) {
 		return standby_units[team][index];
 	}
@@ -170,9 +183,13 @@ public class ResourceManager {
 	public static BufferedImage getMoveTargetCursorImage() {
 		return move_target;
 	}
-	
+
 	public static BufferedImage getAttackCursorImage(int index) {
 		return attack_cursor[index];
+	}
+	
+	public static BufferedImage getAttackSparkImage(int index) {
+		return p_attack_spark[index];
 	}
 
 	public static BufferedImage getAttackAlpha() {
