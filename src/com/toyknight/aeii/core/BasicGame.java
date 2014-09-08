@@ -1,15 +1,9 @@
 package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.map.Map;
-import com.toyknight.aeii.core.map.Tile;
-import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
-import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
-import com.toyknight.aeii.core.unit.UnitToolkit;
-import java.awt.Point;
-import java.util.ArrayList;
 
 /**
  *
@@ -17,24 +11,10 @@ import java.util.ArrayList;
  */
 public class BasicGame implements OperationListener {
 
-	public static final int STATE_MOVE = 0x2;
-	public static final int STATE_RMOVE = 0x3;
-	public static final int STATE_ACTION = 0x4;
-	public static final int STATE_ATTACK = 0x5;
-
-	private int state;
-
 	private final Map map;
-	private final Player[] player_list;
 	private int current_team;
+	private final Player[] player_list;
 	private GameListener game_listener;
-
-	private UnitToolkit unit_toolkit;
-	private Unit selected_unit;
-	private ArrayList<Point> movable_positions;
-	private ArrayList<Point> move_path;
-	private Point last_position;
-	private ArrayList<Point> attackable_positions;
 
 	public BasicGame(Map map) {
 		this.map = map;
@@ -42,101 +22,14 @@ public class BasicGame implements OperationListener {
 	}
 
 	public void init() {
-		state = STATE_ACTION;
-		selected_unit = null;
-		unit_toolkit = new UnitToolkit(this);
-		movable_positions = new ArrayList();
-		move_path = new ArrayList();
 		current_team = -1;
 		for (int team = 0; team < player_list.length; team++) {
 			if (player_list[team] != null && current_team == -1) {
 				current_team = team;
 				break;
 			} else {
-				
+
 			}
-		}
-	}
-
-	public ArrayList<Point> getMovablePositions() {
-		return movable_positions;
-	}
-
-	public ArrayList<Point> getMovePath(int dest_x, int dest_y) {
-		if (selected_unit != null && needNewMovePath(dest_x, dest_y)) {
-			move_path = unit_toolkit.createMovePath(selected_unit, dest_x, dest_y);
-		}
-		return move_path;
-	}
-
-	public ArrayList<Point> getAttackablePositions() {
-		return attackable_positions;
-	}
-
-	private boolean needNewMovePath(int dest_x, int dest_y) {
-		Point dest = new Point(dest_x, dest_y);
-		if (move_path.isEmpty()) {
-			return true;
-		} else {
-			return !move_path.get(move_path.size() - 1).equals(dest);
-		}
-	}
-
-	public void beginMovePhase() {
-		if (isUnitAccessible(selected_unit) && state == STATE_ACTION) {
-			movable_positions = unit_toolkit.createMovablePositions(selected_unit);
-			this.state = STATE_MOVE;
-		}
-	}
-
-	public void cancelMovePhase() {
-		this.state = STATE_ACTION;
-	}
-
-	public void beginAttackPhase() {
-		if (isUnitAccessible(selected_unit) && state == STATE_ACTION) {
-			this.attackable_positions = unit_toolkit.createAttackablePositions(selected_unit);
-			this.state = STATE_ATTACK;
-		}
-	}
-
-	public void cancelAttackPhase() {
-		this.state = STATE_ACTION;
-	}
-
-	protected void setState(int state) {
-		this.state = state;
-	}
-
-	public int getState() {
-		return state;
-	}
-
-	public boolean canAttack(int x, int y) {
-		if (selected_unit != null && attackable_positions != null && 
-				attackable_positions.contains(new Point(x, y))) {
-			Unit unit = getMap().getUnit(x, y);
-			if (unit != null) {
-				return isEnemy(selected_unit, unit);
-			} else {
-				if(selected_unit.getAbilities().contains(Ability.DESTROYER)) {
-					int tile_index = getMap().getTileIndex(x, y);
-					Tile tile = TileRepository.getTile(tile_index);
-					return tile.isDestroyable();
-				} else {
-					return false;
-				}
-			}
-		} else {
-			return false;
-		}
-	}
-
-	public boolean isEnemy(Unit unit, Unit target_unit) {
-		if (unit != null && target_unit != null) {
-			return unit.getTeam() != target_unit.getTeam();
-		} else {
-			return false;
 		}
 	}
 
@@ -164,73 +57,30 @@ public class BasicGame implements OperationListener {
 		this.game_listener = listener;
 	}
 
-	public void selectUnit(int x, int y) {
-		selected_unit = getMap().getUnit(x, y);
-		if (selected_unit != null) {
-			last_position = new Point(x, y);
-		}
-	}
-
-	public Unit getSelectedUnit() {
-		return selected_unit;
-	}
-	
 	@Override
 	public void doAttack(int unit_x, int unit_y, int target_x, int target_y) {
-		Unit unit = getMap().getUnit(unit_x, unit_y);
-		Unit target = getMap().getUnit(target_x, target_y);
-		if(unit != null && target != null) {
-			unit.setStandby(true);
-			this.state = STATE_ACTION;
-			game_listener.onUnitAttack(target, 0);
+		Unit attacker = getMap().getUnit(unit_x, unit_y);
+		Unit defencer = getMap().getUnit(target_x, target_y);
+		if (attacker != null && defencer != null) {
+			game_listener.onUnitAttack(attacker, defencer, 0);
+			game_listener.onUnitStandby(attacker);
 		}
 	}
 
 	@Override
 	public void standbyUnit(int unit_x, int unit_y) {
-		if (state == STATE_ACTION) {
-			Unit unit = getMap().getUnit(unit_x, unit_y);
-			if (isUnitAccessible(unit)) {
-				unit.setStandby(true);
-			}
+		Unit unit = getMap().getUnit(unit_x, unit_y);
+		if (unit != null) {
+			unit.setStandby(true);
 		}
 	}
 
 	@Override
 	public void moveUnit(int unit_x, int unit_y, int dest_x, int dest_y) {
 		Unit unit = getMap().getUnit(unit_x, unit_y);
-		if (isUnitAccessible(unit)) {
-			move_path = unit_toolkit.createMovePath(unit, dest_x, dest_y);
-			if (!move_path.isEmpty()) {
-				setUnitPosition(unit, dest_x, dest_y);
-				this.state = STATE_ACTION;
-				game_listener.onUnitMove(unit, move_path);
-			}
-		}
-	}
-
-	public boolean canReverseMove() {
-		if (last_position != null) {
-			int last_x = last_position.x;
-			int last_y = last_position.y;
-			int current_x = selected_unit.getX();
-			int current_y = selected_unit.getY();
-			return current_x != last_x || current_y != last_y;
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public void reverseMove() {
-		if (isUnitAccessible(selected_unit) && state == STATE_ACTION) {
-			if (canReverseMove()) {
-				int last_x = last_position.x;
-				int last_y = last_position.y;
-				setUnitPosition(selected_unit, last_x, last_y);
-				this.state = STATE_MOVE;
-				beginMovePhase();
-			}
+		if (unit != null) {
+			setUnitPosition(unit, dest_x, dest_y);
+			game_listener.onUnitMove(unit, unit_x, unit_y, dest_x, dest_y);
 		}
 	}
 
@@ -241,16 +91,12 @@ public class BasicGame implements OperationListener {
 		getMap().addUnit(unit);
 	}
 
-	public boolean isUnitAccessible(Unit unit) {
-		return unit != null && unit.getTeam() == current_team && !unit.isStandby();
-	}
-
 	public Map getMap() {
 		return map;
 	}
-	
+
 	public void startTurn() {
-		
+
 	}
 
 	@Override

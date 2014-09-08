@@ -2,12 +2,17 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.GameListener;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.Screen;
+import com.toyknight.aeii.gui.animation.Animation;
+import com.toyknight.aeii.gui.animation.AnimationListener;
+import com.toyknight.aeii.gui.animation.UnitAnimation;
 import com.toyknight.aeii.gui.animation.UnitAttackedAnimation;
 import com.toyknight.aeii.gui.animation.UnitMovementAnimation;
+import com.toyknight.aeii.gui.animation.UnitStandbyAnimation;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -20,6 +25,7 @@ import java.util.ArrayList;
 public class GameScreen extends Screen implements GameListener {
 
 	private BasicGame game;
+	private LocalGameManager manager;
 
 	private MapCanvas map_canvas;
 	private TilePanel tile_panel;
@@ -55,7 +61,10 @@ public class GameScreen extends Screen implements GameListener {
 	public void setGame(BasicGame game) {
 		this.game = game;
 		this.game.setGameListener(this);
-		map_canvas.newGame();
+		this.manager = new LocalGameManager(game);
+		map_canvas.newGame(manager);
+		action_panel.setGameManager(manager);
+		tile_panel.setGameManager(manager);
 		action_panel.update();
 		tile_panel.update();
 		this.game.startTurn();
@@ -73,10 +82,6 @@ public class GameScreen extends Screen implements GameListener {
 		return map_canvas;
 	}
 
-	public BasicGame getGame() {
-		return game;
-	}
-
 	@Override
 	public void onKeyPress(KeyEvent e) {
 		map_canvas.onKeyPress(e);
@@ -88,20 +93,38 @@ public class GameScreen extends Screen implements GameListener {
 	}
 	
 	@Override
-	public void onUnitAttack(Unit target, int damage) {
+	public void onUnitStandby(Unit unit) {
 		int ts = getContext().getTileSize();
-		UnitAttackedAnimation animation = new UnitAttackedAnimation(target, damage, ts);
-		animation.setInterval(2);
+		UnitStandbyAnimation animation = new UnitStandbyAnimation(unit, ts);
+		animation.addAnimationListener(new AnimationListener() {
+			@Override
+			public void animationCompleted(Animation animation) {
+				Unit unit = ((UnitAnimation)animation).getUnit();
+				manager.getGame().standbyUnit(unit.getX(), unit.getY());
+			}
+		});
 		getCanvas().submitAnimation(animation);
 	}
 	
 	@Override
-	public void onUnitMove(Unit unit, ArrayList<Point> path) {
-		Point dest = path.get(path.size() - 1);
-		int x = dest.x;
-		int y = dest.y;
+	public void onUnitAttack(Unit attacker, Unit defencer, int damage) {
 		int ts = getContext().getTileSize();
-		UnitMovementAnimation animation = new UnitMovementAnimation(unit, x, y, path, ts);
+		UnitAttackedAnimation animation = new UnitAttackedAnimation(defencer, damage, ts);
+		animation.setInterval(1);
+		getCanvas().submitAnimation(animation);
+	}
+	
+	@Override
+	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
+		ArrayList<Point> path;
+		if(manager.getGame().isLocalPlayer()) {
+			path = manager.getMovePath(dest_x, dest_y);
+		} else {
+			manager.getUnitToolkit().createMovablePositions(unit);
+			path = manager.getUnitToolkit().createMovePath(start_x, start_y, dest_x, dest_y);
+		}
+		int ts = getContext().getTileSize();
+		UnitMovementAnimation animation = new UnitMovementAnimation(unit, path, ts);
 		getCanvas().submitAnimation(animation);
 	}
 

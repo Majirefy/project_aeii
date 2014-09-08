@@ -35,7 +35,7 @@ public class UnitAttackedAnimation extends UnitAnimation {
 			complete();
 		}
 	}
-	
+
 	@Override
 	public void update() {
 		unit_dx = random.nextInt(ts / 12) - ts / 24;

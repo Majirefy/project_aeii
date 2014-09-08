@@ -2,6 +2,7 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
 import com.toyknight.aeii.core.BasicGame;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
@@ -21,6 +22,7 @@ import javax.swing.JLabel;
 public class ActionPanel extends AEIIPanel {
 
 	private int ts;
+	private LocalGameManager manager;
 	private final GameScreen game_screen;
 
 	private final JLabel lb_unit_icon;
@@ -76,9 +78,13 @@ public class ActionPanel extends AEIIPanel {
 		this.add(lb_unit_icon);
 	}
 
+	public void setGameManager(LocalGameManager manager) {
+		this.manager = manager;
+	}
+
 	public void update() {
 		updateButtons();
-		Unit unit = getGame().getSelectedUnit();
+		Unit unit = manager.getSelectedUnit();
 		if (unit != null) {
 			BufferedImage unit_image
 					= ResourceManager.getUnitImage(unit.getTeam(), unit.getIndex(), 0);
@@ -94,29 +100,30 @@ public class ActionPanel extends AEIIPanel {
 		btn_repair.setEnabled(false);
 		btn_summon.setEnabled(false);
 		btn_end_turn.setEnabled(false);
-		Unit unit = getGame().getSelectedUnit();
-		if (getGame().isUnitAccessible(unit) && !game_screen.getCanvas().isAnimating()) {
-			if (getGame().getState() == BasicGame.STATE_ACTION) {
-				btn_standby.setEnabled(true);
-				btn_attack.setEnabled(true);
-				if (!getGame().canReverseMove()) {
-					btn_move.setEnabled(true);
+		Unit unit = manager.getSelectedUnit();
+		if (!game_screen.getCanvas().isAnimating()) {
+			if (manager.getUnitToolkit().isUnitAccessible(unit)) {
+				switch (manager.getState()) {
+					case LocalGameManager.STATE_SELECT:
+						btn_move.setEnabled(true);
+					case LocalGameManager.STATE_ACTION:
+						btn_standby.setEnabled(true);
+						btn_attack.setEnabled(true);
+						break;
+					default:
+					//do nothing
 				}
 			}
+			if (manager.getGame().isLocalPlayer()) {
+				btn_end_turn.setEnabled(true);
+			}
 		}
-		if (getGame().isLocalPlayer() && !game_screen.getCanvas().isAnimating()) {
-			btn_end_turn.setEnabled(true);
-		}
-	}
-
-	public BasicGame getGame() {
-		return game_screen.getGame();
 	}
 
 	private final ActionListener btn_move_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getGame().beginMovePhase();
+			manager.beginMovePhase();
 			updateButtons();
 		}
 	};
@@ -124,7 +131,7 @@ public class ActionPanel extends AEIIPanel {
 	private final ActionListener btn_attack_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getGame().beginAttackPhase();
+			manager.beginAttackPhase();
 			updateButtons();
 		}
 	};
@@ -132,9 +139,9 @@ public class ActionPanel extends AEIIPanel {
 	private final ActionListener btn_standby_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int unit_x = getGame().getSelectedUnit().getX();
-			int unit_y = getGame().getSelectedUnit().getY();
-			getGame().standbyUnit(unit_x, unit_y);
+			int unit_x = manager.getSelectedUnit().getX();
+			int unit_y = manager.getSelectedUnit().getY();
+			manager.getGame().standbyUnit(unit_x, unit_y);
 			updateButtons();
 		}
 	};

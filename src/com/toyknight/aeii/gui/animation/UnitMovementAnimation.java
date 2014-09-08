@@ -20,8 +20,8 @@ public class UnitMovementAnimation extends UnitAnimation {
 	private int x_offset;
 	private int y_offset;
 
-	public UnitMovementAnimation(Unit unit, int x, int y, ArrayList<Point> path, int ts) {
-		super(unit, x, y);
+	public UnitMovementAnimation(Unit unit, ArrayList<Point> path, int ts) {
+		super(unit, unit.getX(), unit.getY());
 		this.ts = ts;
 		this.path = path;
 		current_location = 0;

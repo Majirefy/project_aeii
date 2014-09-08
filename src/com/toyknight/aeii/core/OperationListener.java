@@ -13,8 +13,6 @@ public interface OperationListener {
 	
 	public void moveUnit(int unit_x, int unit_y, int dest_x, int dest_y);
 	
-	public void reverseMove();
-	
 	public void endTurn();
 	
 }

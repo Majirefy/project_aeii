@@ -69,7 +69,7 @@ public class UnitToolkit {
 					if (current_mp - mp_cost > move_mark_map[next_x][next_y]) {
 						if (mp_cost <= current_mp) {
 							Unit target_unit = game.getMap().getUnit(next_x, next_y);
-							if(canMoveThrough(unit, target_unit)) {
+							if (canMoveThrough(unit, target_unit)) {
 								Step next_step = new Step(next, current_mp - mp_cost);
 								move_mark_map[next_x][next_y] = current_mp - mp_cost;
 								next_steps.add(next_step);
@@ -84,15 +84,13 @@ public class UnitToolkit {
 		}
 	}
 
-	public ArrayList<Point> createMovePath(Unit unit, int dest_x, int dest_y) {
+	public ArrayList<Point> createMovePath(int start_x, int start_y, int dest_x, int dest_y) {
 		Point dest_position = new Point(dest_x, dest_y);
 		if (movable_positions.contains(dest_position)) {
 			move_path = new ArrayList();
 			int current_x = dest_x;
 			int current_y = dest_y;
-			int start_x = unit.getX();
-			int start_y = unit.getY();
-			createMovePath(current_x, current_y, start_x, start_y);
+			gengerateMovePath(current_x, current_y, start_x, start_y);
 			return move_path;
 		} else {
 			return new ArrayList();
@@ -100,7 +98,7 @@ public class UnitToolkit {
 
 	}
 
-	private void createMovePath(int current_x, int current_y, int start_x, int start_y) {
+	private void gengerateMovePath(int current_x, int current_y, int start_x, int start_y) {
 		move_path.add(0, new Point(current_x, current_y));
 		if (current_x != start_x || current_y != start_y) {
 			int next_x = 0;
@@ -124,7 +122,7 @@ public class UnitToolkit {
 					}
 				}
 			}
-			createMovePath(next_x, next_y, start_x, start_y);
+			gengerateMovePath(next_x, next_y, start_x, start_y);
 		}
 	}
 
@@ -178,13 +176,24 @@ public class UnitToolkit {
 		if (target_unit == null) {
 			return true;
 		} else {
-			if (!game.isEnemy(unit, target_unit) || 
-					(unit.getAbilities().contains(Ability.AIR_FORCE) && 
-					!target_unit.getAbilities().contains(Ability.AIR_FORCE))) {
-				return true;
+			if (isEnemy(unit, target_unit)) {
+				return unit.getAbilities().contains(Ability.AIR_FORCE)
+						&& !target_unit.getAbilities().contains(Ability.AIR_FORCE);
 			} else {
-				return false;
+				return true;
 			}
+		}
+	}
+
+	public boolean isUnitAccessible(Unit unit) {
+		return unit != null && unit.getTeam() == game.getCurrentTeam() && !unit.isStandby();
+	}
+
+	public boolean isEnemy(Unit unit, Unit target_unit) {
+		if (unit != null && target_unit != null) {
+			return unit.getTeam() != target_unit.getTeam();
+		} else {
+			return false;
 		}
 	}
 
