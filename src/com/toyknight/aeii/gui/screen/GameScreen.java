@@ -107,9 +107,9 @@ public class GameScreen extends Screen implements GameListener {
 	}
 	
 	@Override
-	public void onUnitAttack(Unit attacker, Unit defencer, int damage) {
+	public void onUnitAttack(Unit attacker, Unit defender, int damage) {
 		int ts = getContext().getTileSize();
-		UnitAttackedAnimation animation = new UnitAttackedAnimation(defencer, damage, ts);
+		UnitAttackedAnimation animation = new UnitAttackedAnimation(defender, damage, ts);
 		animation.setInterval(1);
 		getCanvas().submitAnimation(animation);
 	}

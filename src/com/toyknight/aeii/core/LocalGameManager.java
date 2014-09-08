@@ -139,8 +139,8 @@ public class LocalGameManager {
 	}
 
 	public void doAttack(int target_x, int target_y) {
-		Unit defencer = getGame().getMap().getUnit(target_x, target_y);
-		if (getUnitToolkit().isEnemy(selected_unit, defencer)) {
+		Unit defender = getGame().getMap().getUnit(target_x, target_y);
+		if (getUnitToolkit().isEnemy(selected_unit, defender)) {
 			int unit_x = selected_unit.getX();
 			int unit_y = selected_unit.getY();
 			getGame().doAttack(unit_x, unit_y, target_x, target_y);

@@ -60,9 +60,9 @@ public class BasicGame implements OperationListener {
 	@Override
 	public void doAttack(int unit_x, int unit_y, int target_x, int target_y) {
 		Unit attacker = getMap().getUnit(unit_x, unit_y);
-		Unit defencer = getMap().getUnit(target_x, target_y);
-		if (attacker != null && defencer != null) {
-			game_listener.onUnitAttack(attacker, defencer, 0);
+		Unit defender = getMap().getUnit(target_x, target_y);
+		if (attacker != null && defender != null) {
+			game_listener.onUnitAttack(attacker, defender, 0);
 			game_listener.onUnitStandby(attacker);
 		}
 	}
