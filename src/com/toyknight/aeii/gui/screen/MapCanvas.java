@@ -2,7 +2,8 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.core.BasicGame;
-import com.toyknight.aeii.core.LocalGameManager;
+import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.Unit;
@@ -16,7 +17,6 @@ import com.toyknight.aeii.gui.sprite.TilePainter;
 import com.toyknight.aeii.gui.sprite.UnitPainter;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -33,7 +33,7 @@ public class MapCanvas extends JPanel {
 
 	private final int ts;
 	private final int SPRITE_INTERVAL = 5;
-	private LocalGameManager manager;
+	private GameManager manager;
 	private final GameScreen game_screen;
 
 	private final PriorityQueue<Animation> animation_dispatcher;
@@ -81,7 +81,7 @@ public class MapCanvas extends JPanel {
 		viewport = new Rectangle(0, 0, getWidth(), getHeight());
 	}
 
-	public void newGame(LocalGameManager manager) {
+	public void newGame(GameManager manager) {
 		this.manager = manager;
 		locateViewport(0, 0);
 		mouse_x = 0;
@@ -131,13 +131,13 @@ public class MapCanvas extends JPanel {
 			int click_y = getCursorYOnMap();
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				switch (manager.getState()) {
-					case LocalGameManager.STATE_SELECT:
+					case GameManager.STATE_SELECT:
 						manager.selectUnit(click_x, click_y);
 						break;
-					case LocalGameManager.STATE_MOVE:
+					case GameManager.STATE_MOVE:
 						manager.moveSelectedUnit(click_x, click_y);
 						break;
-					case LocalGameManager.STATE_ATTACK:
+					case GameManager.STATE_ATTACK:
 						manager.doAttack(click_x, click_y);
 						break;
 					default:
@@ -146,13 +146,13 @@ public class MapCanvas extends JPanel {
 			}
 			if (e.getButton() == MouseEvent.BUTTON3) {
 				switch (manager.getState()) {
-					case LocalGameManager.STATE_MOVE:
+					case GameManager.STATE_MOVE:
 						manager.cancelMovePhase();
 						break;
-					case LocalGameManager.STATE_ACTION:
+					case GameManager.STATE_ACTION:
 						manager.reverseMove();
 						break;
-					case LocalGameManager.STATE_ATTACK:
+					case GameManager.STATE_ATTACK:
 						manager.cancelAttackPhase();
 					default:
 					//do nothing
@@ -298,12 +298,12 @@ public class MapCanvas extends JPanel {
 		paintTiles(g, ts);
 		if (!isAnimating()) {
 			switch (manager.getState()) {
-				case LocalGameManager.STATE_MOVE:
-				case LocalGameManager.STATE_RMOVE:
+				case GameManager.STATE_MOVE:
+				case GameManager.STATE_RMOVE:
 					paintMoveAlpha(g);
 					paintMovePath(g, ts);
 					break;
-				case LocalGameManager.STATE_ATTACK:
+				case GameManager.STATE_ATTACK:
 					paintAttackAlpha(g);
 					break;
 				default:
@@ -420,7 +420,7 @@ public class MapCanvas extends JPanel {
 		int sx = getXOnCanvas(cursor_x);
 		int sy = getYOnCanvas(cursor_y);
 		if (isWithinScreen(sx, sy)) {
-			if (manager.getState() == LocalGameManager.STATE_ATTACK
+			if (manager.getState() == GameManager.STATE_ATTACK
 					&& manager.canAttack(cursor_x, cursor_y)) {
 				attack_cursor.paint(g, sx, sy);
 			} else {

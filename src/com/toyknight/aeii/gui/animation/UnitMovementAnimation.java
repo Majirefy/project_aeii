@@ -1,10 +1,10 @@
 package com.toyknight.aeii.gui.animation;
 
+import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.screen.MapCanvas;
 import com.toyknight.aeii.gui.sprite.UnitPainter;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.util.ArrayList;
 
 /**

@@ -2,7 +2,7 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
 import com.toyknight.aeii.core.BasicGame;
-import com.toyknight.aeii.core.LocalGameManager;
+import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
@@ -22,7 +22,7 @@ import javax.swing.JLabel;
 public class ActionPanel extends AEIIPanel {
 
 	private int ts;
-	private LocalGameManager manager;
+	private GameManager manager;
 	private final GameScreen game_screen;
 
 	private final JLabel lb_unit_icon;
@@ -78,7 +78,7 @@ public class ActionPanel extends AEIIPanel {
 		this.add(lb_unit_icon);
 	}
 
-	public void setGameManager(LocalGameManager manager) {
+	public void setGameManager(GameManager manager) {
 		this.manager = manager;
 	}
 
@@ -104,9 +104,9 @@ public class ActionPanel extends AEIIPanel {
 		if (!game_screen.getCanvas().isAnimating()) {
 			if (manager.getUnitToolkit().isUnitAccessible(unit)) {
 				switch (manager.getState()) {
-					case LocalGameManager.STATE_SELECT:
+					case GameManager.STATE_SELECT:
 						btn_move.setEnabled(true);
-					case LocalGameManager.STATE_ACTION:
+					case GameManager.STATE_ACTION:
 						btn_standby.setEnabled(true);
 						btn_attack.setEnabled(true);
 						break;

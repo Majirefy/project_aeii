@@ -1,9 +1,9 @@
 package com.toyknight.aeii.core.unit;
 
 import com.toyknight.aeii.core.BasicGame;
+import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileRepository;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;

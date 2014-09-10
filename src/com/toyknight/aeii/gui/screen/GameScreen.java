@@ -2,7 +2,8 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.LocalGameManager;
+import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
@@ -14,7 +15,6 @@ import com.toyknight.aeii.gui.animation.UnitAttackedAnimation;
 import com.toyknight.aeii.gui.animation.UnitMovementAnimation;
 import com.toyknight.aeii.gui.animation.UnitStandbyAnimation;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public class GameScreen extends Screen implements GameListener {
 
 	private BasicGame game;
-	private LocalGameManager manager;
+	private GameManager manager;
 
 	private MapCanvas map_canvas;
 	private TilePanel tile_panel;
@@ -61,7 +61,7 @@ public class GameScreen extends Screen implements GameListener {
 	public void setGame(BasicGame game) {
 		this.game = game;
 		this.game.setGameListener(this);
-		this.manager = new LocalGameManager(game);
+		this.manager = new GameManager(game);
 		map_canvas.newGame(manager);
 		action_panel.setGameManager(manager);
 		tile_panel.setGameManager(manager);

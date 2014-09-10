@@ -1,7 +1,7 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.core.BasicGame;
-import com.toyknight.aeii.core.LocalGameManager;
+import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
 import java.awt.Graphics;
@@ -13,7 +13,7 @@ import java.awt.Graphics;
 public class TilePanel extends AEIIPanel {
 
 	private final int ts;
-	private LocalGameManager manager;
+	private GameManager manager;
 	private final GameScreen game_screen;
 
 	private int tile_index;
@@ -23,7 +23,7 @@ public class TilePanel extends AEIIPanel {
 		this.game_screen = game_screen;
 	}
 	
-	public void setGameManager(LocalGameManager manager) {
+	public void setGameManager(GameManager manager) {
 		this.manager = manager;
 	}
 

@@ -2,7 +2,6 @@
 package com.toyknight.aeii.gui.animation;
 
 import com.toyknight.aeii.gui.screen.MapCanvas;
-import com.toyknight.aeii.gui.sprite.Sprite;
 import java.awt.Graphics;
 import java.util.ArrayList;
 

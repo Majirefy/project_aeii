@@ -5,14 +5,13 @@ import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitToolkit;
-import java.awt.Point;
 import java.util.ArrayList;
 
 /**
  *
  * @author toyknight
  */
-public class LocalGameManager {
+public class GameManager {
 
 	public static final int STATE_SELECT = 0x1;
 	public static final int STATE_MOVE = 0x2;
@@ -30,7 +29,7 @@ public class LocalGameManager {
 	private ArrayList<Point> movable_positions;
 	private ArrayList<Point> attackable_positions;
 
-	public LocalGameManager(BasicGame game) {
+	public GameManager(BasicGame game) {
 		this.game = game;
 		this.selected_unit = null;
 		this.unit_toolkit = new UnitToolkit(game);
