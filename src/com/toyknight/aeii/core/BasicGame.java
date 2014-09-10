@@ -62,33 +62,44 @@ public class BasicGame implements OperationListener {
 		Unit attacker = getMap().getUnit(unit_x, unit_y);
 		Unit defender = getMap().getUnit(target_x, target_y);
 		if (attacker != null && defender != null) {
-			game_listener.onUnitAttack(attacker, defender, 0);
-			game_listener.onUnitStandby(attacker);
+			doAttack(attacker, defender);
 		}
+	}
+
+	protected void doAttack(Unit attacker, Unit defender) {
+		game_listener.onUnitAttack(attacker, defender, 0);
+		game_listener.onUnitStandby(attacker);
 	}
 
 	@Override
 	public void standbyUnit(int unit_x, int unit_y) {
 		Unit unit = getMap().getUnit(unit_x, unit_y);
 		if (unit != null) {
-			unit.setStandby(true);
+			standbyUnit(unit);
 		}
+	}
+	
+	protected void standbyUnit(Unit unit) {
+		unit.setStandby(true);
 	}
 
 	@Override
 	public void moveUnit(int unit_x, int unit_y, int dest_x, int dest_y) {
 		Unit unit = getMap().getUnit(unit_x, unit_y);
 		if (unit != null) {
-			setUnitPosition(unit, dest_x, dest_y);
-			game_listener.onUnitMove(unit, unit_x, unit_y, dest_x, dest_y);
+			moveUnit(unit, dest_x, dest_y);
+			
 		}
 	}
 
-	protected void setUnitPosition(Unit unit, int x, int y) {
-		getMap().removeUnit(unit.getX(), unit.getY());
-		unit.setX(x);
-		unit.setY(y);
+	protected void moveUnit(Unit unit, int dest_x, int dest_y) {
+		int start_x = unit.getX();
+		int start_y = unit.getY();
+		getMap().removeUnit(start_x, start_y);
+		unit.setX(dest_x);
+		unit.setY(dest_y);
 		getMap().addUnit(unit);
+		game_listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
 	}
 
 	public Map getMap() {

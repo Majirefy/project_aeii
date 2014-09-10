@@ -101,7 +101,12 @@ public class GameManager {
 	}
 
 	public void cancelAttackPhase() {
-		this.state = STATE_ACTION;
+		if(canReverseMove()) {
+			this.state = STATE_ACTION;
+		} else {
+			this.state = STATE_SELECT;
+		}
+		
 	}
 
 	public void selectUnit(int x, int y) {
@@ -155,11 +160,13 @@ public class GameManager {
 	}
 
 	public void moveSelectedUnit(int dest_x, int dest_y) {
-		if (selected_unit != null) {
+		if (selected_unit != null && state == STATE_MOVE) {
 			int unit_x = selected_unit.getX();
 			int unit_y = selected_unit.getY();
-			getGame().moveUnit(unit_x, unit_y, dest_x, dest_y);
-			setState(STATE_ACTION);
+			if (movable_positions.contains(new Point(dest_x, dest_y))) {
+				getGame().moveUnit(unit_x, unit_y, dest_x, dest_y);
+				setState(STATE_ACTION);
+			}
 		}
 	}
 
@@ -167,9 +174,13 @@ public class GameManager {
 		if (getUnitToolkit().isUnitAccessible(selected_unit) && state == STATE_ACTION) {
 			int last_x = last_position.x;
 			int last_y = last_position.y;
-			getGame().setUnitPosition(selected_unit, last_x, last_y);
+			getGame().moveUnit(selected_unit, last_x, last_y);
 			beginMovePhase();
 		}
+	}
+
+	public boolean canReverseMove() {
+		return selected_unit.getX() != last_position.x || selected_unit.getY() != last_position.y;
 	}
 
 }
