@@ -25,7 +25,6 @@ public class GameManager {
 
 	private Unit selected_unit;
 	private Point last_position;
-	private ArrayList<Point> move_path;
 	private ArrayList<Point> movable_positions;
 	private ArrayList<Point> attackable_positions;
 
@@ -56,35 +55,13 @@ public class GameManager {
 		return movable_positions;
 	}
 
-	public ArrayList<Point> getMovePath(int dest_x, int dest_y) {
-		if (selected_unit != null && needNewMovePath(dest_x, dest_y)) {
-			int start_x = selected_unit.getX();
-			int start_y = selected_unit.getY();
-			move_path = getUnitToolkit().createMovePath(start_x, start_y, dest_x, dest_y);
-		}
-		return move_path;
-	}
-
 	public ArrayList<Point> getAttackablePositions() {
 		return attackable_positions;
 	}
 
-	private boolean needNewMovePath(int dest_x, int dest_y) {
-		Point dest = new Point(dest_x, dest_y);
-		if (move_path == null) {
-			return true;
-		} else {
-			if (move_path.isEmpty()) {
-				return true;
-			} else {
-				return !move_path.get(move_path.size() - 1).equals(dest);
-			}
-		}
-	}
-
 	public void beginMovePhase() {
 		if (getUnitToolkit().isUnitAccessible(selected_unit)) {
-			movable_positions = getUnitToolkit().createMovablePositions(selected_unit);
+			movable_positions = getUnitToolkit().createMovablePositions();
 			this.state = STATE_MOVE;
 		}
 	}
@@ -111,9 +88,11 @@ public class GameManager {
 
 	public void selectUnit(int x, int y) {
 		if (state == STATE_SELECT) {
-			selected_unit = getGame().getMap().getUnit(x, y);
-			if (selected_unit != null) {
+			Unit unit = getGame().getMap().getUnit(x, y);
+			if (unit != null) {
+				selected_unit = unit;
 				last_position = new Point(x, y);
+				unit_toolkit.setCurrentUnit(selected_unit);
 			}
 		}
 	}
@@ -123,11 +102,10 @@ public class GameManager {
 	}
 
 	public boolean canAttack(int x, int y) {
-		if (selected_unit != null && attackable_positions != null
-				&& attackable_positions.contains(new Point(x, y))) {
-			Unit unit = getGame().getMap().getUnit(x, y);
-			if (unit != null) {
-				return unit_toolkit.isEnemy(selected_unit, unit);
+		if (selected_unit != null && UnitToolkit.isWithinRange(selected_unit, x, y)) {
+			Unit defender = getGame().getMap().getUnit(x, y);
+			if (defender != null) {
+				return UnitToolkit.isEnemy(selected_unit, defender);
 			} else {
 				if (selected_unit.getAbilities().contains(Ability.DESTROYER)) {
 					int tile_index = getGame().getMap().getTileIndex(x, y);
@@ -143,8 +121,7 @@ public class GameManager {
 	}
 
 	public void doAttack(int target_x, int target_y) {
-		Unit defender = getGame().getMap().getUnit(target_x, target_y);
-		if (getUnitToolkit().isEnemy(selected_unit, defender)) {
+		if (canAttack(target_x, target_y)) {
 			int unit_x = selected_unit.getX();
 			int unit_y = selected_unit.getY();
 			getGame().doAttack(unit_x, unit_y, target_x, target_y);

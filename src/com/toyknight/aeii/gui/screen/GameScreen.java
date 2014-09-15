@@ -116,13 +116,7 @@ public class GameScreen extends Screen implements GameListener {
 	
 	@Override
 	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
-		ArrayList<Point> path;
-		if(manager.getGame().isLocalPlayer()) {
-			path = manager.getMovePath(dest_x, dest_y);
-		} else {
-			manager.getUnitToolkit().createMovablePositions(unit);
-			path = manager.getUnitToolkit().createMovePath(start_x, start_y, dest_x, dest_y);
-		}
+		ArrayList<Point> path = manager.getUnitToolkit().createMovePath(unit, start_x, start_y, dest_x, dest_y);
 		int ts = getContext().getTileSize();
 		UnitMovementAnimation animation = new UnitMovementAnimation(unit, path, ts);
 		getCanvas().submitAnimation(animation);

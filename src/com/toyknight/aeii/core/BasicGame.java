@@ -4,6 +4,7 @@ import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
 import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.unit.UnitToolkit;
 
 /**
  *
@@ -61,7 +62,8 @@ public class BasicGame implements OperationListener {
 	public void doAttack(int unit_x, int unit_y, int target_x, int target_y) {
 		Unit attacker = getMap().getUnit(unit_x, unit_y);
 		Unit defender = getMap().getUnit(target_x, target_y);
-		if (attacker != null && defender != null) {
+		if (attacker != null && defender != null && 
+				UnitToolkit.isWithinRange(attacker, defender.getX(), defender.getY())) {
 			doAttack(attacker, defender);
 		}
 	}

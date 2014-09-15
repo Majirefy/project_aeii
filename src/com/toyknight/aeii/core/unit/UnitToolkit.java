@@ -15,17 +15,39 @@ import java.util.Queue;
  */
 public class UnitToolkit {
 
+	private int dest_x;
+	private int dest_y;
+	private Unit current_unit;
+
 	private final BasicGame game;
-	private HashSet<Point> movable_positions;
-	private ArrayList<Point> move_path;
-	private HashSet<Point> attackable_positions;
+
 	private int[][] move_mark_map;
+	private ArrayList<Point> move_path;
+	private HashSet<Point> movable_positions;
+	private HashSet<Point> attackable_positions;
+
 	private final int[] x_dir = {1, -1, 0, 0};
 	private final int[] y_dir = {0, 0, 1, -1};
 
 	public UnitToolkit(BasicGame game) {
 		this.game = game;
+	}
 
+	public void setCurrentUnit(Unit unit) {
+		this.current_unit = unit;
+		this.dest_x = -1;
+		this.dest_y = -1;
+		this.move_path = new ArrayList();
+		this.movable_positions = null;
+		this.attackable_positions = null;
+	}
+
+	public boolean isCurrentUnit(Unit unit) {
+		if (current_unit == null) {
+			return false;
+		} else {
+			return current_unit.getX() == unit.getX() && current_unit.getY() == unit.getY();
+		}
 	}
 
 	private void createMoveMarkMap() {
@@ -39,18 +61,21 @@ public class UnitToolkit {
 		}
 	}
 
-	public ArrayList<Point> createMovablePositions(Unit unit) {
+	public ArrayList<Point> createMovablePositions() {
 		createMoveMarkMap();
 		movable_positions = new HashSet();
-		Point start_position = new Point(unit.getX(), unit.getY());
-		Step start_step = new Step(start_position, unit.getCurrentMovementPoint());
+		int unit_x = current_unit.getX();
+		int unit_y = current_unit.getY();
+		int movement_point = current_unit.getCurrentMovementPoint();
+		Point start_position = new Point(unit_x, unit_y);
+		Step start_step = new Step(start_position, movement_point);
 		Queue<Step> start_steps = new LinkedList();
 		start_steps.add(start_step);
-		createMovablePisitions(start_steps, unit);
+		createMovablePisitions(start_steps);
 		return new ArrayList(movable_positions);
 	}
 
-	private void createMovablePisitions(Queue<Step> current_steps, Unit unit) {
+	private void createMovablePisitions(Queue<Step> current_steps) {
 		Queue<Step> next_steps = new LinkedList();
 		while (!current_steps.isEmpty()) {
 			Step current_step = current_steps.poll();
@@ -65,11 +90,11 @@ public class UnitToolkit {
 				Point next = new Point(next_x, next_y);
 				int current_mp = current_step.getMp();
 				if (game.getMap().isWithinMap(next_x, next_y)) {
-					int mp_cost = getMovementPointCost(unit, next_x, next_y);
+					int mp_cost = getMovementPointCost(current_unit, next_x, next_y);
 					if (current_mp - mp_cost > move_mark_map[next_x][next_y]) {
 						if (mp_cost <= current_mp) {
 							Unit target_unit = game.getMap().getUnit(next_x, next_y);
-							if (canMoveThrough(unit, target_unit)) {
+							if (canMoveThrough(current_unit, target_unit)) {
 								Step next_step = new Step(next, current_mp - mp_cost);
 								move_mark_map[next_x][next_y] = current_mp - mp_cost;
 								next_steps.add(next_step);
@@ -80,25 +105,30 @@ public class UnitToolkit {
 			}
 		}
 		if (!next_steps.isEmpty()) {
-			createMovablePisitions(next_steps, unit);
+			createMovablePisitions(next_steps);
 		}
 	}
 
-	public ArrayList<Point> createMovePath(int start_x, int start_y, int dest_x, int dest_y) {
-		Point dest_position = new Point(dest_x, dest_y);
-		if (movable_positions.contains(dest_position)) {
-			move_path = new ArrayList();
-			int current_x = dest_x;
-			int current_y = dest_y;
-			gengerateMovePath(current_x, current_y, start_x, start_y);
-			return move_path;
-		} else {
-			return new ArrayList();
+	public ArrayList<Point> createMovePath(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
+		if(!isCurrentUnit(unit)) {
+			setCurrentUnit(unit);
+			createMovablePositions();
 		}
-
+		if (this.dest_x != dest_x || this.dest_y != dest_y) {
+			Point dest_position = new Point(dest_x, dest_y);
+			if (movable_positions.contains(dest_position)) {
+				move_path = new ArrayList();
+				int current_x = dest_x;
+				int current_y = dest_y;
+				createMovePath(current_x, current_y, start_x, start_y);
+			} else {
+				move_path = new ArrayList();
+			}
+		}
+		return move_path;
 	}
 
-	private void gengerateMovePath(int current_x, int current_y, int start_x, int start_y) {
+	private void createMovePath(int current_x, int current_y, int start_x, int start_y) {
 		move_path.add(0, new Point(current_x, current_y));
 		if (current_x != start_x || current_y != start_y) {
 			int next_x = 0;
@@ -122,7 +152,7 @@ public class UnitToolkit {
 					}
 				}
 			}
-			gengerateMovePath(next_x, next_y, start_x, start_y);
+			createMovePath(next_x, next_y, start_x, start_y);
 		}
 	}
 
@@ -189,12 +219,17 @@ public class UnitToolkit {
 		return unit != null && unit.getTeam() == game.getCurrentTeam() && !unit.isStandby();
 	}
 
-	public boolean isEnemy(Unit unit, Unit target_unit) {
+	public static boolean isEnemy(Unit unit, Unit target_unit) {
 		if (unit != null && target_unit != null) {
 			return unit.getTeam() != target_unit.getTeam();
 		} else {
 			return false;
 		}
+	}
+	
+	public static boolean isWithinRange(Unit unit, int target_x, int target_y) {
+		int range = Math.abs(target_x - unit.getX()) + Math.abs(target_y - unit.getY());
+		return  unit.getMinAttackRange() <= range && range <= unit.getMaxAttackRange();
 	}
 
 	private class Step {
