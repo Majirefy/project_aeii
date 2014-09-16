@@ -8,7 +8,8 @@ package com.toyknight.aeii.audio;
 public class AudioSystem {
 	
 	private AudioSystem() {
-	}
+	
+        }
 	
 	//init the sound system, evoked on launch
 	public static void init() {
@@ -19,6 +20,14 @@ public class AudioSystem {
 	public static void playBgm(String filename, boolean loop) {
 		
 	}
+        
+        public static void playBgm(String[] file_list, int start_index) {
+            
+        }
+        
+        public static void stopBgm() {
+            
+        }
 	
 	//can play multiple SE at a time
 	public static void playSe(String filename) {
