@@ -4,12 +4,12 @@ import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.Point;
+import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.ResourceManager;
-import com.toyknight.aeii.gui.animation.Animation;
-import com.toyknight.aeii.gui.animation.AnimationListener;
+import com.toyknight.aeii.gui.animation.SwingAnimation;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
 import com.toyknight.aeii.gui.sprite.AttackCursorSprite;
 import com.toyknight.aeii.gui.sprite.CursorSprite;
@@ -22,7 +22,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 import javax.swing.JPanel;
 
 /**
@@ -35,9 +34,6 @@ public class MapCanvas extends JPanel {
 	private final int SPRITE_INTERVAL = 5;
 	private GameManager manager;
 	private final GameScreen game_screen;
-
-	private final PriorityQueue<Animation> animation_dispatcher;
-	private Animation current_animation;
 
 	private Rectangle viewport;
 
@@ -70,7 +66,6 @@ public class MapCanvas extends JPanel {
 		};
 		this.addMouseMotionListener(mouse_adapter);
 		this.addMouseListener(mouse_adapter);
-		this.animation_dispatcher = new PriorityQueue();
 	}
 
 	public void init() {
@@ -86,28 +81,7 @@ public class MapCanvas extends JPanel {
 		locateViewport(0, 0);
 		mouse_x = 0;
 		mouse_y = 0;
-		current_animation = null;
-		animation_dispatcher.clear();
 		current_delay = 0;
-	}
-
-	public void submitAnimation(Animation animation) {
-		animation.addAnimationListener(new AnimationListener() {
-			@Override
-			public void animationCompleted(Animation animation) {
-				current_animation = animation_dispatcher.poll();
-				game_screen.getActionPanel().update();
-			}
-		});
-		if (current_animation == null) {
-			current_animation = animation;
-		} else {
-			animation_dispatcher.add(animation);
-		}
-	}
-
-	public Animation getCurrentAnimation() {
-		return current_animation;
 	}
 
 	public boolean isOperatable() {
@@ -115,13 +89,13 @@ public class MapCanvas extends JPanel {
 	}
 
 	public boolean isAnimating() {
-		return current_animation != null;
+		return manager.getCurrentAnimation() != null;
 	}
 
 	private boolean isUnitAnimating(Unit unit) {
+		Animation current_animation = manager.getCurrentAnimation();
 		return isAnimating()
-				&& unit.getX() == current_animation.getX()
-				&& unit.getY() == current_animation.getY()
+				&& current_animation.hasLocation(unit.getX(), unit.getY())
 				&& current_animation instanceof UnitAnimation;
 	}
 
@@ -241,9 +215,6 @@ public class MapCanvas extends JPanel {
 		attack_cursor.update();
 		if (isOperatable()) {
 			updateViewport();
-		}
-		if (current_animation != null) {
-			current_animation.update();
 		}
 	}
 
@@ -413,7 +384,8 @@ public class MapCanvas extends JPanel {
 
 	private void paintAnimation(Graphics g) {
 		if (isAnimating()) {
-			current_animation.paint(g, this);
+			SwingAnimation animation = (SwingAnimation)manager.getCurrentAnimation();
+			animation.paint(g, this);
 		}
 	}
 

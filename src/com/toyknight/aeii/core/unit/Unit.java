@@ -12,7 +12,7 @@ public class Unit {
 	public static final int ATTACK_MAGICAL = 1;
 
 	private final int index;
-	
+
 	private int price;
 
 	private int level;     //等级（初始等级为0，最高可以升级到3级）
@@ -44,12 +44,14 @@ public class Unit {
 
 	private int max_attack_range;  //最大攻击距离
 	private int min_attack_range;   //最小攻击距离
-	
+
 	private boolean is_standby;
 
 	public Unit(int index) {
 		this.index = index;
 		this.level = 0;
+		abilities = new ArrayList();
+		learnable_abilities = new ArrayList();
 		buff_list = new ArrayList();
 	}
 
@@ -79,7 +81,7 @@ public class Unit {
 		this.max_attack_range = unit.max_attack_range;
 		this.min_attack_range = unit.min_attack_range;
 	}
-	
+
 	public int getIndex() {
 		return index;
 	}
@@ -215,7 +217,7 @@ public class Unit {
 	public int getHpGrowth() {
 		return hp_growth;
 	}
-	
+
 	public void setHpGrowth(int growth) {
 		this.hp_growth = growth;
 	}
@@ -275,11 +277,11 @@ public class Unit {
 	public void setMinAttackRange(int min_attack_range) {
 		this.min_attack_range = min_attack_range;
 	}
-	
+
 	public void setStandby(boolean b) {
 		this.is_standby = b;
 	}
-	
+
 	public boolean isStandby() {
 		return is_standby;
 	}

@@ -1,19 +1,17 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.core.BasicGame;
-import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.Point;
+import com.toyknight.aeii.core.animation.Animation;
+import com.toyknight.aeii.core.animation.AnimationListener;
+import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.Screen;
-import com.toyknight.aeii.gui.animation.Animation;
-import com.toyknight.aeii.gui.animation.AnimationListener;
-import com.toyknight.aeii.gui.animation.UnitAnimation;
-import com.toyknight.aeii.gui.animation.UnitAttackedAnimation;
-import com.toyknight.aeii.gui.animation.UnitMovementAnimation;
-import com.toyknight.aeii.gui.animation.UnitStandbyAnimation;
+import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
+import com.toyknight.aeii.gui.animation.UnitMoveAnimation;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -22,7 +20,7 @@ import java.util.ArrayList;
  *
  * @author toyknight
  */
-public class GameScreen extends Screen implements GameListener {
+public class GameScreen extends Screen implements AnimationProvider {
 
 	private BasicGame game;
 	private GameManager manager;
@@ -37,7 +35,7 @@ public class GameScreen extends Screen implements GameListener {
 	}
 
 	@Override
-	public void initComponents(int ts) {
+	public void initComponents() {
 		this.setLayout(null);
 		int apw = 3; //action panel width(in column)
 		int width = getPreferredSize().width;
@@ -60,8 +58,7 @@ public class GameScreen extends Screen implements GameListener {
 
 	public void setGame(BasicGame game) {
 		this.game = game;
-		this.game.setGameListener(this);
-		this.manager = new GameManager(game);
+		this.manager = new GameManager(game, this);
 		map_canvas.newGame(manager);
 		action_panel.setGameManager(manager);
 		tile_panel.setGameManager(manager);
@@ -93,39 +90,36 @@ public class GameScreen extends Screen implements GameListener {
 	}
 	
 	@Override
-	public void onUnitStandby(Unit unit) {
-		int ts = getContext().getTileSize();
-		UnitStandbyAnimation animation = new UnitStandbyAnimation(unit, ts);
+	public Animation getUnitAttackAnimation(Unit attacker, Unit defender, int damage) {
+		UnitAttackAnimation animation = new UnitAttackAnimation(attacker, defender, damage, ts);
+		processAnimation(animation);
+		animation.setInterval(1);
+		return animation;
+	}
+	
+	@Override
+	public Animation getUnitMoveAnimation(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
+		ArrayList<Point> path = manager.getUnitToolkit().createMovePath(unit, start_x, start_y, dest_x, dest_y);
+		UnitMoveAnimation animation = new UnitMoveAnimation(unit, path, ts);
+		processAnimation(animation);
+		return animation;
+	}
+	
+	private Animation processAnimation(Animation animation) {
 		animation.addAnimationListener(new AnimationListener() {
 			@Override
 			public void animationCompleted(Animation animation) {
-				Unit unit = ((UnitAnimation)animation).getUnit();
-				manager.getGame().standbyUnit(unit.getX(), unit.getY());
+				action_panel.update();
 			}
 		});
-		getCanvas().submitAnimation(animation);
-	}
-	
-	@Override
-	public void onUnitAttack(Unit attacker, Unit defender, int damage) {
-		int ts = getContext().getTileSize();
-		UnitAttackedAnimation animation = new UnitAttackedAnimation(defender, damage, ts);
-		animation.setInterval(1);
-		getCanvas().submitAnimation(animation);
-	}
-	
-	@Override
-	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
-		ArrayList<Point> path = manager.getUnitToolkit().createMovePath(unit, start_x, start_y, dest_x, dest_y);
-		int ts = getContext().getTileSize();
-		UnitMovementAnimation animation = new UnitMovementAnimation(unit, path, ts);
-		getCanvas().submitAnimation(animation);
+		return animation;
 	}
 
 	@Override
 	public void update() {
 		map_canvas.update();
 		tile_panel.update();
+		manager.updateAnimation();
 	}
 
 	private class StatusPanel extends AEIIPanel {

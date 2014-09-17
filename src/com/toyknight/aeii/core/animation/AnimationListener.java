@@ -1,5 +1,5 @@
 
-package com.toyknight.aeii.gui.animation;
+package com.toyknight.aeii.core.animation;
 
 /**
  *

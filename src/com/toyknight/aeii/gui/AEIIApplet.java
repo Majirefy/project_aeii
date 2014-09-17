@@ -77,10 +77,10 @@ public class AEIIApplet {
 		logo_screen = new LogoScreen(SCREEN_SIZE, this);
 		this.getContentPane().add(logo_screen, ID_LOGO_SCREEN);
 		main_menu_screen = new MainMenuScreen(SCREEN_SIZE, this);
-		main_menu_screen.initComponents(TILE_SIZE);
+		main_menu_screen.initComponents();
 		this.getContentPane().add(main_menu_screen, ID_MAIN_MENU_SCREEN);
 		game_screen = new GameScreen(SCREEN_SIZE, this);
-		game_screen.initComponents(TILE_SIZE);
+		game_screen.initComponents();
 		this.getContentPane().add(game_screen, ID_GAME_SCREEN);
 		setCurrentScreen(ID_LOGO_SCREEN);
 		

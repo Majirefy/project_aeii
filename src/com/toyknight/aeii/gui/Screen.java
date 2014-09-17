@@ -11,15 +11,17 @@ import javax.swing.JDesktopPane;
  */
 public class Screen extends JDesktopPane {
 	
+	protected final int ts;
 	private final AEIIApplet context;
 
 	public Screen(Dimension size, AEIIApplet context) {
 		this.setPreferredSize(size);
 		this.context = context;
+		this.ts = context.getTileSize();
 		this.setOpaque(false);
 	}
 	
-	public void initComponents(int ts) {
+	public void initComponents() {
 		
 	}
 	

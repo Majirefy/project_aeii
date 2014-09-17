@@ -11,19 +11,24 @@ import java.util.Random;
  *
  * @author toyknight
  */
-public class UnitAttackedAnimation extends UnitAnimation {
+public class UnitAttackAnimation extends UnitAnimation {
 
 	private final int ts;
 	private final Random random;
+	private final Unit attacker;
+	private final Unit defender;
 
 	private int current_frame;
 	private int unit_dx;
 	private int unit_dy;
 
-	public UnitAttackedAnimation(Unit unit, int damage, int ts) {
-		super(unit, unit.getX(), unit.getY());
+	public UnitAttackAnimation(Unit attacker, Unit defender, int damage, int ts) {
+		super(null, defender.getX(), defender.getY());
+		addLocation(attacker.getX(), attacker.getY());
 		this.ts = ts;
-		current_frame = 0;
+		this.current_frame = 0;
+		this.attacker = new Unit(attacker);
+		this.defender = new Unit(defender);
 		random = new Random(System.currentTimeMillis());
 	}
 
@@ -46,10 +51,13 @@ public class UnitAttackedAnimation extends UnitAnimation {
 	@Override
 	public void paint(Graphics g, MapCanvas canvas) {
 		int offset = (ts - ts / 24 * 20) / 2;
-		int sx = canvas.getXOnCanvas(getX());
-		int sy = canvas.getYOnCanvas(getY());
-		UnitPainter.paint(g, getUnit(), sx + unit_dx, sy + unit_dy, ts);
-		g.drawImage(ResourceManager.getAttackSparkImage(current_frame), sx + offset, sy + offset, null);
+		int sx_attacker = canvas.getXOnCanvas(attacker.getX());
+		int sy_attacker = canvas.getYOnCanvas(attacker.getY());
+		int sx_defender = canvas.getXOnCanvas(defender.getX());
+		int sy_defender = canvas.getYOnCanvas(defender.getY());
+		UnitPainter.paint(g, attacker, sx_attacker, sy_attacker, ts);
+		UnitPainter.paint(g, defender, sx_defender + unit_dx, sy_defender + unit_dy, ts);
+		g.drawImage(ResourceManager.getAttackSparkImage(current_frame), sx_defender + offset, sy_defender + offset, null);
 	}
 
 }

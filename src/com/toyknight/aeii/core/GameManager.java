@@ -1,17 +1,23 @@
 package com.toyknight.aeii.core;
 
+import com.toyknight.aeii.core.animation.Animation;
+import com.toyknight.aeii.core.animation.AnimationListener;
+import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitToolkit;
+import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
+import com.toyknight.aeii.gui.animation.UnitMoveAnimation;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 /**
  *
  * @author toyknight
  */
-public class GameManager {
+public class GameManager implements GameListener {
 
 	public static final int STATE_SELECT = 0x1;
 	public static final int STATE_MOVE = 0x2;
@@ -22,17 +28,31 @@ public class GameManager {
 	private int state;
 	private final BasicGame game;
 	private final UnitToolkit unit_toolkit;
+	private final AnimationProvider animation_provider;
+	
+	private final PriorityQueue<Animation> animation_dispatcher;
+	private Animation current_animation;
 
 	private Unit selected_unit;
 	private Point last_position;
 	private ArrayList<Point> movable_positions;
 	private ArrayList<Point> attackable_positions;
 
-	public GameManager(BasicGame game) {
+	public GameManager(BasicGame game, AnimationProvider provider) {
 		this.game = game;
+		this.animation_provider = provider;
+		this.state = STATE_SELECT;
 		this.selected_unit = null;
 		this.unit_toolkit = new UnitToolkit(game);
-		this.state = STATE_SELECT;
+		this.animation_dispatcher = new PriorityQueue();
+		current_animation = null;
+		this.game.setGameListener(this);
+	}
+	
+	public void updateAnimation() {
+		if (current_animation != null) {
+			current_animation.update();
+		}
 	}
 
 	public BasicGame getGame() {
@@ -46,9 +66,39 @@ public class GameManager {
 	public int getState() {
 		return state;
 	}
+	
+	public void submitAnimation(Animation animation) {
+		animation.addAnimationListener(new AnimationListener() {
+			@Override
+			public void animationCompleted(Animation animation) {
+				current_animation = animation_dispatcher.poll();
+			}
+		});
+		if (current_animation == null) {
+			current_animation = animation;
+		} else {
+			animation_dispatcher.add(animation);
+		}
+	}
+
+	public Animation getCurrentAnimation() {
+		return current_animation;
+	}
 
 	public UnitToolkit getUnitToolkit() {
 		return unit_toolkit;
+	}
+	
+	@Override
+	public void onUnitAttack(Unit attacker, Unit defender, int damage) {
+		Animation animation = animation_provider.getUnitAttackAnimation(attacker, defender, damage);
+		submitAnimation(animation);
+	}
+	
+	@Override
+	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
+		Animation animation = animation_provider.getUnitMoveAnimation(unit, start_x, start_y, dest_x, dest_y);
+		submitAnimation(animation);
 	}
 
 	public ArrayList<Point> getMovablePositions() {

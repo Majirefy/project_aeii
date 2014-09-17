@@ -61,7 +61,7 @@ public class BasicGame implements OperationListener {
 	@Override
 	public void doAttack(int unit_x, int unit_y, int target_x, int target_y) {
 		Unit attacker = getMap().getUnit(unit_x, unit_y);
-		if(attacker != null && UnitToolkit.isWithinRange(attacker, target_x, target_x)) {
+		if(attacker != null && UnitToolkit.isWithinRange(attacker, target_x, target_y)) {
 			Unit defender = getMap().getUnit(target_x, target_y);
 			if(defender != null) {
 				doAttack(attacker, defender);
@@ -72,8 +72,8 @@ public class BasicGame implements OperationListener {
 	}
 
 	protected void doAttack(Unit attacker, Unit defender) {
+		standbyUnit(attacker);
 		game_listener.onUnitAttack(attacker, defender, 0);
-		game_listener.onUnitStandby(attacker);
 	}
 
 	@Override

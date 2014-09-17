@@ -9,8 +9,6 @@ import com.toyknight.aeii.core.unit.Unit;
  */
 public interface GameListener {
 	
-	public void onUnitStandby(Unit unit);
-	
 	public void onUnitAttack(Unit attacker, Unit defender, int damage);
 	
 	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y);
