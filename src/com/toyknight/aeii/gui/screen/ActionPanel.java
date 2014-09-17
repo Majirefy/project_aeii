@@ -100,7 +100,7 @@ public class ActionPanel extends AEIIPanel {
 		btn_summon.setEnabled(false);
 		btn_end_turn.setEnabled(false);
 		Unit unit = manager.getSelectedUnit();
-		if (!game_screen.getCanvas().isAnimating()) {
+		if (isOperatable()) {
 			if (manager.getUnitToolkit().isUnitAccessible(unit)) {
 				switch (manager.getState()) {
 					case GameManager.STATE_SELECT:
@@ -117,6 +117,10 @@ public class ActionPanel extends AEIIPanel {
 				btn_end_turn.setEnabled(true);
 			}
 		}
+	}
+	
+	private boolean isOperatable() {
+		return manager.getGame().isLocalPlayer() && !game_screen.getCanvas().isAnimating();
 	}
 
 	private final ActionListener btn_move_listener = new ActionListener() {

@@ -27,7 +27,7 @@ public class GameManager implements GameListener {
 	private final BasicGame game;
 	private final UnitToolkit unit_toolkit;
 	private final AnimationProvider animation_provider;
-	
+
 	private final PriorityQueue<Animation> animation_dispatcher;
 	private Animation current_animation;
 
@@ -46,7 +46,7 @@ public class GameManager implements GameListener {
 		current_animation = null;
 		this.game.setGameListener(this);
 	}
-	
+
 	public void updateAnimation() {
 		if (current_animation != null) {
 			current_animation.update();
@@ -64,7 +64,7 @@ public class GameManager implements GameListener {
 	public int getState() {
 		return state;
 	}
-	
+
 	public void submitAnimation(Animation animation) {
 		animation.addAnimationListener(new AnimationListener() {
 			@Override
@@ -86,13 +86,26 @@ public class GameManager implements GameListener {
 	public UnitToolkit getUnitToolkit() {
 		return unit_toolkit;
 	}
-	
+
 	@Override
-	public void onUnitAttack(Unit attacker, Unit defender, int damage) {
-		Animation animation = animation_provider.getUnitAttackAnimation(attacker, defender, damage);
-		submitAnimation(animation);
+	public void onUnitAttack(Unit attacker, Unit defender, int attack_damage, int counter_damage) {
+		Animation attack_animation = animation_provider.getUnitAttackAnimation(attacker, defender, attack_damage);
+		submitAnimation(attack_animation);
+		if (counter_damage >= 0) {
+			Animation counter_animation = animation_provider.getUnitAttackAnimation(defender, attacker, counter_damage);
+			submitAnimation(counter_animation);
+		}
 	}
 	
+	@Override
+	public void onUnitAttackFinished(Unit attacker, Unit defender) {
+		if(attacker.getCurrentHp() > 0 && attacker.getAbilities().contains(Ability.CHARGER)) {
+			setState(STATE_RMOVE);
+		} else {
+			setState(STATE_SELECT);
+		}
+	}
+
 	@Override
 	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
 		Animation animation = animation_provider.getUnitMoveAnimation(unit, start_x, start_y, dest_x, dest_y);
@@ -126,12 +139,12 @@ public class GameManager implements GameListener {
 	}
 
 	public void cancelAttackPhase() {
-		if(canReverseMove()) {
+		if (canReverseMove()) {
 			this.state = STATE_ACTION;
 		} else {
 			this.state = STATE_SELECT;
 		}
-		
+
 	}
 
 	public void selectUnit(int x, int y) {

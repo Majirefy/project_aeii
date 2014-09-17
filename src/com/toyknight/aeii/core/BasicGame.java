@@ -73,7 +73,8 @@ public class BasicGame implements OperationListener {
 
 	protected void doAttack(Unit attacker, Unit defender) {
 		standbyUnit(attacker);
-		game_listener.onUnitAttack(attacker, defender, 0);
+		game_listener.onUnitAttack(attacker, defender, 0, 0);
+		game_listener.onUnitAttackFinished(attacker, defender);
 	}
 
 	@Override
