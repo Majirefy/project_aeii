@@ -8,8 +8,6 @@ import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitToolkit;
-import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
-import com.toyknight.aeii.gui.animation.UnitMoveAnimation;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
