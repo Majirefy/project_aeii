@@ -1,4 +1,3 @@
-
 package com.toyknight.aeii.gui;
 
 import com.toyknight.aeii.core.AEIIException;
@@ -28,11 +27,11 @@ import java.util.concurrent.Executors;
  * @author toyknight
  */
 public class AEIIApplet {
-	
+
 	public static final String ID_LOGO_SCREEN = "logo";
 	public static final String ID_MAIN_MENU_SCREEN = "main_menu";
 	public static final String ID_GAME_SCREEN = "game";
-	
+
 	private CommandLineDialog command_line;
 
 	private final Object FPS_LOCK = new Object();
@@ -42,10 +41,10 @@ public class AEIIApplet {
 	private final long inMenuFpsDelay;
 	private final long inGameFpsDelay;
 	private long currentFpsDelay;
-	
+
 	private final Thread animation_thread;
 	private final ExecutorService executor;
-	
+
 	private Container content_pane;
 
 	private final int TILE_SIZE;
@@ -57,7 +56,7 @@ public class AEIIApplet {
 	private GameScreen game_screen;
 
 	private CardLayout screen_container;
-	
+
 	public AEIIApplet(int ts, int width, int height) {
 		this.TILE_SIZE = ts;
 		SCREEN_SIZE = new Dimension(width, height);
@@ -66,12 +65,12 @@ public class AEIIApplet {
 		animation_thread = new Thread(new Animator());
 		executor = Executors.newSingleThreadExecutor();
 	}
-	
+
 	public void init() {
 		ImageWaveEffect.createSinTab();
-		
+
 		content_pane = new Container();
-		
+
 		screen_container = new CardLayout();
 		this.getContentPane().setLayout(screen_container);
 		logo_screen = new LogoScreen(SCREEN_SIZE, this);
@@ -83,48 +82,53 @@ public class AEIIApplet {
 		game_screen.initComponents();
 		this.getContentPane().add(game_screen, ID_GAME_SCREEN);
 		setCurrentScreen(ID_LOGO_SCREEN);
-		
+
 		command_line = new CommandLineDialog(this);
-		
+
 		Toolkit.getDefaultToolkit().addAWTEventListener(
 				new GlobalKeyListener(),
 				AWTEvent.KEY_EVENT_MASK);
 	}
-	
+
 	public void start() {
-		try {
-			isRunning = true;
-			setCurrentFpsDelayToMenu();
-			executor.submit(animation_thread);
-			current_screen.repaint();
-			loadResources();
-		} catch (IOException | AEIIException ex) {
-			DialogUtil.showError(Launcher.getWindow(), ex.getMessage());
-			Launcher.exit();
-		}
+		isRunning = true;
+		setCurrentFpsDelayToMenu();
+		executor.submit(animation_thread);
+		current_screen.repaint();
+		loadResources();
 	}
-	
+
 	public void stop() {
 		isRunning = false;
 		executor.shutdown();
 	}
-	
-	private void loadResources() throws IOException, AEIIException {
-		File tile_data_dir = new File("data\\tiles");
-		File unit_data_dir = new File("data\\units");
-		TileRepository.init(tile_data_dir);
-		UnitFactory.init(unit_data_dir);
-		ResourceManager.init(getTileSize());
-		logo_screen.setResourceLoaded(true);
+
+	private void loadResources() {
+		new Thread("resource loading thread") {
+			@Override
+			public void run() {
+				try {
+					File tile_data_dir = new File("data\\tiles");
+					File unit_data_dir = new File("data\\units");
+					TileRepository.init(tile_data_dir);
+					UnitFactory.init(unit_data_dir);
+					ResourceManager.init(getTileSize());
+					logo_screen.setResourceLoaded(true);
+				} catch (IOException | AEIIException ex) {
+					DialogUtil.showError(Launcher.getWindow(), ex.getMessage());
+					Launcher.exit();
+				}
+			}
+		}.start();
 	}
-	
+
 	public Container getContentPane() {
 		return content_pane;
 	}
-	
+
 	public void setCurrentScreen(String screen_id) {
 		screen_container.show(getContentPane(), screen_id);
-		switch(screen_id) {
+		switch (screen_id) {
 			case ID_LOGO_SCREEN:
 				current_screen = logo_screen;
 				break;
@@ -143,7 +147,7 @@ public class AEIIApplet {
 	public Screen getCurrentScreen() {
 		return current_screen;
 	}
-	
+
 	public GameScreen getGameScreen() {
 		return game_screen;
 	}
@@ -151,7 +155,7 @@ public class AEIIApplet {
 	public int getTileSize() {
 		return TILE_SIZE;
 	}
-	
+
 	public void setCurrentFpsDelayToGame() {
 		synchronized (FPS_LOCK) {
 			currentFpsDelay = inGameFpsDelay;
@@ -163,7 +167,7 @@ public class AEIIApplet {
 			currentFpsDelay = inMenuFpsDelay;
 		}
 	}
-	
+
 	public void setCurrentFpsDelay(long delay) {
 		synchronized (FPS_LOCK) {
 			currentFpsDelay = delay;
@@ -175,7 +179,7 @@ public class AEIIApplet {
 			return currentFpsDelay;
 		}
 	}
-	
+
 	private final class Animator implements Runnable {
 
 		@Override
@@ -202,7 +206,7 @@ public class AEIIApplet {
 		}
 
 	}
-	
+
 	private class GlobalKeyListener implements AWTEventListener {
 
 		@Override
@@ -225,5 +229,5 @@ public class AEIIApplet {
 		}
 
 	}
-	
+
 }

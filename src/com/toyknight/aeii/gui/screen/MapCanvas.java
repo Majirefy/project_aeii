@@ -109,6 +109,7 @@ public class MapCanvas extends JPanel {
 						manager.selectUnit(click_x, click_y);
 						break;
 					case GameManager.STATE_MOVE:
+					case GameManager.STATE_RMOVE:
 						manager.moveSelectedUnit(click_x, click_y);
 						break;
 					case GameManager.STATE_ATTACK:
@@ -269,8 +270,8 @@ public class MapCanvas extends JPanel {
 		paintTiles(g, ts);
 		if (!isAnimating()) {
 			switch (manager.getState()) {
-				case GameManager.STATE_MOVE:
 				case GameManager.STATE_RMOVE:
+				case GameManager.STATE_MOVE:
 					paintMoveAlpha(g);
 					paintMovePath(g, ts);
 					break;
@@ -278,7 +279,7 @@ public class MapCanvas extends JPanel {
 					paintAttackAlpha(g);
 					break;
 				default:
-				//do nothing
+					//do nothing
 			}
 		}
 		paintUnits(g);

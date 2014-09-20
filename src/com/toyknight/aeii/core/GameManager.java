@@ -88,21 +88,26 @@ public class GameManager implements GameListener {
 	}
 
 	@Override
-	public void onUnitAttack(Unit attacker, Unit defender, int attack_damage, int counter_damage) {
-		Animation attack_animation = animation_provider.getUnitAttackAnimation(attacker, defender, attack_damage);
+	public void onUnitAttack(Unit attacker, Unit defender, int damage) {
+		Animation attack_animation = animation_provider.getUnitAttackAnimation(attacker, defender, damage);
 		submitAnimation(attack_animation);
-		if (counter_damage >= 0) {
-			Animation counter_animation = animation_provider.getUnitAttackAnimation(defender, attacker, counter_damage);
-			submitAnimation(counter_animation);
-		}
 	}
-	
+
+	@Override
+	public void onUnitCounter(Unit counterer, Unit attacker, int damage) {
+		Animation counter_animation = animation_provider.getUnitAttackAnimation(counterer, attacker, damage);
+		submitAnimation(counter_animation);
+	}
+
 	@Override
 	public void onUnitAttackFinished(Unit attacker, Unit defender) {
-		if(attacker.getCurrentHp() > 0 && attacker.getAbilities().contains(Ability.CHARGER)) {
-			setState(STATE_RMOVE);
-		} else {
-			setState(STATE_SELECT);
+		if (getGame().isLocalPlayer()) {
+			if (attacker.getCurrentHp() > 0 && attacker.getCurrentMovementPoint() > 0
+					&& attacker.getAbilities().contains(Ability.CHARGER)) {
+				beginRMovePhase();
+			} else {
+				setState(STATE_SELECT);
+			}
 		}
 	}
 
@@ -123,28 +128,35 @@ public class GameManager implements GameListener {
 	public void beginMovePhase() {
 		if (getUnitToolkit().isUnitAccessible(selected_unit)) {
 			movable_positions = getUnitToolkit().createMovablePositions();
-			this.state = STATE_MOVE;
+			setState(STATE_MOVE);
+		}
+	}
+
+	private void beginRMovePhase() {
+		if (getUnitToolkit().isUnitAccessible(selected_unit)) {
+			getUnitToolkit().setCurrentUnit(selected_unit);
+			movable_positions = getUnitToolkit().createMovablePositions();
+			setState(STATE_RMOVE);
 		}
 	}
 
 	public void cancelMovePhase() {
-		this.state = STATE_SELECT;
+		setState(STATE_SELECT);
 	}
 
 	public void beginAttackPhase() {
 		if (getUnitToolkit().isUnitAccessible(selected_unit)) {
 			this.attackable_positions = unit_toolkit.createAttackablePositions(selected_unit);
-			this.state = STATE_ATTACK;
+			setState(STATE_ATTACK);
 		}
 	}
 
 	public void cancelAttackPhase() {
 		if (canReverseMove()) {
-			this.state = STATE_ACTION;
+			setState(STATE_ACTION);
 		} else {
-			this.state = STATE_SELECT;
+			setState(STATE_SELECT);
 		}
-
 	}
 
 	public void selectUnit(int x, int y) {
@@ -186,7 +198,6 @@ public class GameManager implements GameListener {
 			int unit_x = selected_unit.getX();
 			int unit_y = selected_unit.getY();
 			getGame().doAttack(unit_x, unit_y, target_x, target_y);
-			setState(STATE_SELECT);
 		}
 	}
 
@@ -198,12 +209,24 @@ public class GameManager implements GameListener {
 	}
 
 	public void moveSelectedUnit(int dest_x, int dest_y) {
-		if (selected_unit != null && state == STATE_MOVE) {
+		if (selected_unit != null && (state == STATE_MOVE || state == STATE_RMOVE)) {
 			int unit_x = selected_unit.getX();
 			int unit_y = selected_unit.getY();
 			if (movable_positions.contains(new Point(dest_x, dest_y))) {
+				int mp_remains = getUnitToolkit().getMovementPointRemains(selected_unit, dest_x, dest_y);
 				getGame().moveUnit(unit_x, unit_y, dest_x, dest_y);
-				setState(STATE_ACTION);
+				selected_unit.setCurrentMovementPoint(mp_remains);
+				switch(state) {
+					case STATE_MOVE:
+						setState(STATE_ACTION);
+						break;
+					case STATE_RMOVE:
+						selected_unit.setStandby(true);
+						setState(STATE_SELECT);
+						break;
+					default:
+						//do nothing
+				}
 			}
 		}
 	}

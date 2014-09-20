@@ -58,10 +58,12 @@ public class UnitMoveAnimation extends UnitAnimation {
 
 	@Override
 	public void paint(Graphics g, MapCanvas canvas) {
-		Point current = path.get(current_location);
-		int sx = canvas.getXOnCanvas(current.x);
-		int sy = canvas.getYOnCanvas(current.y);
-		UnitPainter.paint(g, getUnit(), sx + x_offset, sy + y_offset, ts);
+		if (path.size() > 0) {
+			Point current = path.get(current_location);
+			int sx = canvas.getXOnCanvas(current.x);
+			int sy = canvas.getYOnCanvas(current.y);
+			UnitPainter.paint(g, getUnit(), sx + x_offset, sy + y_offset, ts);
+		}
 	}
 
 }

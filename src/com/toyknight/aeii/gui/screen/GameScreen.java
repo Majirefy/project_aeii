@@ -66,15 +66,15 @@ public class GameScreen extends Screen implements AnimationProvider {
 		tile_panel.update();
 		this.game.startTurn();
 	}
-	
+
 	public ActionPanel getActionPanel() {
 		return action_panel;
 	}
-	
+
 	public TilePanel getTilePanel() {
 		return tile_panel;
 	}
-	
+
 	public MapCanvas getCanvas() {
 		return map_canvas;
 	}
@@ -88,7 +88,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 	public void onKeyRelease(KeyEvent e) {
 		map_canvas.onKeyRelease(e);
 	}
-	
+
 	@Override
 	public Animation getUnitAttackAnimation(Unit attacker, Unit defender, int damage) {
 		UnitAttackAnimation animation = new UnitAttackAnimation(attacker, defender, damage, ts);
@@ -96,7 +96,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 		animation.setInterval(1);
 		return animation;
 	}
-	
+
 	@Override
 	public Animation getUnitMoveAnimation(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
 		ArrayList<Point> path = manager.getUnitToolkit().createMovePath(unit, start_x, start_y, dest_x, dest_y);
@@ -104,12 +104,14 @@ public class GameScreen extends Screen implements AnimationProvider {
 		processAnimation(animation);
 		return animation;
 	}
-	
+
 	private Animation processAnimation(Animation animation) {
 		animation.addAnimationListener(new AnimationListener() {
 			@Override
 			public void animationCompleted(Animation animation) {
-				action_panel.update();
+				if (manager.getGame().isLocalPlayer()) {
+					action_panel.update();
+				}
 			}
 		});
 		return animation;
@@ -123,7 +125,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 	}
 
 	private class StatusPanel extends AEIIPanel {
-		
+
 	}
 
 }

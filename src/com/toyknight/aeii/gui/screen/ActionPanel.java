@@ -106,8 +106,9 @@ public class ActionPanel extends AEIIPanel {
 					case GameManager.STATE_SELECT:
 						btn_move.setEnabled(true);
 					case GameManager.STATE_ACTION:
-						btn_standby.setEnabled(true);
 						btn_attack.setEnabled(true);
+					case GameManager.STATE_RMOVE:
+						btn_standby.setEnabled(true);
 						break;
 					default:
 					//do nothing
@@ -142,9 +143,7 @@ public class ActionPanel extends AEIIPanel {
 	private final ActionListener btn_standby_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int unit_x = manager.getSelectedUnit().getX();
-			int unit_y = manager.getSelectedUnit().getY();
-			manager.getGame().standbyUnit(unit_x, unit_y);
+			manager.standbySelectedUnit();
 			updateButtons();
 		}
 	};

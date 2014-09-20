@@ -72,8 +72,9 @@ public class BasicGame implements OperationListener {
 	}
 
 	protected void doAttack(Unit attacker, Unit defender) {
-		standbyUnit(attacker);
-		game_listener.onUnitAttack(attacker, defender, 0, 0);
+		//standbyUnit(attacker);
+		game_listener.onUnitAttack(attacker, defender, 0);
+		game_listener.onUnitCounter(defender, attacker, 0);
 		game_listener.onUnitAttackFinished(attacker, defender);
 	}
 
@@ -94,7 +95,6 @@ public class BasicGame implements OperationListener {
 		Unit unit = getMap().getUnit(unit_x, unit_y);
 		if (unit != null) {
 			moveUnit(unit, dest_x, dest_y);
-			
 		}
 	}
 

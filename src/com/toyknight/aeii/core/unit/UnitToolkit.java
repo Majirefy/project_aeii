@@ -110,7 +110,7 @@ public class UnitToolkit {
 	}
 
 	public ArrayList<Point> createMovePath(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
-		if(!isCurrentUnit(unit)) {
+		if (!isCurrentUnit(unit)) {
 			setCurrentUnit(unit);
 			createMovablePositions();
 		}
@@ -153,6 +153,19 @@ public class UnitToolkit {
 				}
 			}
 			createMovePath(next_x, next_y, start_x, start_y);
+		}
+	}
+
+	public int getMovementPointRemains(Unit unit, int dest_x, int dest_y) {
+		if (!isCurrentUnit(unit)) {
+			setCurrentUnit(unit);
+			createMovablePositions();
+		}
+		Point dest_position = new Point(dest_x, dest_y);
+		if (movable_positions.contains(dest_position)) {
+			return move_mark_map[dest_x][dest_y];
+		} else {
+			return -1;
 		}
 	}
 
@@ -226,10 +239,10 @@ public class UnitToolkit {
 			return false;
 		}
 	}
-	
+
 	public static boolean isWithinRange(Unit unit, int target_x, int target_y) {
 		int range = Math.abs(target_x - unit.getX()) + Math.abs(target_y - unit.getY());
-		return  unit.getMinAttackRange() <= range && range <= unit.getMaxAttackRange();
+		return unit.getMinAttackRange() <= range && range <= unit.getMaxAttackRange();
 	}
 
 	private class Step {

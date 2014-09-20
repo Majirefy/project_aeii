@@ -28,6 +28,9 @@ public class ResourceManager {
 	private static BufferedImage[] p_attack_spark;
 	private static BufferedImage move_alpha;
 	private static BufferedImage attack_alpha;
+	private static BufferedImage[] lnbumbers;
+	private static BufferedImage lplus;
+	private static BufferedImage lminus;
 	private static Color aeii_panel_bg;
 	private static Color move_path_color;
 
@@ -43,6 +46,7 @@ public class ResourceManager {
 		loadUnits(ts);
 		loadSparks(ts);
 		loadAlpha(ts);
+		loadChars(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		move_path_color = new Color(225, 0, 82);
 	}
@@ -151,8 +155,12 @@ public class ResourceManager {
 		move_alpha = ResourceUtil.getImageClip(img_alpha, ts, 0, ts, ts);
 		attack_alpha = ResourceUtil.getImageClip(img_alpha, 0, 0, ts, ts);
 	}
+	
+	private static void loadChars(int ts) {
+		
+	}
 
-	public static BufferedImage getLogoImage() {
+	public static BufferedImage getLogoImage() throws IOException {
 		return img_logo;
 	}
 
