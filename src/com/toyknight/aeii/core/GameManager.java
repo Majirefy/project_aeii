@@ -106,6 +106,7 @@ public class GameManager implements GameListener {
 					&& attacker.getAbilities().contains(Ability.CHARGER)) {
 				beginRMovePhase();
 			} else {
+				attacker.setStandby(true);
 				setState(STATE_SELECT);
 			}
 		}
