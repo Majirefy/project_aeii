@@ -156,11 +156,11 @@ public class ResourceManager {
 		attack_alpha = ResourceUtil.getImageClip(img_alpha, 0, 0, ts, ts);
 	}
 	
-	private static void loadChars(int ts) {
+	private static void loadChars(int ts) throws IOException {
 		
 	}
 
-	public static BufferedImage getLogoImage() throws IOException {
+	public static BufferedImage getLogoImage() {
 		return img_logo;
 	}
 
