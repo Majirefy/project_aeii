@@ -58,11 +58,15 @@ public class UnitAttackAnimation extends UnitAnimation {
 		int sy_attacker = canvas.getYOnCanvas(attacker.getY());
 		int sx_defender = canvas.getXOnCanvas(defender.getX());
 		int sy_defender = canvas.getYOnCanvas(defender.getY());
+		//paint attacker and defender
 		UnitPainter.paint(g, attacker, sx_attacker, sy_attacker, ts);
 		UnitPainter.paint(g, defender, sx_defender + unit_dx, sy_defender + unit_dy, ts);
+		//paint spark
 		g.drawImage(ResourceManager.getAttackSparkImage(current_frame), sx_defender + offset, sy_defender + offset, null);
-		int damage_dx = (ts - CharPainter.getLNumberWidth(damage, true, ts)) / 2;
-		CharPainter.paintNegativeLNumber(g, damage, sx_defender + damage_dx, sy_defender + (ts - ts / 24 * 11), ts);
+		//paint damage
+		int damage_dx = (ts - CharPainter.getLNumberWidth(damage, true)) / 2;
+		int damage_dy = ts - CharPainter.getLCharHeight();
+		CharPainter.paintNegativeLNumber(g, damage, sx_defender + damage_dx, sy_defender + damage_dy);
 	}
 
 }

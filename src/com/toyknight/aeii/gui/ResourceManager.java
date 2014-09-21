@@ -28,7 +28,9 @@ public class ResourceManager {
 	private static BufferedImage[] p_attack_spark;
 	private static BufferedImage move_alpha;
 	private static BufferedImage attack_alpha;
+	private static BufferedImage[] numbers;
 	private static BufferedImage[] lnumbers;
+	private static BufferedImage minus;
 	private static BufferedImage lplus;
 	private static BufferedImage lminus;
 	private static Color aeii_panel_bg;
@@ -157,15 +159,23 @@ public class ResourceManager {
 	}
 
 	private static void loadChars(int ts) throws IOException {
+		int w = ts / 24 * 6;
+		int h = ts / 24 * 7;
 		int lw = ts / 24 * 8;
 		int lh = ts / 24 * 11;
+		File chars_file = new File("res\\img\\chars.png");
+		BufferedImage img_chars = new BufferedImage(w * 12, h, BufferedImage.TYPE_INT_ARGB);
+		img_chars.getGraphics().drawImage(ImageIO.read(chars_file), 0, 0, w * 12, h, null);
 		File lchars_file = new File("res\\img\\lchars.png");
 		BufferedImage img_lchars = new BufferedImage(lw * 13, lh, BufferedImage.TYPE_INT_ARGB);
 		img_lchars.getGraphics().drawImage(ImageIO.read(lchars_file), 0, 0, lw * 13, lh, null);
+		numbers = new BufferedImage[10];
 		lnumbers = new BufferedImage[10];
 		for (int i = 0; i < 10; i++) {
+			numbers[i] = ResourceUtil.getImageClip(img_chars, i * w, 0, w, h);
 			lnumbers[i] = ResourceUtil.getImageClip(img_lchars, i * lw, 0, lw, lh);
 		}
+		minus = ResourceUtil.getImageClip(img_chars, 10 * w, 0, w, h);
 		lminus = ResourceUtil.getImageClip(img_lchars, 11 * lw, 0, lw, lh);
 		lplus = ResourceUtil.getImageClip(img_lchars, 12 * lw, 0, lw, lh);
 	}
@@ -217,9 +227,17 @@ public class ResourceManager {
 	public static BufferedImage getMoveAlpha() {
 		return move_alpha;
 	}
+	
+	public static BufferedImage getNumber(int n) {
+		return numbers[n];
+	}
 
 	public static BufferedImage getLNumber(int n) {
 		return lnumbers[n];
+	}
+	
+	public static BufferedImage getMinus() {
+		return minus;
 	}
 
 	public static BufferedImage getLPlus() {

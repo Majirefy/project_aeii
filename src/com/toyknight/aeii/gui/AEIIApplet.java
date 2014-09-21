@@ -9,6 +9,7 @@ import com.toyknight.aeii.gui.effect.ImageWaveEffect;
 import com.toyknight.aeii.gui.screen.GameScreen;
 import com.toyknight.aeii.gui.screen.LogoScreen;
 import com.toyknight.aeii.gui.screen.MainMenuScreen;
+import com.toyknight.aeii.gui.util.CharPainter;
 import com.toyknight.aeii.gui.util.DialogUtil;
 import java.awt.AWTEvent;
 import java.awt.CardLayout;
@@ -82,6 +83,8 @@ public class AEIIApplet {
 		game_screen.initComponents();
 		this.getContentPane().add(game_screen, ID_GAME_SCREEN);
 		setCurrentScreen(ID_LOGO_SCREEN);
+		
+		CharPainter.init(TILE_SIZE);
 
 		command_line = new CommandLineDialog(this);
 

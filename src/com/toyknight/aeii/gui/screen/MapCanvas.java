@@ -55,8 +55,8 @@ public class MapCanvas extends JPanel {
 		this.setOpaque(false);
 		MouseAdapter mouse_adapter = new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				onMouseClick(e);
+			public void mousePressed(MouseEvent e) {
+				onMousePress(e);
 			}
 
 			@Override
@@ -99,7 +99,7 @@ public class MapCanvas extends JPanel {
 				&& current_animation instanceof UnitAnimation;
 	}
 
-	public void onMouseClick(MouseEvent e) {
+	public void onMousePress(MouseEvent e) {
 		if (isOperatable()) {
 			int click_x = getCursorXOnMap();
 			int click_y = getCursorYOnMap();
