@@ -105,13 +105,13 @@ public class Launcher implements Runnable {
 				ex.printStackTrace();
 			}
 		} else {
-			throw new AEIIException("È±ÉÙÆô¶¯²ÎÊı");
+			throw new AEIIException("ç¼ºå°‘å¯åŠ¨å‚æ•°");
 		}
 	}
 	
 	private static void validateParam(int ts, int width, int height, boolean fs) throws Exception{
 		if ((ts < 24) || (ts % 24 != 0)) {
-			throw new AEIIException("TILE_SIZE ±ØĞëµÈÓÚ 24µÄÕûÊı±¶");
+			throw new AEIIException("TILE_SIZE ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 24ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 		}
 	}
 
