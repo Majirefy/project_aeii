@@ -106,7 +106,7 @@ public class Launcher implements Runnable {
 	
 	private static void validateParam(int ts, int width, int height, boolean fs) throws Exception{
 		if (ts < 24) {
-			throw new Exception("TILE_SIZE ±ØÐë´óÓÚ 24");
+			throw new Exception("TILE_SIZE å¿…é¡»å¤§äºŽ 24");
 		}
 	}
 
