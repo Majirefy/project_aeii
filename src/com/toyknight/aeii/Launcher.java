@@ -96,10 +96,17 @@ public class Launcher implements Runnable {
 				int width = Integer.parseInt(args[1]);
 				int height = Integer.parseInt(args[2]);
 				boolean fs = Boolean.parseBoolean(args[3]);
+				validateParam(ts, width, height , fs);
 				EventQueue.invokeLater(new Launcher(ts, width, height, fs));
-			} catch (java.lang.NumberFormatException ex) {
-				//do nothing
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
+		}
+	}
+	
+	private static void validateParam(int ts, int width, int height, boolean fs) throws Exception{
+		if (ts < 24) {
+			throw new Exception("TILE_SIZE ±ØÐë´óÓÚ 24");
 		}
 	}
 
