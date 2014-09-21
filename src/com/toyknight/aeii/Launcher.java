@@ -1,13 +1,16 @@
 package com.toyknight.aeii;
 
+import com.toyknight.aeii.core.AEIIException;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.util.DialogUtil;
+
 import java.awt.EventQueue;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -89,7 +92,7 @@ public class Launcher implements Runnable {
 		main_frame.dispose();
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		if (args.length >= 4) {
 			try {
 				int ts = Integer.parseInt(args[0]);
@@ -101,12 +104,14 @@ public class Launcher implements Runnable {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+		} else {
+			throw new AEIIException("缺少启动参数");
 		}
 	}
 	
 	private static void validateParam(int ts, int width, int height, boolean fs) throws Exception{
-		if (ts < 24) {
-			throw new Exception("TILE_SIZE 蹇呴』澶т簬 24");
+		if ((ts < 24) || (ts % 24 != 0)) {
+			throw new AEIIException("TILE_SIZE 必须等于 24的整数倍");
 		}
 	}
 
