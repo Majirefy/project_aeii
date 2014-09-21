@@ -28,7 +28,7 @@ public class ResourceManager {
 	private static BufferedImage[] p_attack_spark;
 	private static BufferedImage move_alpha;
 	private static BufferedImage attack_alpha;
-	private static BufferedImage[] lnbumbers;
+	private static BufferedImage[] lnumbers;
 	private static BufferedImage lplus;
 	private static BufferedImage lminus;
 	private static Color aeii_panel_bg;
@@ -144,7 +144,7 @@ public class ResourceManager {
 		BufferedImage p_attack_sparks = new BufferedImage(ts * 6, ts, BufferedImage.TYPE_INT_ARGB);
 		p_attack_sparks.getGraphics().drawImage(ImageIO.read(p_attack_spark_file), 0, 0, ts * 6, ts, null);
 		for (int i = 0; i < 6; i++) {
-			p_attack_spark[i] = ResourceUtil.getImageClip(p_attack_sparks, ts*i, 0, ts, ts);
+			p_attack_spark[i] = ResourceUtil.getImageClip(p_attack_sparks, ts * i, 0, ts, ts);
 		}
 	}
 
@@ -155,9 +155,19 @@ public class ResourceManager {
 		move_alpha = ResourceUtil.getImageClip(img_alpha, ts, 0, ts, ts);
 		attack_alpha = ResourceUtil.getImageClip(img_alpha, 0, 0, ts, ts);
 	}
-	
+
 	private static void loadChars(int ts) throws IOException {
-		
+		int lw = ts / 24 * 8;
+		int lh = ts / 24 * 11;
+		File lchars_file = new File("res\\img\\lchars.png");
+		BufferedImage img_lchars = new BufferedImage(lw * 13, lh, BufferedImage.TYPE_INT_ARGB);
+		img_lchars.getGraphics().drawImage(ImageIO.read(lchars_file), 0, 0, lw * 13, lh, null);
+		lnumbers = new BufferedImage[10];
+		for (int i = 0; i < 10; i++) {
+			lnumbers[i] = ResourceUtil.getImageClip(img_lchars, i * lw, 0, lw, lh);
+		}
+		lminus = ResourceUtil.getImageClip(img_lchars, 11 * lw, 0, lw, lh);
+		lplus = ResourceUtil.getImageClip(img_lchars, 12 * lw, 0, lw, lh);
 	}
 
 	public static BufferedImage getLogoImage() {
@@ -195,7 +205,7 @@ public class ResourceManager {
 	public static BufferedImage getAttackCursorImage(int index) {
 		return attack_cursor[index];
 	}
-	
+
 	public static BufferedImage getAttackSparkImage(int index) {
 		return p_attack_spark[index];
 	}
@@ -206,6 +216,18 @@ public class ResourceManager {
 
 	public static BufferedImage getMoveAlpha() {
 		return move_alpha;
+	}
+
+	public static BufferedImage getLNumber(int n) {
+		return lnumbers[n];
+	}
+
+	public static BufferedImage getLPlus() {
+		return lplus;
+	}
+
+	public static BufferedImage getLMinus() {
+		return lminus;
 	}
 
 	public static Color getAEIIPanelBg() {

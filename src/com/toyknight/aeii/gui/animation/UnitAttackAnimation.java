@@ -4,6 +4,7 @@ import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.screen.MapCanvas;
 import com.toyknight.aeii.gui.sprite.UnitPainter;
+import com.toyknight.aeii.gui.util.CharPainter;
 import java.awt.Graphics;
 import java.util.Random;
 
@@ -14,9 +15,10 @@ import java.util.Random;
 public class UnitAttackAnimation extends UnitAnimation {
 
 	private final int ts;
-	private final Random random;
+	private final int damage;
 	private final Unit attacker;
 	private final Unit defender;
+	private final Random random;
 
 	private int current_frame;
 	private int unit_dx;
@@ -27,6 +29,7 @@ public class UnitAttackAnimation extends UnitAnimation {
 		addLocation(attacker.getX(), attacker.getY());
 		this.ts = ts;
 		this.current_frame = 0;
+		this.damage = damage;
 		this.attacker = new Unit(attacker);
 		this.defender = new Unit(defender);
 		random = new Random(System.currentTimeMillis());
@@ -58,6 +61,8 @@ public class UnitAttackAnimation extends UnitAnimation {
 		UnitPainter.paint(g, attacker, sx_attacker, sy_attacker, ts);
 		UnitPainter.paint(g, defender, sx_defender + unit_dx, sy_defender + unit_dy, ts);
 		g.drawImage(ResourceManager.getAttackSparkImage(current_frame), sx_defender + offset, sy_defender + offset, null);
+		int damage_dx = (ts - CharPainter.getLNumberWidth(damage, true, ts)) / 2;
+		CharPainter.paintNegativeLNumber(g, damage, sx_defender + damage_dx, sy_defender + (ts - ts / 24 * 11), ts);
 	}
 
 }
