@@ -110,8 +110,8 @@ public class Launcher implements Runnable {
 	}
 	
 	private static void validateParam(int ts, int width, int height, boolean fs) throws Exception{
-		if ((ts < 24) || (ts % 24 != 0)) {
-			throw new AEIIException("TILE_SIZE ������� 24��������");
+		if (ts < 0 || ts%24 != 0) {
+			throw new AEIIException("TILE_SIZE 必须为 24的正整数倍");
 		}
 	}
 
