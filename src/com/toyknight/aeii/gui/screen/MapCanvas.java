@@ -179,11 +179,27 @@ public class MapCanvas extends JPanel {
 	}
 
 	public int getCursorXOnMap() {
-		return (mouse_x + viewport.x) / ts;
+		int map_width = manager.getGame().getMap().getWidth();
+		int cursor_x = (mouse_x + viewport.x) / ts;
+		if(cursor_x >= map_width) {
+			return map_width - 1;
+		}
+		if(cursor_x < 0) {
+			return 0;
+		}
+		return cursor_x;
 	}
 
 	public int getCursorYOnMap() {
-		return (mouse_y + viewport.y) / ts;
+		int map_height = manager.getGame().getMap().getHeight();
+		int cursor_y = (mouse_y + viewport.y) / ts;
+		if(cursor_y >= map_height) {
+			return map_height - 1;
+		}
+		if(cursor_y < 0) {
+			return 0;
+		}
+		return cursor_y;
 	}
 
 	public int getXOnCanvas(int map_x) {

@@ -122,7 +122,7 @@ public class CommandLineDialog extends JDialog {
 				IllegalAccessException |
 				IllegalArgumentException |
 				InvocationTargetException ex) {
-			System.err.println(ex.getClass().toString() + ": \n" + ex.getMessage());
+			System.err.println(ex.getClass().toString() + ": " + ex.getMessage() + "\n" + ex.getCause().toString());
 		}
 	}
 
