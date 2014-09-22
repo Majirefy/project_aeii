@@ -94,16 +94,10 @@ public class GameManager implements GameListener {
 	}
 
 	@Override
-	public void onUnitCounter(Unit counterer, Unit attacker, int damage) {
-		Animation counter_animation = animation_provider.getUnitAttackAnimation(counterer, attacker, damage);
-		submitAnimation(counter_animation);
-	}
-
-	@Override
 	public void onUnitAttackFinished(Unit attacker, Unit defender) {
 		if (getGame().isLocalPlayer()) {
 			if (attacker.getCurrentHp() > 0 && attacker.getCurrentMovementPoint() > 0
-					&& attacker.getAbilities().contains(Ability.CHARGER)) {
+					&& attacker.hasAbility(Ability.CHARGER)) {
 				beginRMovePhase();
 			} else {
 				attacker.setStandby(true);
@@ -181,7 +175,7 @@ public class GameManager implements GameListener {
 			if (defender != null) {
 				return UnitToolkit.isEnemy(selected_unit, defender);
 			} else {
-				if (selected_unit.getAbilities().contains(Ability.DESTROYER)) {
+				if (selected_unit.hasAbility(Ability.DESTROYER)) {
 					int tile_index = getGame().getMap().getTileIndex(x, y);
 					Tile tile = TileRepository.getTile(tile_index);
 					return tile.isDestroyable();
@@ -237,6 +231,7 @@ public class GameManager implements GameListener {
 			int last_x = last_position.x;
 			int last_y = last_position.y;
 			getGame().moveUnit(selected_unit, last_x, last_y);
+			selected_unit.setCurrentMovementPoint(selected_unit.getMovementPoint());
 			beginMovePhase();
 		}
 	}

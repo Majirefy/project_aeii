@@ -189,6 +189,10 @@ public class Unit {
 	public void setCurrentMovementPoint(int current_movement_point) {
 		this.current_movement_point = current_movement_point;
 	}
+	
+	public boolean hasAbility(int ability) {
+		return abilities.contains(ability);
+	}
 
 	public ArrayList<Integer> getAbilities() {
 		return abilities;

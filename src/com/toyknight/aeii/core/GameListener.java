@@ -11,8 +11,6 @@ public interface GameListener {
 	
 	public void onUnitAttack(Unit attacker, Unit defender, int damage);
 	
-	public void onUnitCounter(Unit counterer, Unit attacker, int damage);
-	
 	public void onUnitAttackFinished(Unit attacker, Unit defender);
 	
 	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y);

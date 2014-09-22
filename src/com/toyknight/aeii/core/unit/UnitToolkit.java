@@ -174,21 +174,20 @@ public class UnitToolkit {
 		Tile tile = TileRepository.getTile(tile_index);
 		int mp_cost = tile.getStepCost();
 		int tile_type = tile.getType();
-		ArrayList<Integer> abilities = unit.getAbilities();
-		if (abilities.contains(Ability.AIR_FORCE)) {
+		if (unit.hasAbility(Ability.AIR_FORCE)) {
 			mp_cost = 1;
 		}
-		if (abilities.contains(Ability.CRAWLER)
+		if (unit.hasAbility(Ability.CRAWLER)
 				&& (tile_type == Tile.TYPE_LAND || tile_type == Tile.TYPE_FOREST || tile_type == Tile.TYPE_MOUNTAIN)) {
 			mp_cost = 1;
 		}
-		if (abilities.contains(Ability.FIGHTER_OF_THE_SEA) && tile_type == Tile.TYPE_WATER) {
+		if (unit.hasAbility(Ability.FIGHTER_OF_THE_SEA) && tile_type == Tile.TYPE_WATER) {
 			mp_cost = 1;
 		}
-		if (abilities.contains(Ability.FIGHTER_OF_THE_FOREST) && tile_type == Tile.TYPE_FOREST) {
+		if (unit.hasAbility(Ability.FIGHTER_OF_THE_FOREST) && tile_type == Tile.TYPE_FOREST) {
 			mp_cost = 1;
 		}
-		if (abilities.contains(Ability.FIGHTER_OF_THE_MOUNTAIN) && tile_type == Tile.TYPE_MOUNTAIN) {
+		if (unit.hasAbility(Ability.FIGHTER_OF_THE_MOUNTAIN) && tile_type == Tile.TYPE_MOUNTAIN) {
 			mp_cost = 1;
 		}
 		if (mp_cost < 1) {
@@ -220,8 +219,7 @@ public class UnitToolkit {
 			return true;
 		} else {
 			if (isEnemy(unit, target_unit)) {
-				return unit.getAbilities().contains(Ability.AIR_FORCE)
-						&& !target_unit.getAbilities().contains(Ability.AIR_FORCE);
+				return unit.hasAbility(Ability.AIR_FORCE) && !target_unit.hasAbility(Ability.AIR_FORCE);
 			} else {
 				return true;
 			}
@@ -243,6 +241,45 @@ public class UnitToolkit {
 	public static boolean isWithinRange(Unit unit, int target_x, int target_y) {
 		int range = Math.abs(target_x - unit.getX()) + Math.abs(target_y - unit.getY());
 		return unit.getMinAttackRange() <= range && range <= unit.getMaxAttackRange();
+	}
+
+	public static int getDefenceBonus(Unit unit, int tile_index) {
+		Tile tile = TileRepository.getTile(tile_index);
+		if (unit.hasAbility(Ability.AIR_FORCE)) {
+			return 0;
+		} else {
+			int defence_bonus = tile.getDefenceBonus();
+			switch (tile.getType()) {
+				case Tile.TYPE_FOREST:
+					if (unit.hasAbility(Ability.FIGHTER_OF_THE_FOREST)) {
+						defence_bonus += 10;
+					}
+				case Tile.TYPE_MOUNTAIN:
+					if (unit.hasAbility(Ability.FIGHTER_OF_THE_MOUNTAIN)) {
+						defence_bonus += 10;
+					}
+				case Tile.TYPE_WATER:
+					if (unit.hasAbility(Ability.FIGHTER_OF_THE_SEA)) {
+						defence_bonus += 10;
+					}
+				default:
+				//do nothing
+			}
+			return defence_bonus;
+		}
+	}
+
+	public static int getDamage(Unit attacker, Unit defender, int defence_bonus) {
+		int attack = attacker.getAttack();
+		int defence = attacker.getAttackType() == Unit.ATTACK_PHYSICAL
+				? defender.getPhysicalDefence() : defender.getMagicalDefence();
+		defence = defence + defence_bonus;
+		int damage = attack > defence ? attack - defence : 0;
+		int attacker_hp = attacker.getCurrentHp();
+		int attacker_max_hp = attacker.getMaxHp();
+		damage = damage * attacker_hp / attacker_max_hp;
+		//more process
+		return damage;
 	}
 
 	private class Step {

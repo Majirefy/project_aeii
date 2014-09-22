@@ -2,6 +2,7 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
 import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
@@ -107,6 +108,9 @@ public class ActionPanel extends AEIIPanel {
 						btn_move.setEnabled(true);
 					case GameManager.STATE_ACTION:
 						btn_attack.setEnabled(true);
+						if(unit.hasAbility(Ability.NECROMANCER)) {
+							btn_summon.setEnabled(true);
+						}
 					case GameManager.STATE_RMOVE:
 						btn_standby.setEnabled(true);
 						break;

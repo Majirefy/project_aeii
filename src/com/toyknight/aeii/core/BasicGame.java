@@ -61,22 +61,46 @@ public class BasicGame implements OperationListener {
 	@Override
 	public void doAttack(int unit_x, int unit_y, int target_x, int target_y) {
 		Unit attacker = getMap().getUnit(unit_x, unit_y);
-		if(attacker != null && UnitToolkit.isWithinRange(attacker, target_x, target_y)) {
+		if (attacker != null && UnitToolkit.isWithinRange(attacker, target_x, target_y)) {
 			Unit defender = getMap().getUnit(target_x, target_y);
-			if(defender != null) {
+			if (defender != null) {
 				doAttack(attacker, defender);
 			} else {
-				
+
 			}
 		}
 	}
 
 	protected void doAttack(Unit attacker, Unit defender) {
-		//standbyUnit(attacker);
-		defender.setCurrentHp(defender.getCurrentHp() - 64);
-		game_listener.onUnitAttack(attacker, defender, 64);
-		game_listener.onUnitCounter(defender, attacker, 0);
+		int defence_bonus = UnitToolkit.getDefenceBonus(
+				defender, 
+				getMap().getTileIndex(defender.getX(), defender.getY()));
+		int attack_damage = UnitToolkit.getDamage(attacker, defender, defence_bonus);
+		doDamage(attacker, defender, attack_damage);
+		if(defender.getCurrentHp() > 0 && 
+				UnitToolkit.isWithinRange(defender, attacker.getX(), attacker.getY())) {
+			defence_bonus = UnitToolkit.getDefenceBonus(
+					attacker, 
+					getMap().getTileIndex(defender.getX(), defender.getY()));
+			int counter_damage = UnitToolkit.getDamage(defender, attacker, defence_bonus);
+			doDamage(defender, attacker, counter_damage);
+		}
 		game_listener.onUnitAttackFinished(attacker, defender);
+	}
+
+	protected void doDamage(Unit attacker, Unit defender, int damage) {
+		if (defender.getCurrentHp() > damage) {
+			defender.setCurrentHp(defender.getCurrentHp() - damage);
+			game_listener.onUnitAttack(attacker, defender, damage);
+			//deal with buff issues
+		} else {
+			damage = defender.getCurrentHp();
+			defender.setCurrentHp(0);
+			game_listener.onUnitAttack(attacker, defender, damage);
+			getMap().removeUnit(defender.getX(), defender.getY());
+			//on unit destory
+			//add tomb
+		}
 	}
 
 	@Override
@@ -86,7 +110,7 @@ public class BasicGame implements OperationListener {
 			standbyUnit(unit);
 		}
 	}
-	
+
 	protected void standbyUnit(Unit unit) {
 		unit.setStandby(true);
 	}
