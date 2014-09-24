@@ -8,32 +8,36 @@ import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.ResourceManager;
+import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SwingAnimation;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
+import com.toyknight.aeii.gui.screen.internal.InternalMenu;
 import com.toyknight.aeii.gui.sprite.AttackCursorSprite;
 import com.toyknight.aeii.gui.sprite.CursorSprite;
 import com.toyknight.aeii.gui.sprite.TilePainter;
 import com.toyknight.aeii.gui.sprite.UnitPainter;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import javax.swing.JPanel;
 
 /**
  *
  * @author toyknight
  */
-public class MapCanvas extends JPanel {
+public class MapCanvas extends Screen {
 
-	private final int ts;
-	private final int SPRITE_INTERVAL = 5;
 	private GameManager manager;
 	private final GameScreen game_screen;
+	private final int SPRITE_INTERVAL = 5;
+	
+	private final InternalMenu internal_menu;
 
 	private Rectangle viewport;
 
@@ -49,10 +53,12 @@ public class MapCanvas extends JPanel {
 	private boolean left_pressed = false;
 	private boolean right_pressed = false;
 
-	public MapCanvas(GameScreen game_screen, int ts) {
-		this.ts = ts;
+	public MapCanvas(Dimension size, AEIIApplet context, GameScreen game_screen) {
+		super(size, context);
 		this.game_screen = game_screen;
 		this.setOpaque(false);
+		internal_menu = new InternalMenu();
+		this.add(internal_menu);
 		MouseAdapter mouse_adapter = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -74,6 +80,7 @@ public class MapCanvas extends JPanel {
 		attack_cursor = new AttackCursorSprite(ts);
 		attack_cursor.setInterval(SPRITE_INTERVAL);
 		viewport = new Rectangle(0, 0, getWidth(), getHeight());
+		internal_menu.setVisible(true);
 	}
 
 	public void newGame(GameManager manager) {
@@ -142,6 +149,7 @@ public class MapCanvas extends JPanel {
 		mouse_y = e.getY();
 	}
 
+	@Override
 	public void onKeyPress(KeyEvent e) {
 		if (e.getKeyCode() == Configuration.getKeyUp()) {
 			this.up_pressed = true;
@@ -157,6 +165,7 @@ public class MapCanvas extends JPanel {
 		}
 	}
 
+	@Override
 	public void onKeyRelease(KeyEvent e) {
 		if (!isAnimating()) {
 			if (e.getKeyCode() == Configuration.getKeyUp()) {
@@ -220,6 +229,7 @@ public class MapCanvas extends JPanel {
 		return manager.getGame();
 	}
 
+	@Override
 	public void update() {
 		if (current_delay < SPRITE_INTERVAL) {
 			current_delay++;

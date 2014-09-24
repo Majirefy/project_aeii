@@ -12,7 +12,9 @@ import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
 import com.toyknight.aeii.gui.animation.UnitMoveAnimation;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -46,7 +48,9 @@ public class GameScreen extends Screen implements AnimationProvider {
 		status_panel = new StatusPanel();
 		status_panel.setBounds(ts, height - ts, width - ts * (apw + 1), ts);
 		this.add(status_panel);
-		map_canvas = new MapCanvas(this, ts);
+		Dimension canvas_size = new Dimension(width - ts * apw, height - ts);
+		map_canvas = new MapCanvas(canvas_size, getContext(), this);
+		map_canvas.setPreferredSize(canvas_size);
 		map_canvas.setBounds(0, 0, width - ts * apw, height - ts);
 		map_canvas.init();
 		this.add(map_canvas);
@@ -115,6 +119,11 @@ public class GameScreen extends Screen implements AnimationProvider {
 			}
 		});
 		return animation;
+	}
+	
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
 	}
 
 	@Override
