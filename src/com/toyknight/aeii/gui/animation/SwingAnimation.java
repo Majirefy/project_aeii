@@ -1,10 +1,8 @@
 package com.toyknight.aeii.gui.animation;
 
 import com.toyknight.aeii.core.animation.Animation;
-import com.toyknight.aeii.core.animation.AnimationListener;
 import com.toyknight.aeii.gui.screen.MapCanvas;
 import java.awt.Graphics;
-import java.util.ArrayList;
 
 /**
  *

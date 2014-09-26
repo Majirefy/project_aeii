@@ -10,9 +10,10 @@ import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.Screen;
+import com.toyknight.aeii.gui.animation.SmokeAnimation;
 import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
+import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
 import com.toyknight.aeii.gui.animation.UnitMoveAnimation;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -92,10 +93,26 @@ public class GameScreen extends Screen implements AnimationProvider {
 	public void onKeyRelease(KeyEvent e) {
 		map_canvas.onKeyRelease(e);
 	}
+	
+	@Override
+	public Animation getSmokeAnimation(int x, int y) {
+		SmokeAnimation animation = new SmokeAnimation(x, y, ts);
+		processAnimation(animation);
+		animation.setInterval(1);
+		return animation;
+	}
 
 	@Override
 	public Animation getUnitAttackAnimation(Unit attacker, Unit defender, int damage) {
 		UnitAttackAnimation animation = new UnitAttackAnimation(attacker, defender, damage, ts);
+		processAnimation(animation);
+		animation.setInterval(1);
+		return animation;
+	}
+	
+	@Override
+	public Animation getUnitDestroyedAnimation(Unit unit) {
+		UnitDestroyedAnimation animation = new UnitDestroyedAnimation(unit, ts);
 		processAnimation(animation);
 		animation.setInterval(1);
 		return animation;
@@ -108,7 +125,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 		processAnimation(animation);
 		return animation;
 	}
-
+	
 	private Animation processAnimation(Animation animation) {
 		animation.addAnimationListener(new AnimationListener() {
 			@Override

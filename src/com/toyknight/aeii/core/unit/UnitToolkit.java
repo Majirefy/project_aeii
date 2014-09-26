@@ -2,6 +2,7 @@ package com.toyknight.aeii.core.unit;
 
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.Point;
+import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileRepository;
 import java.util.ArrayList;
@@ -268,12 +269,20 @@ public class UnitToolkit {
 			return defence_bonus;
 		}
 	}
+	
+	public static int getAttackBonus(Unit attacker, int tile_index) {
+		return 0;
+	}
 
-	public static int getDamage(Unit attacker, Unit defender, int defence_bonus) {
-		int attack = attacker.getAttack();
+	public static int getDamage(Unit attacker, Unit defender, Map map) {
+		int attacker_tile_index = map.getTileIndex(attacker.getX(), attacker.getY());
+		int defender_tile_index = map.getTileIndex(defender.getX(), defender.getY());
+		int attack_bonus = getAttackBonus(attacker, attacker_tile_index);
+		int attack = attacker.getAttack() + attack_bonus;
+		int defence_bonus = getDefenceBonus(defender, defender_tile_index);
 		int defence = attacker.getAttackType() == Unit.ATTACK_PHYSICAL
 				? defender.getPhysicalDefence() : defender.getMagicalDefence();
-		defence = defence + defence_bonus;
+		defence += defence_bonus;
 		int damage = attack > defence ? attack - defence : 0;
 		int attacker_hp = attacker.getCurrentHp();
 		int attacker_max_hp = attacker.getMaxHp();

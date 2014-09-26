@@ -50,7 +50,10 @@ public class Map {
 	}
 	
 	public void addTomb(int x, int y) {
-		tomb_list.add(new Tomb(x, y));
+		Tomb tomb = new Tomb(x, y);
+		if(!tomb_list.contains(tomb)) {
+			tomb_list.add(tomb);
+		}
 	}
 	
 	public void removeTomb(Tomb tomb) {

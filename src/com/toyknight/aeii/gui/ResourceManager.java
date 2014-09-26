@@ -20,14 +20,17 @@ public class ResourceManager {
 	private static BufferedImage[] borders;
 	private static BufferedImage[] tiles;
 	private static BufferedImage[] top_tiles;
+	private static BufferedImage tomb;
 	private static BufferedImage[][][] units;
 	private static BufferedImage[][] standby_units;
 	private static BufferedImage[] cursor;
 	private static BufferedImage move_target;
 	private static BufferedImage[] attack_cursor;
-	private static BufferedImage[] p_attack_spark;
+	private static BufferedImage[] attack_spark;
 	private static BufferedImage move_alpha;
 	private static BufferedImage attack_alpha;
+	private static BufferedImage[] white_spark;
+	private static BufferedImage[] smoke;
 	private static BufferedImage[] numbers;
 	private static BufferedImage[] lnumbers;
 	private static BufferedImage minus;
@@ -48,6 +51,7 @@ public class ResourceManager {
 		loadUnits(ts);
 		loadSparks(ts);
 		loadAlpha(ts);
+		loadSmoke(ts);
 		loadChars(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		move_path_color = new Color(225, 0, 82);
@@ -72,6 +76,9 @@ public class ResourceManager {
 			tiles[i] = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 			tiles[i].getGraphics().drawImage(ImageIO.read(tile), 0, 0, ts, ts, null);
 		}
+		File tomb_file = new File("res\\img\\tombstone.png");
+		tomb = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
+		tomb.getGraphics().drawImage(ImageIO.read(tomb_file), 0, 0, ts, ts, null);
 	}
 
 	private static void loadTopTiles(int ts) throws IOException {
@@ -140,13 +147,20 @@ public class ResourceManager {
 	}
 
 	private static void loadSparks(int ts) throws IOException {
-		ts = ts / 24 * 20;
-		p_attack_spark = new BufferedImage[6];
-		File p_attack_spark_file = new File("res\\img\\physical_attack_spark.png");
-		BufferedImage p_attack_sparks = new BufferedImage(ts * 6, ts, BufferedImage.TYPE_INT_ARGB);
-		p_attack_sparks.getGraphics().drawImage(ImageIO.read(p_attack_spark_file), 0, 0, ts * 6, ts, null);
+		int asts = ts / 24 * 20;
+		attack_spark = new BufferedImage[6];
+		File attack_spark_file = new File("res\\img\\attack_spark.png");
+		BufferedImage attack_sparks = new BufferedImage(asts * 6, asts, BufferedImage.TYPE_INT_ARGB);
+		attack_sparks.getGraphics().drawImage(ImageIO.read(attack_spark_file), 0, 0, asts * 6, asts, null);
 		for (int i = 0; i < 6; i++) {
-			p_attack_spark[i] = ResourceUtil.getImageClip(p_attack_sparks, ts * i, 0, ts, ts);
+			attack_spark[i] = ResourceUtil.getImageClip(attack_sparks, asts * i, 0, asts, asts);
+		}
+		white_spark = new BufferedImage[6];
+		File spark_file = new File("res\\img\\white_spark.png");
+		BufferedImage white_sparks = new BufferedImage(ts * 6, ts, BufferedImage.TYPE_INT_ARGB);
+		white_sparks.getGraphics().drawImage(ImageIO.read(spark_file), 0, 0, ts * 6, ts, null);
+		for (int i = 0; i < 6; i++) {
+			white_spark[i] = ResourceUtil.getImageClip(white_sparks, ts * i, 0, ts, ts);
 		}
 	}
 
@@ -156,6 +170,17 @@ public class ResourceManager {
 		img_alpha.getGraphics().drawImage(ImageIO.read(alpha_file), 0, 0, ts * 2, ts, null);
 		move_alpha = ResourceUtil.getImageClip(img_alpha, ts, 0, ts, ts);
 		attack_alpha = ResourceUtil.getImageClip(img_alpha, 0, 0, ts, ts);
+	}
+
+	private static void loadSmoke(int ts) throws IOException {
+		int h = ts / 24 * 20;
+		smoke = new BufferedImage[4];
+		File smoke_file = new File("res\\img\\smoke.png");
+		BufferedImage smokes = new BufferedImage(ts * 4, h, BufferedImage.TYPE_INT_ARGB);
+		smokes.getGraphics().drawImage(ImageIO.read(smoke_file), 0, 0, ts * 4, h, null);
+		for (int i = 0; i < 4; i++) {
+			smoke[i] = ResourceUtil.getImageClip(smokes, ts * i, 0, ts, h);
+		}
 	}
 
 	private static void loadChars(int ts) throws IOException {
@@ -196,6 +221,10 @@ public class ResourceManager {
 		return top_tiles[index];
 	}
 
+	public static BufferedImage getTombImage() {
+		return tomb;
+	}
+
 	public static BufferedImage getUnitImage(int team, int index, int frame) {
 		return units[team][index][frame];
 	}
@@ -217,7 +246,15 @@ public class ResourceManager {
 	}
 
 	public static BufferedImage getAttackSparkImage(int index) {
-		return p_attack_spark[index];
+		return attack_spark[index];
+	}
+
+	public static BufferedImage getWhiteSparkImage(int index) {
+		return white_spark[index];
+	}
+
+	public static BufferedImage getSmokeImage(int index) {
+		return smoke[index];
 	}
 
 	public static BufferedImage getAttackAlpha() {
@@ -227,7 +264,7 @@ public class ResourceManager {
 	public static BufferedImage getMoveAlpha() {
 		return move_alpha;
 	}
-	
+
 	public static BufferedImage getNumber(int n) {
 		return numbers[n];
 	}
@@ -235,7 +272,7 @@ public class ResourceManager {
 	public static BufferedImage getLNumber(int n) {
 		return lnumbers[n];
 	}
-	
+
 	public static BufferedImage getMinus() {
 		return minus;
 	}

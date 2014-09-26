@@ -72,17 +72,11 @@ public class BasicGame implements OperationListener {
 	}
 
 	protected void doAttack(Unit attacker, Unit defender) {
-		int defence_bonus = UnitToolkit.getDefenceBonus(
-				defender, 
-				getMap().getTileIndex(defender.getX(), defender.getY()));
-		int attack_damage = UnitToolkit.getDamage(attacker, defender, defence_bonus);
+		int attack_damage = UnitToolkit.getDamage(attacker, defender, getMap());
 		doDamage(attacker, defender, attack_damage);
 		if(defender.getCurrentHp() > 0 && 
 				UnitToolkit.isWithinRange(defender, attacker.getX(), attacker.getY())) {
-			defence_bonus = UnitToolkit.getDefenceBonus(
-					attacker, 
-					getMap().getTileIndex(defender.getX(), defender.getY()));
-			int counter_damage = UnitToolkit.getDamage(defender, attacker, defence_bonus);
+			int counter_damage = UnitToolkit.getDamage(defender, attacker, getMap());
 			doDamage(defender, attacker, counter_damage);
 		}
 		game_listener.onUnitAttackFinished(attacker, defender);
@@ -98,8 +92,8 @@ public class BasicGame implements OperationListener {
 			defender.setCurrentHp(0);
 			game_listener.onUnitAttack(attacker, defender, damage);
 			getMap().removeUnit(defender.getX(), defender.getY());
-			//on unit destory
-			//add tomb
+			game_listener.onUnitDestroyed(defender);
+			getMap().addTomb(defender.getX(), defender.getY());
 		}
 	}
 

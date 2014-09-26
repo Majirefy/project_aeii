@@ -9,7 +9,8 @@ import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitToolkit;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  *
@@ -28,7 +29,7 @@ public class GameManager implements GameListener {
 	private final UnitToolkit unit_toolkit;
 	private final AnimationProvider animation_provider;
 
-	private final PriorityQueue<Animation> animation_dispatcher;
+	private final Queue<Animation> animation_dispatcher;
 	private Animation current_animation;
 
 	private Unit selected_unit;
@@ -42,7 +43,7 @@ public class GameManager implements GameListener {
 		this.state = STATE_SELECT;
 		this.selected_unit = null;
 		this.unit_toolkit = new UnitToolkit(game);
-		this.animation_dispatcher = new PriorityQueue();
+		this.animation_dispatcher = new LinkedList();
 		current_animation = null;
 		this.game.setGameListener(this);
 	}
@@ -104,6 +105,14 @@ public class GameManager implements GameListener {
 				setState(STATE_SELECT);
 			}
 		}
+	}
+	
+	@Override
+	public void onUnitDestroyed(Unit unit) {
+		Animation animation = animation_provider.getUnitDestroyedAnimation(unit);
+		submitAnimation(animation);
+		Animation smoke_animation = animation_provider.getSmokeAnimation(unit.getX(), unit.getY());
+		submitAnimation(smoke_animation);
 	}
 
 	@Override

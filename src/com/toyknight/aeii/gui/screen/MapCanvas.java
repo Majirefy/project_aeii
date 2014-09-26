@@ -7,12 +7,14 @@ import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileRepository;
+import com.toyknight.aeii.core.map.Tomb;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SwingAnimation;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
+import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
 import com.toyknight.aeii.gui.screen.internal.InternalMenu;
 import com.toyknight.aeii.gui.sprite.AttackCursorSprite;
 import com.toyknight.aeii.gui.sprite.CursorSprite;
@@ -36,7 +38,7 @@ public class MapCanvas extends Screen {
 	private GameManager manager;
 	private final GameScreen game_screen;
 	private final int SPRITE_INTERVAL = 5;
-	
+
 	private final InternalMenu internal_menu;
 
 	private Rectangle viewport;
@@ -58,7 +60,6 @@ public class MapCanvas extends Screen {
 		this.game_screen = game_screen;
 		this.setOpaque(false);
 		internal_menu = new InternalMenu();
-		this.add(internal_menu);
 		MouseAdapter mouse_adapter = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -75,12 +76,12 @@ public class MapCanvas extends Screen {
 	}
 
 	public void init() {
+		this.add(internal_menu);
 		cursor = new CursorSprite(ts);
 		cursor.setInterval(SPRITE_INTERVAL);
 		attack_cursor = new AttackCursorSprite(ts);
 		attack_cursor.setInterval(SPRITE_INTERVAL);
 		viewport = new Rectangle(0, 0, getWidth(), getHeight());
-		internal_menu.setVisible(true);
 	}
 
 	public void newGame(GameManager manager) {
@@ -99,11 +100,22 @@ public class MapCanvas extends Screen {
 		return manager.getCurrentAnimation() != null;
 	}
 
-	private boolean isUnitAnimating(Unit unit) {
+	private boolean isOnUnitAnimation(int x, int y) {
 		Animation current_animation = manager.getCurrentAnimation();
-		return isAnimating()
-				&& current_animation.hasLocation(unit.getX(), unit.getY())
-				&& current_animation instanceof UnitAnimation;
+		return isAnimating() && current_animation.hasLocation(x, y) && current_animation instanceof UnitAnimation;
+	}
+	
+	private boolean needTombDisplay(int x, int y) {
+		Animation current_animation = manager.getCurrentAnimation();
+		if(current_animation == null) {
+			return true;
+		} else {
+			if(current_animation.hasLocation(x, y)) {
+				return !(current_animation instanceof UnitDestroyedAnimation);
+			} else {
+				return true;
+			}
+		}
 	}
 
 	public void onMousePress(MouseEvent e) {
@@ -190,10 +202,10 @@ public class MapCanvas extends Screen {
 	public int getCursorXOnMap() {
 		int map_width = manager.getGame().getMap().getWidth();
 		int cursor_x = (mouse_x + viewport.x) / ts;
-		if(cursor_x >= map_width) {
+		if (cursor_x >= map_width) {
 			return map_width - 1;
 		}
-		if(cursor_x < 0) {
+		if (cursor_x < 0) {
 			return 0;
 		}
 		return cursor_x;
@@ -202,10 +214,10 @@ public class MapCanvas extends Screen {
 	public int getCursorYOnMap() {
 		int map_height = manager.getGame().getMap().getHeight();
 		int cursor_y = (mouse_y + viewport.y) / ts;
-		if(cursor_y >= map_height) {
+		if (cursor_y >= map_height) {
 			return map_height - 1;
 		}
-		if(cursor_y < 0) {
+		if (cursor_y < 0) {
 			return 0;
 		}
 		return cursor_y;
@@ -305,9 +317,10 @@ public class MapCanvas extends Screen {
 					paintAttackAlpha(g);
 					break;
 				default:
-					//do nothing
+				//do nothing
 			}
 		}
+		paintTombs(g);
 		paintUnits(g);
 		paintAnimation(g);
 		if (getGame().isLocalPlayer() && !isAnimating()) {
@@ -332,6 +345,17 @@ public class MapCanvas extends Screen {
 								sx, sy - ts, this);
 					}
 				}
+			}
+		}
+	}
+
+	private void paintTombs(Graphics g) {
+		ArrayList<Tomb> tomb_list = manager.getGame().getMap().getTombList();
+		for (Tomb tomb : tomb_list) {
+			if (needTombDisplay(tomb.x, tomb.y)) {
+				int sx_tomb = getXOnCanvas(tomb.x);
+				int sy_tomb = getYOnCanvas(tomb.y);
+				g.drawImage(ResourceManager.getTombImage(), sx_tomb, sy_tomb, this);
 			}
 		}
 	}
@@ -397,7 +421,7 @@ public class MapCanvas extends Screen {
 		ArrayList<Unit> unit_list = getGame().getMap().getUnitList();
 		for (Unit unit : unit_list) {
 			//if this unit isn't animating, then paint it. otherwise, let animation paint it
-			if (!isUnitAnimating(unit)) {
+			if (!isOnUnitAnimation(unit.getX(), unit.getY())) {
 				int unit_x = unit.getX();
 				int unit_y = unit.getY();
 				int sx = getXOnCanvas(unit_x);
@@ -411,7 +435,7 @@ public class MapCanvas extends Screen {
 
 	private void paintAnimation(Graphics g) {
 		if (isAnimating()) {
-			SwingAnimation animation = (SwingAnimation)manager.getCurrentAnimation();
+			SwingAnimation animation = (SwingAnimation) manager.getCurrentAnimation();
 			animation.paint(g, this);
 		}
 	}
