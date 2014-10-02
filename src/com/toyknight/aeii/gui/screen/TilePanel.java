@@ -22,15 +22,17 @@ public class TilePanel extends AEIIPanel {
 		this.ts = ts;
 		this.game_screen = game_screen;
 	}
-	
+
 	public void setGameManager(GameManager manager) {
 		this.manager = manager;
 	}
 
 	public void update() {
-		int cursor_x = game_screen.getCanvas().getCursorXOnMap();
-		int cursor_y = game_screen.getCanvas().getCursorYOnMap();
-		tile_index = manager.getGame().getMap().getTileIndex(cursor_x, cursor_y);
+		if (game_screen.getCanvas().isOperatable()) {
+			int cursor_x = game_screen.getCanvas().getCursorXOnMap();
+			int cursor_y = game_screen.getCanvas().getCursorYOnMap();
+			tile_index = manager.getGame().getMap().getTileIndex(cursor_x, cursor_y);
+		}
 	}
 
 	@Override
