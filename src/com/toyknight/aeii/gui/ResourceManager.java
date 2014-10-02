@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 public class ResourceManager {
 
 	private static BufferedImage img_logo;
+	private static BufferedImage[][] action_buttons;
 	private static BufferedImage[] borders;
 	private static BufferedImage[] tiles;
 	private static BufferedImage[] top_tiles;
@@ -53,6 +54,7 @@ public class ResourceManager {
 		loadAlpha(ts);
 		loadSmoke(ts);
 		loadChars(ts);
+		loadActionButtons(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		move_path_color = new Color(225, 0, 82);
 	}
@@ -205,6 +207,35 @@ public class ResourceManager {
 		lplus = ResourceUtil.getImageClip(img_lchars, 12 * lw, 0, lw, lh);
 	}
 
+	private static void loadActionButtons(int ts) throws IOException {
+		int iw = ts / 24 * 16;
+		int ih = ts / 24 * 16;
+		int cw = ts / 24 * 20;
+		int ch = ts / 24 * 21;
+		File icons_file = new File("res\\img\\action_icons.png");
+		BufferedImage action_icons = new BufferedImage(iw * 7, ih, BufferedImage.TYPE_INT_ARGB);
+		action_icons.getGraphics().drawImage(ImageIO.read(icons_file), 0, 0, iw * 7, ih, null);
+		BufferedImage[] icon_list = new BufferedImage[7];
+		for (int i = 0; i < 7; i++) {
+			icon_list[i] = ResourceUtil.getImageClip(action_icons, iw * i, 0, iw, ih);
+		}
+		File circle_file = new File("res\\img\\small_circle.png");
+		BufferedImage small_circles = new BufferedImage(cw * 2, ch, BufferedImage.TYPE_INT_ARGB);
+		small_circles.getGraphics().drawImage(ImageIO.read(circle_file), 0, 0, cw * 2, ch, null);
+		BufferedImage[] circle_list = new BufferedImage[2];
+		for (int i = 0; i < 2; i++) {
+			circle_list[i] = ResourceUtil.getImageClip(small_circles, cw * i, 0, cw, ch);
+		}
+		action_buttons = new BufferedImage[7][2];
+		for (int i = 0; i < 7; i++) {
+			for (int j = 0; j < 2; j++) {
+				action_buttons[i][j] = new BufferedImage(cw, ch, BufferedImage.TYPE_INT_ARGB);
+				action_buttons[i][j].getGraphics().drawImage(circle_list[j], 0, 0, null);
+				action_buttons[i][j].getGraphics().drawImage(icon_list[i], (cw - iw) / 2, (ch - ih) / 2, null);
+			}
+		}
+	}
+
 	public static BufferedImage getLogoImage() {
 		return img_logo;
 	}
@@ -283,6 +314,10 @@ public class ResourceManager {
 
 	public static BufferedImage getLMinus() {
 		return lminus;
+	}
+	
+	public static BufferedImage getActionButtonImage(int index, int frame) {
+		return action_buttons[index][frame];
 	}
 
 	public static Color getAEIIPanelBg() {

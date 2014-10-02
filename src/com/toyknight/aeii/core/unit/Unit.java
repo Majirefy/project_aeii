@@ -320,5 +320,9 @@ public class Unit {
 			}
 		}
 	}
+	
+	public boolean isAt(int x, int y) {
+		return this.x_position == x && this.y_position == y;
+	}
 
 }

@@ -132,6 +132,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 			public void animationCompleted(Animation animation) {
 				if (manager.getGame().isLocalPlayer()) {
 					action_panel.update();
+					map_canvas.updateActionBar();
 				}
 			}
 		});

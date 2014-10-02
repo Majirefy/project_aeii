@@ -47,7 +47,7 @@ public class UnitToolkit {
 		if (current_unit == null) {
 			return false;
 		} else {
-			return current_unit.getX() == unit.getX() && current_unit.getY() == unit.getY();
+			return current_unit.isAt(unit.getX(), unit.getY());
 		}
 	}
 

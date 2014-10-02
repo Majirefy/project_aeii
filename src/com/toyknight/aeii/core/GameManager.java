@@ -32,6 +32,7 @@ public class GameManager implements GameListener {
 	private final Queue<Animation> animation_dispatcher;
 	private Animation current_animation;
 
+	private Unit bought_unit;
 	private Unit selected_unit;
 	private Point last_position;
 	private ArrayList<Point> movable_positions;
@@ -41,6 +42,7 @@ public class GameManager implements GameListener {
 		this.game = game;
 		this.animation_provider = provider;
 		this.state = STATE_SELECT;
+		this.bought_unit = null;
 		this.selected_unit = null;
 		this.unit_toolkit = new UnitToolkit(game);
 		this.animation_dispatcher = new LinkedList();
@@ -106,7 +108,7 @@ public class GameManager implements GameListener {
 			}
 		}
 	}
-	
+
 	@Override
 	public void onUnitDestroyed(Unit unit) {
 		Animation animation = animation_provider.getUnitDestroyedAnimation(unit);
@@ -174,6 +176,14 @@ public class GameManager implements GameListener {
 		}
 	}
 
+	public Unit getUnit(int x, int y) {
+		if (bought_unit != null && bought_unit.isAt(x, y)) {
+			return bought_unit;
+		} else {
+			return getGame().getMap().getUnit(x, y);
+		}
+	}
+
 	public Unit getSelectedUnit() {
 		return selected_unit;
 	}
@@ -220,7 +230,7 @@ public class GameManager implements GameListener {
 				int mp_remains = getUnitToolkit().getMovementPointRemains(selected_unit, dest_x, dest_y);
 				getGame().moveUnit(unit_x, unit_y, dest_x, dest_y);
 				selected_unit.setCurrentMovementPoint(mp_remains);
-				switch(state) {
+				switch (state) {
 					case STATE_MOVE:
 						setState(STATE_ACTION);
 						break;
@@ -229,7 +239,7 @@ public class GameManager implements GameListener {
 						setState(STATE_SELECT);
 						break;
 					default:
-						//do nothing
+					//do nothing
 				}
 			}
 		}
@@ -247,6 +257,15 @@ public class GameManager implements GameListener {
 
 	public boolean canReverseMove() {
 		return selected_unit.getX() != last_position.x || selected_unit.getY() != last_position.y;
+	}
+
+	public boolean isAccessibleCastle(int index) {
+		if (index == 39 || index == 41 || index == 43 || index == 45) {
+			Tile tile = TileRepository.getTile(index);
+			return tile.getTeam() == getGame().getCurrentTeam();
+		} else {
+			return false;
+	}
 	}
 
 }

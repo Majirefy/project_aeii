@@ -83,14 +83,12 @@ public class AEIIApplet {
 		game_screen.initComponents();
 		this.getContentPane().add(game_screen, ID_GAME_SCREEN);
 		setCurrentScreen(ID_LOGO_SCREEN);
-		
+
 		CharPainter.init(TILE_SIZE);
 
 		command_line = new CommandLineDialog(this);
 
-		Toolkit.getDefaultToolkit().addAWTEventListener(
-				new GlobalKeyListener(),
-				AWTEvent.KEY_EVENT_MASK);
+		Toolkit.getDefaultToolkit().addAWTEventListener(new GlobalKeyListener(), AWTEvent.KEY_EVENT_MASK);
 	}
 
 	public void start() {
@@ -214,7 +212,7 @@ public class AEIIApplet {
 
 		@Override
 		public void eventDispatched(AWTEvent event) {
-			if (event instanceof KeyEvent) {
+			if (!command_line.isVisible() && event instanceof KeyEvent) {
 				KeyEvent e = (KeyEvent) event;
 				switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
@@ -230,7 +228,6 @@ public class AEIIApplet {
 				}
 			}
 		}
-
 	}
 
 }

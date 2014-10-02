@@ -15,7 +15,8 @@ import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SwingAnimation;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
 import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
-import com.toyknight.aeii.gui.screen.internal.InternalMenu;
+import com.toyknight.aeii.gui.screen.internal.ActionBar;
+import com.toyknight.aeii.gui.screen.internal.UnitStore;
 import com.toyknight.aeii.gui.sprite.AttackCursorSprite;
 import com.toyknight.aeii.gui.sprite.CursorSprite;
 import com.toyknight.aeii.gui.sprite.TilePainter;
@@ -28,6 +29,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  *
@@ -39,7 +41,8 @@ public class MapCanvas extends Screen {
 	private final GameScreen game_screen;
 	private final int SPRITE_INTERVAL = 5;
 
-	private final InternalMenu internal_menu;
+	private final ActionBar action_bar;
+	private final UnitStore unit_store;
 
 	private Rectangle viewport;
 
@@ -50,6 +53,9 @@ public class MapCanvas extends Screen {
 	private CursorSprite cursor;
 	private AttackCursorSprite attack_cursor;
 
+	private int selected_tile_index;
+	private boolean internal_frame_shown;
+
 	private boolean up_pressed = false;
 	private boolean down_pressed = false;
 	private boolean left_pressed = false;
@@ -58,8 +64,10 @@ public class MapCanvas extends Screen {
 	public MapCanvas(Dimension size, AEIIApplet context, GameScreen game_screen) {
 		super(size, context);
 		this.game_screen = game_screen;
+		this.setLayout(null);
 		this.setOpaque(false);
-		internal_menu = new InternalMenu();
+		action_bar = new ActionBar(this, ts);
+		unit_store = new UnitStore(this);
 		MouseAdapter mouse_adapter = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -76,7 +84,9 @@ public class MapCanvas extends Screen {
 	}
 
 	public void init() {
-		this.add(internal_menu);
+		//action_bar.setVisible(false);
+		this.add(action_bar);
+		this.add(unit_store);
 		cursor = new CursorSprite(ts);
 		cursor.setInterval(SPRITE_INTERVAL);
 		attack_cursor = new AttackCursorSprite(ts);
@@ -86,31 +96,41 @@ public class MapCanvas extends Screen {
 
 	public void newGame(GameManager manager) {
 		this.manager = manager;
+		this.action_bar.setGameManager(manager);
 		locateViewport(0, 0);
 		mouse_x = 0;
 		mouse_y = 0;
 		current_delay = 0;
+		internal_frame_shown = false;
 	}
 
 	public boolean isOperatable() {
-		return getGame().isLocalPlayer() && !isAnimating();
+		return getGame().isLocalPlayer() && !isAnimating() && !internalFrameShown();
 	}
 
 	public boolean isAnimating() {
 		return manager.getCurrentAnimation() != null;
 	}
 
+	public boolean internalFrameShown() {
+		return internal_frame_shown;
+	}
+
+	public void setInternalFrameShown(boolean shown) {
+		this.internal_frame_shown = shown;
+	}
+
 	private boolean isOnUnitAnimation(int x, int y) {
 		Animation current_animation = manager.getCurrentAnimation();
 		return isAnimating() && current_animation.hasLocation(x, y) && current_animation instanceof UnitAnimation;
 	}
-	
+
 	private boolean needTombDisplay(int x, int y) {
 		Animation current_animation = manager.getCurrentAnimation();
-		if(current_animation == null) {
+		if (current_animation == null) {
 			return true;
 		} else {
-			if(current_animation.hasLocation(x, y)) {
+			if (current_animation.hasLocation(x, y)) {
 				return !(current_animation instanceof UnitDestroyedAnimation);
 			} else {
 				return true;
@@ -118,14 +138,23 @@ public class MapCanvas extends Screen {
 		}
 	}
 
+	public void showUnitStore() {
+		unit_store.setLocation(
+				(getWidth() - unit_store.getWidth()) / 2,
+				(getHeight() - unit_store.getHeight()) / 2);
+		this.internal_frame_shown = true;
+		unit_store.setVisible(true);
+	}
+
 	public void onMousePress(MouseEvent e) {
 		if (isOperatable()) {
 			int click_x = getCursorXOnMap();
 			int click_y = getCursorYOnMap();
+			selected_tile_index = manager.getGame().getMap().getTileIndex(click_x, click_y);
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				switch (manager.getState()) {
 					case GameManager.STATE_SELECT:
-						manager.selectUnit(click_x, click_y);
+						doSelect(click_x, click_y);
 						break;
 					case GameManager.STATE_MOVE:
 					case GameManager.STATE_RMOVE:
@@ -140,20 +169,25 @@ public class MapCanvas extends Screen {
 			}
 			if (e.getButton() == MouseEvent.BUTTON3) {
 				switch (manager.getState()) {
+					case GameManager.STATE_SELECT:
+						action_bar.setVisible(false);
+						break;
 					case GameManager.STATE_MOVE:
 						manager.cancelMovePhase();
+						action_bar.display();
 						break;
 					case GameManager.STATE_ACTION:
 						manager.reverseMove();
 						break;
 					case GameManager.STATE_ATTACK:
 						manager.cancelAttackPhase();
+						action_bar.display();
 					default:
 					//do nothing
 				}
 			}
+			game_screen.getActionPanel().update();
 		}
-		game_screen.getActionPanel().update();
 	}
 
 	public void onMouseMove(MouseEvent e) {
@@ -191,6 +225,22 @@ public class MapCanvas extends Screen {
 			}
 			if (e.getKeyCode() == Configuration.getKeyRight()) {
 				this.right_pressed = false;
+			}
+		}
+	}
+
+	private void doSelect(int x, int y) {
+		Unit unit = manager.getUnit(x, y);
+		if (unit != null) {
+			manager.selectUnit(x, y);
+			if (manager.getUnitToolkit().isUnitAccessible(unit)) {
+				action_bar.display();
+			} else {
+				action_bar.setVisible(false);
+			}
+		} else {
+			if (manager.isAccessibleCastle(selected_tile_index)) {
+				action_bar.display();
 			}
 		}
 	}
@@ -237,6 +287,10 @@ public class MapCanvas extends Screen {
 		return (map_y - sy) * ts + y_offset;
 	}
 
+	public int getSelectedTile() {
+		return selected_tile_index;
+	}
+
 	private BasicGame getGame() {
 		return manager.getGame();
 	}
@@ -252,8 +306,20 @@ public class MapCanvas extends Screen {
 		}
 		cursor.update();
 		attack_cursor.update();
-		if (isOperatable()) {
-			updateViewport();
+		updateViewport();
+	}
+
+	public void updateActionBar() {
+		if (!isAnimating()) {
+			switch (manager.getState()) {
+				case GameManager.STATE_ACTION:
+					action_bar.display();
+					break;
+				case GameManager.STATE_SELECT:
+					break;
+				default:
+					action_bar.setVisible(false);
+			}
 		}
 	}
 
@@ -285,19 +351,21 @@ public class MapCanvas extends Screen {
 	}
 
 	private void updateViewport() {
-		int map_width = getGame().getMap().getWidth() * ts;
-		int map_height = getGame().getMap().getHeight() * ts;
-		if (down_pressed && viewport.y < map_height - viewport.height) {
-			viewport.y += ts / 3;
-		}
-		if (up_pressed && viewport.y > 0) {
-			viewport.y -= ts / 3;
-		}
-		if (right_pressed && viewport.x < map_width - viewport.width) {
-			viewport.x += ts / 3;
-		}
-		if (left_pressed && viewport.x > 0) {
-			viewport.x -= ts / 3;
+		if (isOperatable()) {
+			int map_width = getGame().getMap().getWidth() * ts;
+			int map_height = getGame().getMap().getHeight() * ts;
+			if (down_pressed && viewport.y < map_height - viewport.height) {
+				viewport.y += ts / 3;
+			}
+			if (up_pressed && viewport.y > 0) {
+				viewport.y -= ts / 3;
+			}
+			if (right_pressed && viewport.x < map_width - viewport.width) {
+				viewport.x += ts / 3;
+			}
+			if (left_pressed && viewport.x > 0) {
+				viewport.x -= ts / 3;
+			}
 		}
 	}
 
@@ -324,7 +392,7 @@ public class MapCanvas extends Screen {
 		paintUnits(g);
 		paintAnimation(g);
 		if (getGame().isLocalPlayer() && !isAnimating()) {
-			paintCursor(g, ts);
+			paintCursor(g);
 		}
 		super.paint(g);
 	}
@@ -418,8 +486,9 @@ public class MapCanvas extends Screen {
 	}
 
 	private void paintUnits(Graphics g) {
-		ArrayList<Unit> unit_list = getGame().getMap().getUnitList();
-		for (Unit unit : unit_list) {
+		Set<Point> unit_positions = getGame().getMap().getUnitPositionSet();
+		for (Point position : unit_positions) {
+			Unit unit = manager.getUnit(position.x, position.y);
 			//if this unit isn't animating, then paint it. otherwise, let animation paint it
 			if (!isOnUnitAnimation(unit.getX(), unit.getY())) {
 				int unit_x = unit.getX();
@@ -440,17 +509,19 @@ public class MapCanvas extends Screen {
 		}
 	}
 
-	private void paintCursor(Graphics g, int ts) {
-		int cursor_x = getCursorXOnMap();
-		int cursor_y = getCursorYOnMap();
-		int sx = getXOnCanvas(cursor_x);
-		int sy = getYOnCanvas(cursor_y);
-		if (isWithinCanvas(sx, sy)) {
-			if (manager.getState() == GameManager.STATE_ATTACK
-					&& manager.canAttack(cursor_x, cursor_y)) {
-				attack_cursor.paint(g, sx, sy);
-			} else {
-				cursor.paint(g, sx, sy);
+	private void paintCursor(Graphics g) {
+		if (isOperatable()) {
+			int cursor_x = getCursorXOnMap();
+			int cursor_y = getCursorYOnMap();
+			int sx = getXOnCanvas(cursor_x);
+			int sy = getYOnCanvas(cursor_y);
+			if (isWithinCanvas(sx, sy)) {
+				if (manager.getState() == GameManager.STATE_ATTACK
+						&& manager.canAttack(cursor_x, cursor_y)) {
+					attack_cursor.paint(g, sx, sy);
+				} else {
+					cursor.paint(g, sx, sy);
+				}
 			}
 		}
 	}
