@@ -17,7 +17,7 @@ public class Unit {
 
 	private int level;     //等级（初始等级为0，最高可以升级到3级）
 
-	private String unit_code;
+	private final String unit_code;
 	private int team;
 
 	private int max_hp;
@@ -46,40 +46,45 @@ public class Unit {
 	private int min_attack_range;   //最小攻击距离
 
 	private boolean is_standby;
-
-	public Unit(int index) {
+	
+	public Unit(int index, String unit_code) {
 		this.index = index;
 		this.level = 0;
-		abilities = new ArrayList();
-		learnable_abilities = new ArrayList();
-		buff_list = new ArrayList();
+		this.abilities = new ArrayList();
+		this.learnable_abilities = new ArrayList();
+		this.buff_list = new ArrayList();
+		this.unit_code = unit_code;
 	}
 
-	public Unit(Unit unit) {
+	public Unit(int index) {
+		this(index, "#");
+	}
+
+	public Unit(Unit unit, String unit_code) {
+		this(unit.getIndex(), unit_code);
+		this.level = unit.getLevel();
+		this.price = unit.getPrice();
+		this.team = unit.getTeam();
+		this.max_hp = unit.getMaxHp();
+		this.current_hp = unit.getCurrentHp();
+		this.attack = unit.getAttack();
+		this.attack_type = unit.getAttackType();
+		this.physical_defence = unit.getPhysicalDefence();
+		this.magical_defence = unit.getMagicalDefence();
+		this.movement_point = unit.getMovementPoint();
+		this.current_movement_point = unit.getCurrentMovementPoint();
+		this.hp_growth = unit.getHpGrowth();
+		this.attack_growth = unit.getAttackGrowth();
+		this.physical_defence_growth = unit.getPhysicalDefenceGrowth();
+		this.magical_defence_growth = unit.getMovementGrowth();
+		this.movement_growth = unit.getMovementGrowth();
+		this.x_position = unit.getX();
+		this.y_position = unit.getY();
+		this.max_attack_range = unit.getMaxAttackRange();
+		this.min_attack_range = unit.getMinAttackRange();
 		this.abilities = new ArrayList(unit.getAbilities());
 		this.buff_list = new ArrayList(unit.getBuffList());
 		this.learnable_abilities = new ArrayList(unit.getLearnableAbilities());
-		this.index = unit.getIndex();
-		this.price = unit.getPrice();
-		this.unit_code = unit.unit_code;
-		this.team = unit.team;
-		this.max_hp = unit.max_hp;
-		this.current_hp = unit.current_hp;
-		this.attack = unit.attack;
-		this.attack_type = unit.attack_type;
-		this.physical_defence = unit.physical_defence;
-		this.magical_defence = unit.magical_defence;
-		this.movement_point = unit.movement_point;
-		this.current_movement_point = unit.current_movement_point;
-		this.hp_growth = unit.hp_growth;
-		this.attack_growth = unit.attack_growth;
-		this.physical_defence_growth = unit.physical_defence_growth;
-		this.magical_defence_growth = unit.magical_defence_growth;
-		this.movement_growth = unit.movement_growth;
-		this.x_position = unit.x_position;
-		this.y_position = unit.y_position;
-		this.max_attack_range = unit.max_attack_range;
-		this.min_attack_range = unit.min_attack_range;
 	}
 
 	public int getIndex() {
@@ -104,10 +109,6 @@ public class Unit {
 
 	public String getUnitCode() {
 		return unit_code;
-	}
-
-	public void setUnitCode(String unit_code) {
-		this.unit_code = unit_code;
 	}
 
 	public int getTeam() {

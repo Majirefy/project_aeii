@@ -1,8 +1,8 @@
 package com.toyknight.aeii.gui;
 
-import com.toyknight.aeii.core.AEIIException;
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.Launcher;
+import com.toyknight.aeii.core.AEIIException;
 import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
@@ -11,12 +11,12 @@ import com.toyknight.aeii.gui.screen.LogoScreen;
 import com.toyknight.aeii.gui.screen.MainMenuScreen;
 import com.toyknight.aeii.gui.util.CharPainter;
 import com.toyknight.aeii.gui.util.DialogUtil;
-import java.awt.AWTEvent;
 import java.awt.CardLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.AWTEventListener;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyEventPostProcessor;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -88,7 +88,8 @@ public class AEIIApplet {
 
 		command_line = new CommandLineDialog(this);
 
-		Toolkit.getDefaultToolkit().addAWTEventListener(new GlobalKeyListener(), AWTEvent.KEY_EVENT_MASK);
+		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		manager.addKeyEventPostProcessor(new GlobalKeyListenerr());
 	}
 
 	public void start() {
@@ -207,13 +208,12 @@ public class AEIIApplet {
 		}
 
 	}
-
-	private class GlobalKeyListener implements AWTEventListener {
+	
+	private class GlobalKeyListenerr implements KeyEventPostProcessor {
 
 		@Override
-		public void eventDispatched(AWTEvent event) {
-			if (!command_line.isVisible() && event instanceof KeyEvent) {
-				KeyEvent e = (KeyEvent) event;
+		public boolean postProcessKeyEvent(KeyEvent e) {
+			if (!command_line.isVisible()) {
 				switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
 						if (e.getKeyCode() == KeyEvent.VK_F9) {
@@ -227,7 +227,9 @@ public class AEIIApplet {
 						break;
 				}
 			}
+			return false;
 		}
+		
 	}
 
 }

@@ -18,6 +18,8 @@ public class ResourceManager {
 
 	private static BufferedImage img_logo;
 	private static BufferedImage[][] action_buttons;
+	private static BufferedImage[] small_circles;
+	private static BufferedImage[] big_circles;
 	private static BufferedImage[] borders;
 	private static BufferedImage[] tiles;
 	private static BufferedImage[] top_tiles;
@@ -54,6 +56,7 @@ public class ResourceManager {
 		loadAlpha(ts);
 		loadSmoke(ts);
 		loadChars(ts);
+		loadCircles(ts);
 		loadActionButtons(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		move_path_color = new Color(225, 0, 82);
@@ -207,6 +210,24 @@ public class ResourceManager {
 		lplus = ResourceUtil.getImageClip(img_lchars, 12 * lw, 0, lw, lh);
 	}
 
+	private static void loadCircles(int ts) throws IOException {
+		int scw = ts / 24 * 20;
+		int sch = ts / 24 * 21;
+		int bcw = ts / 24 * 32;
+		int bch = ts / 24 * 33;
+		big_circles = new BufferedImage[2];
+		small_circles = new BufferedImage[2];
+		File small_circle_file = new File("res\\img\\small_circle.png");
+		BufferedImage img_small_circle = new BufferedImage(scw * 2, sch, BufferedImage.TYPE_INT_ARGB);
+		img_small_circle.getGraphics().drawImage(ImageIO.read(small_circle_file), 0, 0, scw * 2, sch, null);
+		for (int i = 0; i < 2; i++) {
+			small_circles[i] = ResourceUtil.getImageClip(img_small_circle, scw * i, 0, scw, sch);
+			File big_circle_file = new File("res\\img\\big_circle_" + i + ".png");
+			big_circles[i] = new BufferedImage(bcw * 2, bch, BufferedImage.TYPE_INT_ARGB);
+			big_circles[i].getGraphics().drawImage(ImageIO.read(big_circle_file), 0, 0, bcw, bch, null);
+		}
+	}
+
 	private static void loadActionButtons(int ts) throws IOException {
 		int iw = ts / 24 * 16;
 		int ih = ts / 24 * 16;
@@ -219,18 +240,11 @@ public class ResourceManager {
 		for (int i = 0; i < 7; i++) {
 			icon_list[i] = ResourceUtil.getImageClip(action_icons, iw * i, 0, iw, ih);
 		}
-		File circle_file = new File("res\\img\\small_circle.png");
-		BufferedImage small_circles = new BufferedImage(cw * 2, ch, BufferedImage.TYPE_INT_ARGB);
-		small_circles.getGraphics().drawImage(ImageIO.read(circle_file), 0, 0, cw * 2, ch, null);
-		BufferedImage[] circle_list = new BufferedImage[2];
-		for (int i = 0; i < 2; i++) {
-			circle_list[i] = ResourceUtil.getImageClip(small_circles, cw * i, 0, cw, ch);
-		}
 		action_buttons = new BufferedImage[7][2];
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 2; j++) {
 				action_buttons[i][j] = new BufferedImage(cw, ch, BufferedImage.TYPE_INT_ARGB);
-				action_buttons[i][j].getGraphics().drawImage(circle_list[j], 0, 0, null);
+				action_buttons[i][j].getGraphics().drawImage(small_circles[j], 0, 0, null);
 				action_buttons[i][j].getGraphics().drawImage(icon_list[i], (cw - iw) / 2, (ch - ih) / 2, null);
 			}
 		}
@@ -315,9 +329,17 @@ public class ResourceManager {
 	public static BufferedImage getLMinus() {
 		return lminus;
 	}
-	
+
 	public static BufferedImage getActionButtonImage(int index, int frame) {
 		return action_buttons[index][frame];
+	}
+	
+	public static BufferedImage getSmallCircleImage(int index) {
+		return small_circles[index];
+	}
+	
+	public static BufferedImage getBigCircleImage(int index) {
+		return big_circles[index];
 	}
 
 	public static Color getAEIIPanelBg() {

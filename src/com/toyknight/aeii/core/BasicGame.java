@@ -4,6 +4,7 @@ import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
 import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
 
 /**
@@ -74,8 +75,8 @@ public class BasicGame implements OperationListener {
 	protected void doAttack(Unit attacker, Unit defender) {
 		int attack_damage = UnitToolkit.getDamage(attacker, defender, getMap());
 		doDamage(attacker, defender, attack_damage);
-		if(defender.getCurrentHp() > 0 && 
-				UnitToolkit.isWithinRange(defender, attacker.getX(), attacker.getY())) {
+		if (defender.getCurrentHp() > 0
+				&& UnitToolkit.isWithinRange(defender, attacker.getX(), attacker.getY())) {
 			int counter_damage = UnitToolkit.getDamage(defender, attacker, getMap());
 			doDamage(defender, attacker, counter_damage);
 		}
@@ -110,6 +111,20 @@ public class BasicGame implements OperationListener {
 	}
 
 	@Override
+	public void buyUnit(int index, int x, int y) {
+		//deal with various issues
+		addUnit(index, x, y);
+	}
+	
+	@Override
+	public void addUnit(int index, int x, int y) {
+		Unit unit = UnitFactory.createUnit(index);
+		unit.setX(x);
+		unit.setY(y);
+		getMap().addUnit(unit);
+	}
+
+	@Override
 	public void moveUnit(int unit_x, int unit_y, int dest_x, int dest_y) {
 		Unit unit = getMap().getUnit(unit_x, unit_y);
 		if (unit != null) {
@@ -118,13 +133,12 @@ public class BasicGame implements OperationListener {
 	}
 
 	protected void moveUnit(Unit unit, int dest_x, int dest_y) {
-		int start_x = unit.getX();
-		int start_y = unit.getY();
-		getMap().removeUnit(start_x, start_y);
-		unit.setX(dest_x);
-		unit.setY(dest_y);
-		getMap().addUnit(unit);
-		game_listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
+		if (unit != null && getMap().getUnit(dest_x, dest_y) == null) {
+			int start_x = unit.getX();
+			int start_y = unit.getY();
+			getMap().moveUnit(unit, dest_x, dest_y);
+			game_listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
+		}
 	}
 
 	public Map getMap() {

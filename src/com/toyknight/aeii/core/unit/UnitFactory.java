@@ -14,6 +14,7 @@ import java.util.Scanner;
 public class UnitFactory {
 
 	private static Unit[] units;
+	private static long current_code;
 
 	private UnitFactory() {
 	}
@@ -76,6 +77,7 @@ public class UnitFactory {
 				throw new AEIIException("bad unit data");
 			}
 		}
+		current_code = 0;
 	}
 	
 	public static int getUnitCount() {
@@ -83,7 +85,17 @@ public class UnitFactory {
 	}
 
 	public static Unit createUnit(int index) {
-		Unit unit = new Unit(units[index]);
+		String unit_code = "#"+Long.toString(current_code++);
+		return createUnit(index, unit_code);
+	}
+	
+	public static Unit cloneUnit(Unit unit) {
+		String unit_code = unit.getUnitCode();
+		return new Unit(unit, unit_code);
+	}
+	
+	public static Unit createUnit(int index, String unit_code) {
+		Unit unit = new Unit(units[index], unit_code);
 		unit.setStandby(false);
 		unit.setCurrentHp(unit.getMaxHp());
 		unit.setCurrentMovementPoint(unit.getMovementPoint());

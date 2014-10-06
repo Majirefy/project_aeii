@@ -54,6 +54,8 @@ public class MapCanvas extends Screen {
 	private AttackCursorSprite attack_cursor;
 
 	private int selected_tile_index;
+	private int selected_x;
+	private int selected_y;
 	private boolean internal_frame_shown;
 
 	private boolean up_pressed = false;
@@ -67,7 +69,7 @@ public class MapCanvas extends Screen {
 		this.setLayout(null);
 		this.setOpaque(false);
 		action_bar = new ActionBar(this, ts);
-		unit_store = new UnitStore(this);
+		unit_store = new UnitStore(this, ts);
 		MouseAdapter mouse_adapter = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -84,7 +86,6 @@ public class MapCanvas extends Screen {
 	}
 
 	public void init() {
-		//action_bar.setVisible(false);
 		this.add(action_bar);
 		this.add(unit_store);
 		cursor = new CursorSprite(ts);
@@ -94,9 +95,10 @@ public class MapCanvas extends Screen {
 		viewport = new Rectangle(0, 0, getWidth(), getHeight());
 	}
 
-	public void newGame(GameManager manager) {
+	public void setGameManager(GameManager manager) {
 		this.manager = manager;
 		this.action_bar.setGameManager(manager);
+		this.unit_store.setGameManager(manager);
 		locateViewport(0, 0);
 		mouse_x = 0;
 		mouse_y = 0;
@@ -142,16 +144,16 @@ public class MapCanvas extends Screen {
 		unit_store.setLocation(
 				(getWidth() - unit_store.getWidth()) / 2,
 				(getHeight() - unit_store.getHeight()) / 2);
-		this.internal_frame_shown = true;
-		unit_store.setVisible(true);
+		unit_store.display();
 	}
 
 	public void onMousePress(MouseEvent e) {
 		if (isOperatable()) {
 			int click_x = getCursorXOnMap();
 			int click_y = getCursorYOnMap();
-			selected_tile_index = manager.getGame().getMap().getTileIndex(click_x, click_y);
 			if (e.getButton() == MouseEvent.BUTTON1) {
+				this.selected_x = click_x;
+				this.selected_y = click_y;
 				switch (manager.getState()) {
 					case GameManager.STATE_SELECT:
 						doSelect(click_x, click_y);
@@ -287,8 +289,12 @@ public class MapCanvas extends Screen {
 		return (map_y - sy) * ts + y_offset;
 	}
 
-	public int getSelectedTile() {
-		return selected_tile_index;
+	public int getSelectedX() {
+		return selected_x;
+	}
+
+	public int getSelectedY() {
+		return selected_y;
 	}
 
 	private BasicGame getGame() {

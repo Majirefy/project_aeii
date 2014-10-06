@@ -1,6 +1,7 @@
 package com.toyknight.aeii.gui.animation;
 
 import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.screen.MapCanvas;
 import com.toyknight.aeii.gui.sprite.UnitPainter;
@@ -30,8 +31,8 @@ public class UnitAttackAnimation extends UnitAnimation {
 		this.ts = ts;
 		this.current_frame = 0;
 		this.damage = damage;
-		this.attacker = new Unit(attacker);
-		this.defender = new Unit(defender);
+		this.attacker = UnitFactory.cloneUnit(attacker);
+		this.defender = UnitFactory.cloneUnit(defender);
 		random = new Random(System.currentTimeMillis());
 	}
 

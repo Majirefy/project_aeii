@@ -87,7 +87,10 @@ public class ActionBar extends JPanel {
 
 	public void display() {
 		this.removeAll();
-		if(manager.isAccessibleCastle(canvas.getSelectedTile())) {
+		int sx = canvas.getSelectedX();
+		int sy = canvas.getSelectedY();
+		int tile_index = manager.getGame().getMap().getTileIndex(sx, sy);
+		if (manager.isAccessibleCastle(tile_index)) {
 			addButton(btn_buy);
 		}
 		Unit unit = manager.getSelectedUnit();
@@ -106,7 +109,9 @@ public class ActionBar extends JPanel {
 				default:
 				//do nothing
 			}
-			int btn_count = this.getComponentCount();
+		}
+		int btn_count = this.getComponentCount();
+		if (btn_count > 0) {
 			this.setBounds(0, canvas.getHeight() - bh * 2, btn_count * bw + (btn_count + 1) * bw / 4, bh);
 			this.setVisible(true);
 		}
@@ -153,7 +158,7 @@ public class ActionBar extends JPanel {
 			setVisible(false);
 		}
 	};
-	
+
 	private final ActionListener btn_buy_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {

@@ -43,14 +43,6 @@ public class UnitToolkit {
 		this.attackable_positions = null;
 	}
 
-	public boolean isCurrentUnit(Unit unit) {
-		if (current_unit == null) {
-			return false;
-		} else {
-			return current_unit.isAt(unit.getX(), unit.getY());
-		}
-	}
-
 	private void createMoveMarkMap() {
 		int width = game.getMap().getWidth();
 		int height = game.getMap().getHeight();
@@ -111,7 +103,7 @@ public class UnitToolkit {
 	}
 
 	public ArrayList<Point> createMovePath(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
-		if (!isCurrentUnit(unit)) {
+		if (!isTheSameUnit(current_unit, unit)) {
 			setCurrentUnit(unit);
 			createMovablePositions();
 		}
@@ -158,7 +150,7 @@ public class UnitToolkit {
 	}
 
 	public int getMovementPointRemains(Unit unit, int dest_x, int dest_y) {
-		if (!isCurrentUnit(unit)) {
+		if (!isTheSameUnit(current_unit, unit)) {
 			setCurrentUnit(unit);
 			createMovablePositions();
 		}
@@ -239,6 +231,18 @@ public class UnitToolkit {
 		}
 	}
 
+	public static boolean isTheSameUnit(Unit unit_a, Unit unit_b) {
+		if (unit_a == null || unit_b == null) {
+			return false;
+		} else {
+			if (unit_a.isAt(unit_b.getX(), unit_b.getY())) {
+				return unit_a.getUnitCode().equals(unit_b.getUnitCode());
+			} else {
+				return false;
+			}
+		}
+	}
+
 	public static boolean isWithinRange(Unit unit, int target_x, int target_y) {
 		int range = Math.abs(target_x - unit.getX()) + Math.abs(target_y - unit.getY());
 		return unit.getMinAttackRange() <= range && range <= unit.getMaxAttackRange();
@@ -269,7 +273,7 @@ public class UnitToolkit {
 			return defence_bonus;
 		}
 	}
-	
+
 	public static int getAttackBonus(Unit attacker, int tile_index) {
 		return 0;
 	}

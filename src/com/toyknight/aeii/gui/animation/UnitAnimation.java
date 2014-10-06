@@ -1,6 +1,7 @@
 package com.toyknight.aeii.gui.animation;
 
 import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.unit.UnitFactory;
 
 /**
  *
@@ -13,7 +14,7 @@ public class UnitAnimation extends SwingAnimation {
 	public UnitAnimation(Unit unit, int x, int y) {
 		super(x, y);
 		if (unit != null) {
-			this.unit = new Unit(unit);
+			this.unit = UnitFactory.cloneUnit(unit);
 		} else {
 			this.unit = null;
 		}

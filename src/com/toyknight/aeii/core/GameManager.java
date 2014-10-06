@@ -25,6 +25,7 @@ public class GameManager implements GameListener {
 	public static final int STATE_ATTACK = 0x5;
 
 	private int state;
+	private boolean is_new_unit_phase;
 	private final BasicGame game;
 	private final UnitToolkit unit_toolkit;
 	private final AnimationProvider animation_provider;
@@ -32,7 +33,6 @@ public class GameManager implements GameListener {
 	private final Queue<Animation> animation_dispatcher;
 	private Animation current_animation;
 
-	private Unit bought_unit;
 	private Unit selected_unit;
 	private Point last_position;
 	private ArrayList<Point> movable_positions;
@@ -42,7 +42,7 @@ public class GameManager implements GameListener {
 		this.game = game;
 		this.animation_provider = provider;
 		this.state = STATE_SELECT;
-		this.bought_unit = null;
+		this.is_new_unit_phase = false;
 		this.selected_unit = null;
 		this.unit_toolkit = new UnitToolkit(game);
 		this.animation_dispatcher = new LinkedList();
@@ -132,26 +132,28 @@ public class GameManager implements GameListener {
 	}
 
 	public void beginMovePhase() {
-		if (getUnitToolkit().isUnitAccessible(selected_unit)) {
+		if (getUnitToolkit().isUnitAccessible(getSelectedUnit())) {
 			movable_positions = getUnitToolkit().createMovablePositions();
 			setState(STATE_MOVE);
 		}
 	}
 
 	private void beginRMovePhase() {
-		if (getUnitToolkit().isUnitAccessible(selected_unit)) {
-			getUnitToolkit().setCurrentUnit(selected_unit);
+		if (getUnitToolkit().isUnitAccessible(getSelectedUnit())) {
+			getUnitToolkit().setCurrentUnit(getSelectedUnit());
 			movable_positions = getUnitToolkit().createMovablePositions();
 			setState(STATE_RMOVE);
 		}
 	}
 
 	public void cancelMovePhase() {
-		setState(STATE_SELECT);
+		if (!is_new_unit_phase) {
+			setState(STATE_SELECT);
+		}
 	}
 
 	public void beginAttackPhase() {
-		if (getUnitToolkit().isUnitAccessible(selected_unit)) {
+		if (getUnitToolkit().isUnitAccessible(getSelectedUnit())) {
 			this.attackable_positions = unit_toolkit.createAttackablePositions(selected_unit);
 			setState(STATE_ATTACK);
 		}
@@ -162,6 +164,15 @@ public class GameManager implements GameListener {
 			setState(STATE_ACTION);
 		} else {
 			setState(STATE_SELECT);
+		}
+	}
+
+	public void buyUnit(int unit_index, int x, int y) {
+		int tile_index = getGame().getMap().getTileIndex(x, y);
+		if (this.isAccessibleCastle(tile_index)) {
+			getGame().buyUnit(unit_index, x, y);
+			selectUnit(x, y);
+			beginMovePhase();
 		}
 	}
 
@@ -177,11 +188,7 @@ public class GameManager implements GameListener {
 	}
 
 	public Unit getUnit(int x, int y) {
-		if (bought_unit != null && bought_unit.isAt(x, y)) {
-			return bought_unit;
-		} else {
-			return getGame().getMap().getUnit(x, y);
-		}
+		return getGame().getMap().getUnit(x, y);
 	}
 
 	public Unit getSelectedUnit() {
@@ -189,12 +196,13 @@ public class GameManager implements GameListener {
 	}
 
 	public boolean canAttack(int x, int y) {
-		if (selected_unit != null && UnitToolkit.isWithinRange(selected_unit, x, y)) {
+		Unit unit = getSelectedUnit();
+		if (unit != null && UnitToolkit.isWithinRange(unit, x, y)) {
 			Unit defender = getGame().getMap().getUnit(x, y);
 			if (defender != null) {
-				return UnitToolkit.isEnemy(selected_unit, defender);
+				return UnitToolkit.isEnemy(unit, defender);
 			} else {
-				if (selected_unit.hasAbility(Ability.DESTROYER)) {
+				if (unit.hasAbility(Ability.DESTROYER)) {
 					int tile_index = getGame().getMap().getTileIndex(x, y);
 					Tile tile = TileRepository.getTile(tile_index);
 					return tile.isDestroyable();
@@ -208,34 +216,40 @@ public class GameManager implements GameListener {
 	}
 
 	public void doAttack(int target_x, int target_y) {
+		Unit unit = getSelectedUnit();
 		if (canAttack(target_x, target_y)) {
-			int unit_x = selected_unit.getX();
-			int unit_y = selected_unit.getY();
+			int unit_x = unit.getX();
+			int unit_y = unit.getY();
 			getGame().doAttack(unit_x, unit_y, target_x, target_y);
 		}
 	}
 
 	public void standbySelectedUnit() {
-		if (selected_unit != null) {
-			getGame().standbyUnit(selected_unit.getX(), selected_unit.getY());
+		Unit unit = getSelectedUnit();
+		if (unit != null) {
+			getGame().standbyUnit(unit.getX(), unit.getY());
 			setState(STATE_SELECT);
 		}
 	}
 
 	public void moveSelectedUnit(int dest_x, int dest_y) {
-		if (selected_unit != null && (state == STATE_MOVE || state == STATE_RMOVE)) {
-			int unit_x = selected_unit.getX();
-			int unit_y = selected_unit.getY();
+		Unit unit = getSelectedUnit();
+		if (unit != null && (state == STATE_MOVE || state == STATE_RMOVE)) {
+			int unit_x = unit.getX();
+			int unit_y = unit.getY();
 			if (movable_positions.contains(new Point(dest_x, dest_y))) {
-				int mp_remains = getUnitToolkit().getMovementPointRemains(selected_unit, dest_x, dest_y);
+				int mp_remains = getUnitToolkit().getMovementPointRemains(unit, dest_x, dest_y);
 				getGame().moveUnit(unit_x, unit_y, dest_x, dest_y);
-				selected_unit.setCurrentMovementPoint(mp_remains);
+				unit.setCurrentMovementPoint(mp_remains);
 				switch (state) {
 					case STATE_MOVE:
+						if (is_new_unit_phase) {
+							is_new_unit_phase = false;
+						}
 						setState(STATE_ACTION);
 						break;
 					case STATE_RMOVE:
-						selected_unit.setStandby(true);
+						unit.setStandby(true);
 						setState(STATE_SELECT);
 						break;
 					default:
@@ -246,17 +260,19 @@ public class GameManager implements GameListener {
 	}
 
 	public void reverseMove() {
-		if (getUnitToolkit().isUnitAccessible(selected_unit) && state == STATE_ACTION) {
+		Unit unit = getSelectedUnit();
+		if (getUnitToolkit().isUnitAccessible(unit) && state == STATE_ACTION) {
 			int last_x = last_position.x;
 			int last_y = last_position.y;
-			getGame().moveUnit(selected_unit, last_x, last_y);
-			selected_unit.setCurrentMovementPoint(selected_unit.getMovementPoint());
+			getGame().moveUnit(unit, last_x, last_y);
+			unit.setCurrentMovementPoint(unit.getMovementPoint());
 			beginMovePhase();
 		}
 	}
 
 	public boolean canReverseMove() {
-		return selected_unit.getX() != last_position.x || selected_unit.getY() != last_position.y;
+		Unit unit = getSelectedUnit();
+		return unit.getX() != last_position.x || unit.getY() != last_position.y;
 	}
 
 	public boolean isAccessibleCastle(int index) {
@@ -265,7 +281,7 @@ public class GameManager implements GameListener {
 			return tile.getTeam() == getGame().getCurrentTeam();
 		} else {
 			return false;
-	}
+		}
 	}
 
 }

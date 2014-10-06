@@ -64,7 +64,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 	public void setGame(BasicGame game) {
 		this.game = game;
 		this.manager = new GameManager(game, this);
-		map_canvas.newGame(manager);
+		map_canvas.setGameManager(manager);
 		action_panel.setGameManager(manager);
 		tile_panel.setGameManager(manager);
 		action_panel.update();
