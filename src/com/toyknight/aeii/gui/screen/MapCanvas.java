@@ -39,7 +39,7 @@ public class MapCanvas extends Screen {
 
 	private GameManager manager;
 	private final GameScreen game_screen;
-	private final int SPRITE_INTERVAL = 5;
+	private final int SPRITE_INTERVAL = 8;
 
 	private final ActionBar action_bar;
 	private final UnitStore unit_store;
@@ -152,8 +152,6 @@ public class MapCanvas extends Screen {
 			int click_x = getCursorXOnMap();
 			int click_y = getCursorYOnMap();
 			if (e.getButton() == MouseEvent.BUTTON1) {
-				this.selected_x = click_x;
-				this.selected_y = click_y;
 				switch (manager.getState()) {
 					case GameManager.STATE_SELECT:
 						doSelect(click_x, click_y);
@@ -232,6 +230,8 @@ public class MapCanvas extends Screen {
 	}
 
 	private void doSelect(int x, int y) {
+		this.selected_x = x;
+		this.selected_y = y;
 		Unit unit = manager.getUnit(x, y);
 		if (unit != null) {
 			manager.selectUnit(x, y);

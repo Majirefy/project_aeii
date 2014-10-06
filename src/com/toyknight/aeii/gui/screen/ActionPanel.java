@@ -21,7 +21,7 @@ import javax.swing.JLabel;
  */
 public class ActionPanel extends AEIIPanel {
 
-	private int ts;
+	private final int ts;
 	private GameManager manager;
 	private final GameScreen game_screen;
 
@@ -30,7 +30,8 @@ public class ActionPanel extends AEIIPanel {
 	private final AEIIButton btn_mini_map;
 	private final AEIIButton btn_end_turn;
 
-	public ActionPanel(GameScreen game_screen) {
+	public ActionPanel(GameScreen game_screen, int ts) {
+		this.ts = ts;
 		this.game_screen = game_screen;
 		btn_end_turn = new AEIIButton(Language.getText("LB_END_TURN"));
 		btn_mini_map = new AEIIButton(Language.getText("LB_MINI_MAP"));
@@ -45,7 +46,6 @@ public class ActionPanel extends AEIIPanel {
 	}
 
 	public void initComponents(int ts) {
-		this.ts = ts;
 		this.setLayout(null);
 		btn_end_turn.setBounds(ts / 2, getHeight() - ts, getWidth() - ts, ts / 2);
 		btn_end_turn.setToolTipText("Ctrl + Enter");

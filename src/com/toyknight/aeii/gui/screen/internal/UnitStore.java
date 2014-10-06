@@ -14,6 +14,7 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
@@ -76,7 +77,7 @@ public class UnitStore extends JInternalFrame {
 		sp_unit_list.setBounds(ts / 2, ts / 2, ts * 9, ts * 3 / 2 * 5);
 		sp_unit_list.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		this.getContentPane().add(sp_unit_list);
-		btn_buy.setBounds(ts / 2, ts * 8 + ts / 2, ts * 2, ts/2);
+		btn_buy.setBounds(ts / 2, ts * 8 + ts / 2, ts * 2, ts / 2);
 		btn_buy.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -93,12 +94,13 @@ public class UnitStore extends JInternalFrame {
 	}
 
 	public void display() {
-		Integer[] unit_index_list = new Integer[UnitFactory.getUnitCount()];
-		for (int i = 0; i < unit_index_list.length; i++) {
-			//deal with buyable issues
-			unit_index_list[i] = i;
+		ArrayList<Integer> unit_index_list = new ArrayList();
+		for (int i = 0; i < UnitFactory.getUnitCount(); i++) {
+			if (UnitFactory.getUnitPrice(i) > 0) {
+				unit_index_list.add(i);
+			}
 		}
-		unit_list.setListData(unit_index_list);
+		unit_list.setListData(unit_index_list.toArray());
 		unit_list.setSelectedIndex(0);
 		canvas.setInternalFrameShown(true);
 		this.show();

@@ -1,4 +1,3 @@
-
 package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.map.Map;
@@ -10,23 +9,20 @@ import com.toyknight.aeii.core.player.Player;
  * @author toyknight
  */
 public class GameFactory {
-	
+
 	private final Map map;
-	private final BasicGame basic_game;
-	
+
 	public GameFactory(Map map) {
 		this.map = map;
-		this.basic_game = new BasicGame(map);
-		this.basic_game.setPlayer(0, new LocalPlayer(basic_game));
 	}
-	
-	public void setPlayers(Player[] players) {
-		
+
+	public BasicGame createBasicGame(Player[] players, int start_gold, int max_population) {
+		for (Player player : players) {
+			player.setGold(start_gold);
+		}
+		BasicGame game = new BasicGame(map, players, max_population);
+		game.init();
+		return game;
 	}
-	
-	public BasicGame createBasicGame() {
-		basic_game.init();
-		return basic_game;
-	}
-	
+
 }

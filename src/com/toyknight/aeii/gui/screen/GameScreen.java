@@ -8,7 +8,6 @@ import com.toyknight.aeii.core.animation.AnimationListener;
 import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
-import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SmokeAnimation;
 import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
@@ -46,7 +45,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 		tile_panel = new TilePanel(this, ts);
 		tile_panel.setBounds(0, height - ts, ts, ts);
 		this.add(tile_panel);
-		status_panel = new StatusPanel();
+		status_panel = new StatusPanel(ts);
 		status_panel.setBounds(ts, height - ts, width - ts * (apw + 1), ts);
 		this.add(status_panel);
 		Dimension canvas_size = new Dimension(width - ts * apw, height - ts);
@@ -55,7 +54,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 		map_canvas.setBounds(0, 0, width - ts * apw, height - ts);
 		map_canvas.init();
 		this.add(map_canvas);
-		action_panel = new ActionPanel(this);
+		action_panel = new ActionPanel(this, ts);
 		action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
 		action_panel.initComponents(ts);
 		this.add(action_panel);
@@ -66,6 +65,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 		this.manager = new GameManager(game, this);
 		map_canvas.setGameManager(manager);
 		action_panel.setGameManager(manager);
+		status_panel.setGameManager(manager);
 		tile_panel.setGameManager(manager);
 		action_panel.update();
 		tile_panel.update();
@@ -149,10 +149,6 @@ public class GameScreen extends Screen implements AnimationProvider {
 		map_canvas.update();
 		tile_panel.update();
 		manager.updateAnimation();
-	}
-
-	private class StatusPanel extends AEIIPanel {
-
 	}
 
 }

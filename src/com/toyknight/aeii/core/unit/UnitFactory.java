@@ -83,6 +83,10 @@ public class UnitFactory {
 	public static int getUnitCount() {
 		return units.length;
 	}
+	
+	public static int getUnitPrice(int index) {
+		return units[index].getPrice();
+	}
 
 	public static Unit createUnit(int index) {
 		String unit_code = "#"+Long.toString(current_code++);

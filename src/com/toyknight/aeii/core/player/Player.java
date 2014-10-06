@@ -1,7 +1,5 @@
 package com.toyknight.aeii.core.player;
 
-import com.toyknight.aeii.core.OperationListener;
-
 /**
  *
  * @author toyknight
@@ -9,15 +7,23 @@ import com.toyknight.aeii.core.OperationListener;
 public abstract class Player {
 	
 	private int alliance;
-
-	private final OperationListener opt_listener;
-
-	public Player(OperationListener opt_listener) {
-		this.opt_listener = opt_listener;
+	private int gold = 0;
+	private int population = 0;
+	
+	public void setPopulation(int population) {
+		this.population = population;
 	}
-
-	public OperationListener getOperationListener() {
-		return opt_listener;
+	
+	public int getPopulation() {
+		return population;
+	}
+	
+	public void setGold(int gold) {
+		this.gold = gold;
+	}
+	
+	public int getGold() {
+		return gold;
 	}
 
 	public void setAlliance(int alliance) {
@@ -27,7 +33,5 @@ public abstract class Player {
 	public int getAlliance() {
 		return alliance;
 	}
-
-	abstract public void play();
 
 }

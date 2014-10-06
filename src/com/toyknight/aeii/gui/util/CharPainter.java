@@ -16,11 +16,11 @@ public class CharPainter {
 	public static void init(int ts) {
 		CharPainter.ts = ts;
 	}
-	
+
 	public static int getCharHeight() {
 		return ts / 24 * 7;
 	}
-	
+
 	public static int getCharWidth() {
 		return ts / 24 * 6;
 	}
@@ -32,19 +32,35 @@ public class CharPainter {
 	public static int getLCharWidth() {
 		return ts / 24 * 8;
 	}
-	
+
 	public static void paintNegativeNumber(Graphics g, int number, int x, int y) {
 		int w = getCharWidth();
 		g.drawImage(ResourceManager.getMinus(), x, y, null);
 		paintNumber(g, number, x + w, y);
 	}
-	
+
 	public static void paintNumber(Graphics g, int number, int x, int y) {
 		int w = getCharWidth();
 		int[] array = getIntArray(number);
 		for (int i = 0; i < array.length; i++) {
 			int n = array[i];
 			g.drawImage(ResourceManager.getNumber(n), x + w * i, y, null);
+		}
+	}
+
+	public static void paintLFraction(Graphics g, int molecule, int denominator, int x, int y) {
+		int lw = getLCharWidth();
+		int[] molecule_array = getIntArray(molecule);
+		int[] denominator_array = getIntArray(denominator);
+		int molecule_len = lw * molecule_array.length;
+		for (int i = 0; i < molecule_array.length; i++) {
+			int n = molecule_array[i];
+			g.drawImage(ResourceManager.getLNumber(n), x + lw * i, y, null);
+		}
+		g.drawImage(ResourceManager.getLDivision(), x + molecule_len, y, null);
+		for (int i = 0; i < denominator_array.length; i++) {
+			int n = denominator_array[i];
+			g.drawImage(ResourceManager.getLNumber(n), x + molecule_len + lw + lw * i, y, null);
 		}
 	}
 
@@ -68,7 +84,7 @@ public class CharPainter {
 			g.drawImage(ResourceManager.getLNumber(n), x + lw * i, y, null);
 		}
 	}
-	
+
 	public static int getNumberWidth(int number, boolean signed) {
 		int w = getCharWidth();
 		if (signed) {

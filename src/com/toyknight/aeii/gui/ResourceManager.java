@@ -17,6 +17,8 @@ import javax.imageio.ImageIO;
 public class ResourceManager {
 
 	private static BufferedImage img_logo;
+	private static BufferedImage gold_icon;
+	private static BufferedImage population_icon;
 	private static BufferedImage[][] action_buttons;
 	private static BufferedImage[] small_circles;
 	private static BufferedImage[] big_circles;
@@ -39,6 +41,7 @@ public class ResourceManager {
 	private static BufferedImage minus;
 	private static BufferedImage lplus;
 	private static BufferedImage lminus;
+	private static BufferedImage ldivision;
 	private static Color aeii_panel_bg;
 	private static Color move_path_color;
 
@@ -58,6 +61,7 @@ public class ResourceManager {
 		loadChars(ts);
 		loadCircles(ts);
 		loadActionButtons(ts);
+		loadHudIcons(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		move_path_color = new Color(225, 0, 82);
 	}
@@ -208,6 +212,7 @@ public class ResourceManager {
 		minus = ResourceUtil.getImageClip(img_chars, 10 * w, 0, w, h);
 		lminus = ResourceUtil.getImageClip(img_lchars, 11 * lw, 0, lw, lh);
 		lplus = ResourceUtil.getImageClip(img_lchars, 12 * lw, 0, lw, lh);
+		ldivision = ResourceUtil.getImageClip(img_lchars, 10 * lw, 0, lw, lh);
 	}
 
 	private static void loadCircles(int ts) throws IOException {
@@ -250,12 +255,30 @@ public class ResourceManager {
 		}
 	}
 
+	private static void loadHudIcons(int ts) throws IOException {
+		int i2w = ts / 24 * 11;
+		int i2h = ts / 24 * 11;
+		File hud_icon2_file = new File("res\\img\\hud_icons_2.png");
+		BufferedImage img_hud_icon2 = new BufferedImage(i2w * 2, i2h, BufferedImage.TYPE_INT_ARGB);
+		img_hud_icon2.getGraphics().drawImage(ImageIO.read(hud_icon2_file), 0, 0, i2w * 2, i2h, null);
+		gold_icon = ResourceUtil.getImageClip(img_hud_icon2, i2w, 0, i2w, i2h);
+		population_icon = ResourceUtil.getImageClip(img_hud_icon2, 0, 0, i2w, i2h);
+	}
+
 	public static BufferedImage getLogoImage() {
 		return img_logo;
 	}
 
 	public static BufferedImage getBorderImage(int index) {
 		return borders[index];
+	}
+
+	public static BufferedImage getPopulationIcon() {
+		return population_icon;
+	}
+	
+	public static BufferedImage getGoldIcon() {
+		return gold_icon;
 	}
 
 	public static BufferedImage getTileImage(int index) {
@@ -330,14 +353,18 @@ public class ResourceManager {
 		return lminus;
 	}
 
+	public static BufferedImage getLDivision() {
+		return ldivision;
+	}
+
 	public static BufferedImage getActionButtonImage(int index, int frame) {
 		return action_buttons[index][frame];
 	}
-	
+
 	public static BufferedImage getSmallCircleImage(int index) {
 		return small_circles[index];
 	}
-	
+
 	public static BufferedImage getBigCircleImage(int index) {
 		return big_circles[index];
 	}

@@ -5,6 +5,8 @@ import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.GameFactory;
 import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.map.MapFactory;
+import com.toyknight.aeii.core.player.LocalPlayer;
+import com.toyknight.aeii.core.player.Player;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -91,10 +93,10 @@ public class CommandLineDialog extends JDialog {
 			if (param_types[i].equals(int.class)) {
 				converted_args[i] = Integer.parseInt((String) args[i]);
 			}
-			if(param_types[i].equals(boolean.class)) {
+			if (param_types[i].equals(boolean.class)) {
 				converted_args[i] = Boolean.parseBoolean((String) args[i]);
 			}
-			if(param_types[i].equals(String.class)) {
+			if (param_types[i].equals(String.class)) {
 				converted_args[i] = args[i];
 			}
 		}
@@ -145,12 +147,16 @@ public class CommandLineDialog extends JDialog {
 				File map_file = new File("map\\" + map_name);
 				Map map = MapFactory.createMap(map_file);
 				GameFactory game_factory = new GameFactory(map);
-				BasicGame game = game_factory.createBasicGame();
+				Player[] players = new Player[4];
+				for (int i = 0; i < 4; i++) {
+					players[i] = new LocalPlayer();
+				}
+				BasicGame game = game_factory.createBasicGame(players, 1000, 20);
 				context.getGameScreen().setGame(game);
 				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
 				context.setCurrentFpsDelayToGame();
 			} catch (IOException ex) {
-				
+
 			}
 		}
 

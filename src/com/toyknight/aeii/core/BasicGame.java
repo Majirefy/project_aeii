@@ -6,6 +6,7 @@ import com.toyknight.aeii.core.player.Player;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
+import java.util.Collection;
 
 /**
  *
@@ -18,19 +19,31 @@ public class BasicGame implements OperationListener {
 	private final Player[] player_list;
 	private GameListener game_listener;
 
-	public BasicGame(Map map) {
+	private final int max_population;
+
+	public BasicGame(Map map, Player[] players, int max_population) {
 		this.map = map;
 		player_list = new Player[4];
+		for (int team = 0; team < 4; team++) {
+			if (team < players.length) {
+				player_list[team] = players[team];
+			} else {
+				break;
+			}
+		}
+		this.max_population = max_population;
 	}
 
 	public void init() {
 		current_team = -1;
 		for (int team = 0; team < player_list.length; team++) {
-			if (player_list[team] != null && current_team == -1) {
-				current_team = team;
-				break;
+			if (player_list[team] != null) {
+				if (current_team == -1) {
+					current_team = team;
+				}
+				updatePopulation(team);
 			} else {
-
+				//remove all elements on the map that is related to this team
 			}
 		}
 	}
@@ -47,12 +60,12 @@ public class BasicGame implements OperationListener {
 		return current_team;
 	}
 
-	public void setPlayer(int index, Player player) {
-		player_list[index] = player;
+	public Player getPlayer(int team ){
+		return player_list[team];
 	}
-
-	public Player getPlayer(int index) {
-		return player_list[index];
+	
+	public int getMaxPopulation() {
+		return max_population;
 	}
 
 	public void setGameListener(GameListener listener) {
@@ -93,6 +106,7 @@ public class BasicGame implements OperationListener {
 			defender.setCurrentHp(0);
 			game_listener.onUnitAttack(attacker, defender, damage);
 			getMap().removeUnit(defender.getX(), defender.getY());
+			updatePopulation(getCurrentTeam());
 			game_listener.onUnitDestroyed(defender);
 			getMap().addTomb(defender.getX(), defender.getY());
 		}
@@ -112,16 +126,21 @@ public class BasicGame implements OperationListener {
 
 	@Override
 	public void buyUnit(int index, int x, int y) {
-		//deal with various issues
-		addUnit(index, x, y);
+		int current_cold = getCurrentPlayer().getGold();
+		int unit_price = UnitFactory.getUnitPrice(index);
+		if(current_cold >= unit_price) {
+			getCurrentPlayer().setGold(current_cold - unit_price);
+			addUnit(index, x, y);
+		}
 	}
-	
+
 	@Override
 	public void addUnit(int index, int x, int y) {
 		Unit unit = UnitFactory.createUnit(index);
 		unit.setX(x);
 		unit.setY(y);
 		getMap().addUnit(unit);
+		updatePopulation(getCurrentTeam());
 	}
 
 	@Override
@@ -139,6 +158,17 @@ public class BasicGame implements OperationListener {
 			getMap().moveUnit(unit, dest_x, dest_y);
 			game_listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
 		}
+	}
+	
+	protected void updatePopulation(int team) {
+		Collection<Unit> units = getMap().getUnitSet();
+		int population = 0;
+		for (Unit unit : units) {
+			if (unit.getTeam() == team) {
+				population++;
+			}
+		}
+		getPlayer(team).setPopulation(population);
 	}
 
 	public Map getMap() {
