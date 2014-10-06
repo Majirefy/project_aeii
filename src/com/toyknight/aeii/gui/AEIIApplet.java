@@ -14,7 +14,6 @@ import com.toyknight.aeii.gui.util.DialogUtil;
 import java.awt.CardLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
@@ -89,7 +88,7 @@ public class AEIIApplet {
 		command_line = new CommandLineDialog(this);
 
 		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-		manager.addKeyEventPostProcessor(new GlobalKeyListenerr());
+		manager.addKeyEventPostProcessor(new GlobalKeyListener());
 	}
 
 	public void start() {
@@ -209,7 +208,7 @@ public class AEIIApplet {
 
 	}
 	
-	private class GlobalKeyListenerr implements KeyEventPostProcessor {
+	private class GlobalKeyListener implements KeyEventPostProcessor {
 
 		@Override
 		public boolean postProcessKeyEvent(KeyEvent e) {
