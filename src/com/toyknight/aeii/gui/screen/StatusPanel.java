@@ -13,10 +13,14 @@ import java.awt.Graphics;
 public class StatusPanel extends AEIIPanel {
 
 	private final int ts;
+	private final int i2w;
+	private final int margin;
 	private GameManager manager;
 
 	public StatusPanel(int ts) {
 		this.ts = ts;
+		this.i2w = ts / 24 * 11;
+		this.margin = (ts - i2w) / 2;
 	}
 
 	public void setGameManager(GameManager manager) {
@@ -25,17 +29,23 @@ public class StatusPanel extends AEIIPanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		int i2w = ts / 24 * 11;
-		int lw = CharPainter.getLCharWidth();
-		int margin = (getHeight() - i2w) / 2;
+		paintGold(g);
+		paintPopulation(g);
+	}
+
+	private void paintGold(Graphics g) {
+		int interval = ts;
 		int gold = manager.getGame().getCurrentPlayer().getGold();
-		int max_population = manager.getGame().getMaxPopulation();
-		int current_population = manager.getGame().getCurrentPlayer().getPopulation();
-		g.drawImage(ResourceManager.getGoldIcon(), margin, margin, this);
-		CharPainter.paintLNumber(g, gold, i2w + margin * 2, margin);
+		g.drawImage(ResourceManager.getGoldIcon(), interval, margin, this);
+		CharPainter.paintLNumber(g, gold, interval + i2w + margin, margin);
+	}
+
+	private void paintPopulation(Graphics g) {
 		int interval = ts * 5;
+		int max = manager.getGame().getMaxPopulation();
+		int current = manager.getGame().getCurrentPlayer().getPopulation();
 		g.drawImage(ResourceManager.getPopulationIcon(), interval, margin, this);
-		CharPainter.paintLFraction(g, current_population, max_population, interval + i2w + margin, margin);
+		CharPainter.paintLFraction(g, current, max, interval + i2w + margin, margin);
 	}
 
 }

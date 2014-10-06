@@ -161,14 +161,7 @@ public class BasicGame implements OperationListener {
 	}
 	
 	protected void updatePopulation(int team) {
-		Collection<Unit> units = getMap().getUnitSet();
-		int population = 0;
-		for (Unit unit : units) {
-			if (unit.getTeam() == team) {
-				population++;
-			}
-		}
-		getPlayer(team).setPopulation(population);
+		getPlayer(team).setPopulation(getMap().getUnitCount(team));
 	}
 
 	public Map getMap() {

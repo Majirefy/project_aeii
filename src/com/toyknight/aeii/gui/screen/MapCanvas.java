@@ -152,6 +152,8 @@ public class MapCanvas extends Screen {
 			int click_x = getCursorXOnMap();
 			int click_y = getCursorYOnMap();
 			if (e.getButton() == MouseEvent.BUTTON1) {
+				this.selected_x = click_x;
+				this.selected_y = click_y;
 				switch (manager.getState()) {
 					case GameManager.STATE_SELECT:
 						doSelect(click_x, click_y);
@@ -159,6 +161,7 @@ public class MapCanvas extends Screen {
 					case GameManager.STATE_MOVE:
 					case GameManager.STATE_RMOVE:
 						manager.moveSelectedUnit(click_x, click_y);
+						action_bar.setVisible(false);
 						break;
 					case GameManager.STATE_ATTACK:
 						manager.doAttack(click_x, click_y);
@@ -173,8 +176,10 @@ public class MapCanvas extends Screen {
 						action_bar.setVisible(false);
 						break;
 					case GameManager.STATE_MOVE:
-						manager.cancelMovePhase();
-						action_bar.display();
+						if(manager.canCancelMovePhase()) {
+							manager.cancelMovePhase();
+							action_bar.display();
+						}
 						break;
 					case GameManager.STATE_ACTION:
 						manager.reverseMove();
@@ -230,8 +235,7 @@ public class MapCanvas extends Screen {
 	}
 
 	private void doSelect(int x, int y) {
-		this.selected_x = x;
-		this.selected_y = y;
+		selected_tile_index = manager.getGame().getMap().getTileIndex(x, y);
 		Unit unit = manager.getUnit(x, y);
 		if (unit != null) {
 			manager.selectUnit(x, y);
@@ -243,6 +247,8 @@ public class MapCanvas extends Screen {
 		} else {
 			if (manager.isAccessibleCastle(selected_tile_index)) {
 				action_bar.display();
+			} else {
+				action_bar.setVisible(false);
 			}
 		}
 	}
@@ -318,11 +324,11 @@ public class MapCanvas extends Screen {
 	public void updateActionBar() {
 		if (!isAnimating()) {
 			switch (manager.getState()) {
+				case GameManager.STATE_RMOVE:
 				case GameManager.STATE_ACTION:
 					action_bar.display();
 					break;
 				case GameManager.STATE_SELECT:
-					break;
 				default:
 					action_bar.setVisible(false);
 			}

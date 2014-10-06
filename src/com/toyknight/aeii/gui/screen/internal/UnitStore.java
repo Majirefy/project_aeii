@@ -7,10 +7,14 @@ import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.control.AEIIButton;
 import com.toyknight.aeii.gui.screen.MapCanvas;
+import com.toyknight.aeii.gui.util.CharPainter;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -66,18 +70,18 @@ public class UnitStore extends JInternalFrame {
 
 	private void initComponents() {
 		this.setBorder(BorderFactory.createEmptyBorder());
-		AEIIPanel container = new AEIIPanel();
-		container.setPreferredSize(new Dimension(10 * ts, ts * 2 + ts * 3 / 2 * 5));
+		StoreContainer container = new StoreContainer();
+		container.setPreferredSize(new Dimension(11 * ts, ts + ts * 3 / 2 * 5));
 		this.setContentPane(container);
 		container.setLayout(null);
 		unit_list.setCellRenderer(new UnitListCellRenderer());
 		unit_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		unit_list.setBackground(ResourceManager.getAEIIPanelBg());
 		JScrollPane sp_unit_list = new JScrollPane(unit_list);
-		sp_unit_list.setBounds(ts / 2, ts / 2, ts * 9, ts * 3 / 2 * 5);
+		sp_unit_list.setBounds(ts / 2, ts / 2, ts * 5, ts * 3 / 2 * 5);
 		sp_unit_list.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		this.getContentPane().add(sp_unit_list);
-		btn_buy.setBounds(ts / 2, ts * 8 + ts / 2, ts * 2, ts / 2);
+		btn_buy.setBounds(ts * 6, ts * 7 + ts / 2, ts * 2, ts / 2);
 		btn_buy.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -87,6 +91,15 @@ public class UnitStore extends JInternalFrame {
 			}
 		});
 		this.getContentPane().add(btn_buy);
+		AEIIButton btn_close = new AEIIButton(Language.getText("LB_CLOSE"));
+		btn_close.setBounds(ts * 8 + ts / 2, ts * 7 + ts / 2, ts * 2, ts / 2);
+		btn_close.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				close();
+			}
+		});
+		this.getContentPane().add(btn_close);
 	}
 
 	public void setGameManager(GameManager manager) {
@@ -144,12 +157,44 @@ public class UnitStore extends JInternalFrame {
 			if (selected) {
 				g.setColor(Color.GRAY);
 			} else {
-				g.setColor(ResourceManager.getAEIIPanelBg());
+				g.setColor(Color.DARK_GRAY);
 			}
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 			g.drawImage(ResourceManager.getBigCircleImage(0), ts / 24, ts / 24, this);
 			int team = manager.getGame().getCurrentTeam();
 			g.drawImage(ResourceManager.getUnitImage(team, index, 0), ts / 4 - ts / 24, ts / 4 - ts / 24, this);
+
+			((Graphics2D) g).setRenderingHint(
+					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			String unit_name = Language.getText("LB_UNIT_NAME_" + index + "_0");
+			g.setColor(Color.WHITE);
+			g.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
+			g.drawString(unit_name, ts / 2 * 3, (ts / 2 * 3 - 16) / 2 + 16);
+			((Graphics2D) g).setRenderingHint(
+					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		}
+
+	}
+
+	private class StoreContainer extends AEIIPanel {
+
+		@Override
+		public void paintComponent(Graphics g) {
+			int lw = ts / 24 * 8;
+			int lh = ts / 24 * 11;
+			int ch = ts / 24 * 13;
+			int index = (int) unit_list.getSelectedValue();
+			((Graphics2D) g).setRenderingHint(
+					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g.setColor(Color.WHITE);
+			g.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
+			g.drawString(Language.getText("LB_UNIT_NAME_" + index + "_0"), ts * 6, ts / 2 + 16 + (lh - 16) / 2);
+			g.drawLine(ts * 6, ts / 2 + ch, ts * 10 + ts / 2, ts / 2 + ch);
+			g.drawImage(ResourceManager.getGoldIcon(), ts * 10 + ts / 2 - lw * 4 - ts / 24 * 11, ts / 2, this);
+			CharPainter.paintLNumber(g, UnitFactory.getUnitPrice(index), ts * 10 + ts / 2 - lw * 4, ts / 2);
+			((Graphics2D) g).setRenderingHint(
+					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			super.paintComponent(g);
 		}
 
 	}

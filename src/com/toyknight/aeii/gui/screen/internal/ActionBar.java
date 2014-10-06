@@ -46,34 +46,34 @@ public class ActionBar extends JPanel {
 		this.setLayout(null);
 		this.setOpaque(false);
 		btn_attack = new ActionButton(2);
-		btn_attack.setToolTipText(Language.getText("LB_ACTION_BTN_ATTACK_TIP"));
+		btn_attack.setToolTipText(Language.getText("LB_ATTACK"));
 		btn_attack.registerKeyboardAction(
 				btn_attack_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_A, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_attack.addActionListener(btn_attack_listener);
 		btn_move = new ActionButton(4);
-		btn_move.setToolTipText(Language.getText("LB_ACTION_BTN_MOVE_TIP"));
+		btn_move.setToolTipText(Language.getText("LB_MOVE"));
 		btn_move.registerKeyboardAction(
 				btn_move_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_M, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_move.addActionListener(btn_move_listener);
 		btn_occupy = new ActionButton(1);
-		btn_occupy.setToolTipText(Language.getText("LB_ACTION_BTN_OCCUPY_TIP"));
+		btn_occupy.setToolTipText(Language.getText("LB_OCCUPY"));
 		btn_repair = new ActionButton(1);
-		btn_repair.setToolTipText(Language.getText("LB_ACTION_BTN_REPAIR_TIP"));
+		btn_repair.setToolTipText(Language.getText("LB_REPAIR"));
 		btn_summon = new ActionButton(3);
-		btn_summon.setToolTipText(Language.getText("LB_ACTION_BTN_SUMMON_TIP"));
+		btn_summon.setToolTipText(Language.getText("LB_SUMMON"));
 		btn_standby = new ActionButton(5);
-		btn_standby.setToolTipText(Language.getText("LB_ACTION_BTN_STANDBY_TIP"));
+		btn_standby.setToolTipText(Language.getText("LB_STANDBY"));
 		btn_standby.registerKeyboardAction(
 				btn_standby_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_standby.addActionListener(btn_standby_listener);
 		btn_buy = new ActionButton(0);
-		btn_buy.setToolTipText(Language.getText("LB_ACTION_BTN_BUY_TIP"));
+		btn_buy.setToolTipText(Language.getText("LB_BUY"));
 		btn_buy.registerKeyboardAction(
 				btn_buy_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_B, 0),

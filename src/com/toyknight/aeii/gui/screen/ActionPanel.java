@@ -38,7 +38,7 @@ public class ActionPanel extends AEIIPanel {
 		lb_unit_icon = new JLabel() {
 			@Override
 			public void paint(Graphics g) {
-				g.setColor(Color.BLACK);
+				g.setColor(Color.DARK_GRAY);
 				g.fillRect(0, 0, this.getWidth(), this.getHeight());
 				super.paint(g);
 			}
@@ -52,7 +52,8 @@ public class ActionPanel extends AEIIPanel {
 		this.add(btn_end_turn);
 		btn_mini_map.setBounds(ts / 2, getHeight() - ts * 2, getWidth() - ts, ts / 2);
 		this.add(btn_mini_map);
-		lb_unit_icon.setBounds(ts / 2, ts / 2, ts, ts);
+		lb_unit_icon.setBounds(ts / 2, ts / 2, ts / 3 * 4, ts / 3 * 4);
+		lb_unit_icon.setHorizontalAlignment(JLabel.CENTER);
 		lb_unit_icon.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		this.add(lb_unit_icon);
 	}
@@ -78,7 +79,7 @@ public class ActionPanel extends AEIIPanel {
 			btn_end_turn.setEnabled(false);
 		}
 	}
-	
+
 	private boolean isOperatable() {
 		return manager.getGame().isLocalPlayer() && !game_screen.getCanvas().isAnimating();
 	}

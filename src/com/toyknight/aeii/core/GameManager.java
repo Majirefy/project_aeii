@@ -103,7 +103,7 @@ public class GameManager implements GameListener {
 					&& attacker.hasAbility(Ability.CHARGER)) {
 				beginRMovePhase();
 			} else {
-				attacker.setStandby(true);
+				getGame().standbyUnit(attacker.getX(), attacker.getY());
 				setState(STATE_SELECT);
 			}
 		}
@@ -173,6 +173,7 @@ public class GameManager implements GameListener {
 			getGame().buyUnit(unit_index, x, y);
 			selectUnit(x, y);
 			beginMovePhase();
+			is_new_unit_phase = true;
 		}
 	}
 
@@ -183,6 +184,9 @@ public class GameManager implements GameListener {
 				selected_unit = unit;
 				last_position = new Point(x, y);
 				unit_toolkit.setCurrentUnit(selected_unit);
+				if (is_new_unit_phase) {
+					is_new_unit_phase = false;
+				}
 			}
 		}
 	}
@@ -243,13 +247,10 @@ public class GameManager implements GameListener {
 				unit.setCurrentMovementPoint(mp_remains);
 				switch (state) {
 					case STATE_MOVE:
-						if (is_new_unit_phase) {
-							is_new_unit_phase = false;
-						}
 						setState(STATE_ACTION);
 						break;
 					case STATE_RMOVE:
-						unit.setStandby(true);
+						getGame().standbyUnit(unit.getX(), unit.getY());
 						setState(STATE_SELECT);
 						break;
 					default:
@@ -269,10 +270,14 @@ public class GameManager implements GameListener {
 			beginMovePhase();
 		}
 	}
+	
+	public boolean canCancelMovePhase() {
+		return !is_new_unit_phase;
+	}
 
 	public boolean canReverseMove() {
 		Unit unit = getSelectedUnit();
-		return unit.getX() != last_position.x || unit.getY() != last_position.y;
+		return !unit.isAt(last_position.x, last_position.y);
 	}
 
 	public boolean isAccessibleCastle(int index) {

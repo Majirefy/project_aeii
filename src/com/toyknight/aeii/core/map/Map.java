@@ -128,6 +128,20 @@ public class Map {
 		return unit_map.keySet();
 	}
 
+	public int getUnitCount(int team) {
+		Collection<Unit> units = getUnitSet();
+		int count = 0;
+		for (Unit unit : units) {
+			if (unit.getTeam() == team) {
+				count++;
+			}
+		}
+		if (new_unit != null && new_unit.getTeam() == team) {
+			count++;
+		}
+		return count;
+	}
+
 	private Point getPosition(int x, int y) {
 		return position_map[x][y];
 	}
