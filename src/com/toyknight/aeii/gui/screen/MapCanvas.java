@@ -207,35 +207,35 @@ public class MapCanvas extends Screen {
 
 	@Override
 	public void onKeyPress(KeyEvent e) {
-		if (e.getKeyCode() == Configuration.getKeyUp()) {
-			this.up_pressed = true;
-		}
-		if (e.getKeyCode() == Configuration.getKeyDown()) {
-			this.down_pressed = true;
-		}
-		if (e.getKeyCode() == Configuration.getKeyLeft()) {
-			this.left_pressed = true;
-		}
-		if (e.getKeyCode() == Configuration.getKeyRight()) {
-			this.right_pressed = true;
+		if (!isAnimating()) {
+			if (e.getKeyCode() == Configuration.getKeyUp()) {
+				this.up_pressed = true;
+			}
+			if (e.getKeyCode() == Configuration.getKeyDown()) {
+				this.down_pressed = true;
+			}
+			if (e.getKeyCode() == Configuration.getKeyLeft()) {
+				this.left_pressed = true;
+			}
+			if (e.getKeyCode() == Configuration.getKeyRight()) {
+				this.right_pressed = true;
+			}
 		}
 	}
 
 	@Override
 	public void onKeyRelease(KeyEvent e) {
-		if (!isAnimating()) {
-			if (e.getKeyCode() == Configuration.getKeyUp()) {
-				this.up_pressed = false;
-			}
-			if (e.getKeyCode() == Configuration.getKeyDown()) {
-				this.down_pressed = false;
-			}
-			if (e.getKeyCode() == Configuration.getKeyLeft()) {
-				this.left_pressed = false;
-			}
-			if (e.getKeyCode() == Configuration.getKeyRight()) {
-				this.right_pressed = false;
-			}
+		if (e.getKeyCode() == Configuration.getKeyUp()) {
+			this.up_pressed = false;
+		}
+		if (e.getKeyCode() == Configuration.getKeyDown()) {
+			this.down_pressed = false;
+		}
+		if (e.getKeyCode() == Configuration.getKeyLeft()) {
+			this.left_pressed = false;
+		}
+		if (e.getKeyCode() == Configuration.getKeyRight()) {
+			this.right_pressed = false;
 		}
 	}
 
@@ -258,8 +258,12 @@ public class MapCanvas extends Screen {
 		}
 	}
 
-	public boolean isWithinCanvas(int sx, int sy) {
+	public boolean isWithinPaintArea(int sx, int sy) {
 		return -ts < sx && sx < viewport.width && -ts < sy && sy < viewport.height;
+	}
+	
+	public boolean isWithinCanvas(int sx, int sy) {
+		return 0 < sx && sx < viewport.width && 0 < sy && sy < viewport.height;
 	}
 
 	public int getCursorXOnMap() {
@@ -367,6 +371,21 @@ public class MapCanvas extends Screen {
 		}
 	}
 
+	public void moveViewport(int delta_x, int delta_y) {
+		int map_width = getGame().getMap().getWidth() * ts;
+		int map_height = getGame().getMap().getHeight() * ts;
+		if (0 <= viewport.x + delta_x && viewport.x + delta_x <= map_width - viewport.width) {
+			viewport.x += delta_x;
+		} else {
+			viewport.x = viewport.x + delta_x < 0 ? 0 : map_width - viewport.width;
+		}
+		if (0 <= viewport.y + delta_y && viewport.y + delta_y <= map_height - viewport.height) {
+			viewport.y += delta_y;
+		} else {
+			viewport.y = viewport.y + delta_y < 0 ? 0 : map_height - viewport.height;
+		}
+	}
+
 	private void updateViewport() {
 		if (isOperatable()) {
 			int map_width = getGame().getMap().getWidth() * ts;
@@ -420,7 +439,7 @@ public class MapCanvas extends Screen {
 			for (int y = 0; y < getGame().getMap().getHeight(); y++) {
 				int sx = getXOnCanvas(x);
 				int sy = getYOnCanvas(y);
-				if (isWithinCanvas(sx, sy)) {
+				if (isWithinPaintArea(sx, sy)) {
 					int index = getGame().getMap().getTileIndex(x, y);
 					TilePainter.paint(g, index, sx, sy, ts);
 					Tile tile = TileRepository.getTile(index);
@@ -451,7 +470,7 @@ public class MapCanvas extends Screen {
 		for (Point position : movable_positions) {
 			int sx = getXOnCanvas(position.x);
 			int sy = getYOnCanvas(position.y);
-			if (isWithinCanvas(sx, sy)) {
+			if (isWithinPaintArea(sx, sy)) {
 				g.drawImage(ResourceManager.getMoveAlpha(), sx, sy, this);
 			}
 		}
@@ -497,7 +516,7 @@ public class MapCanvas extends Screen {
 		for (Point position : attackable_positions) {
 			int sx = getXOnCanvas(position.x);
 			int sy = getYOnCanvas(position.y);
-			if (isWithinCanvas(sx, sy)) {
+			if (isWithinPaintArea(sx, sy)) {
 				g.drawImage(ResourceManager.getAttackAlpha(), sx, sy, this);
 			}
 		}
@@ -513,7 +532,7 @@ public class MapCanvas extends Screen {
 				int unit_y = unit.getY();
 				int sx = getXOnCanvas(unit_x);
 				int sy = getYOnCanvas(unit_y);
-				if (isWithinCanvas(sx, sy)) {
+				if (isWithinPaintArea(sx, sy)) {
 					UnitPainter.paint(g, unit, sx, sy, ts);
 				}
 			}
@@ -533,7 +552,7 @@ public class MapCanvas extends Screen {
 			int cursor_y = getCursorYOnMap();
 			int sx = getXOnCanvas(cursor_x);
 			int sy = getYOnCanvas(cursor_y);
-			if (isWithinCanvas(sx, sy)) {
+			if (isWithinPaintArea(sx, sy)) {
 				switch (manager.getState()) {
 					case GameManager.STATE_ATTACK:
 						if (manager.canAttack(cursor_x, cursor_y)) {

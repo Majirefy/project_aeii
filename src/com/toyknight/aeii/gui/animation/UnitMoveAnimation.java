@@ -63,6 +63,26 @@ public class UnitMoveAnimation extends UnitAnimation {
 			int sx = canvas.getXOnCanvas(current.x);
 			int sy = canvas.getYOnCanvas(current.y);
 			UnitPainter.paint(g, getUnit(), sx + x_offset, sy + y_offset, ts);
+			validateViewport(canvas, sx, sy);
+		}
+	}
+
+	private void validateViewport(MapCanvas canvas, int sx, int sy) {
+		if (canvas.isWithinCanvas(sx, sy)) {
+			if (sx + x_offset > canvas.getWidth() - ts * 2) {
+				canvas.moveViewport(ts / 4, 0);
+			}
+			if (sx + x_offset < ts) {
+				canvas.moveViewport(-ts / 4, 0);
+			}
+			if (sy + y_offset > canvas.getHeight() - ts * 2) {
+				canvas.moveViewport(0, ts / 4);
+			}
+			if (sy + y_offset < ts) {
+				canvas.moveViewport(0, -ts / 4);
+			}
+		} else {
+			canvas.locateViewport(sx, sy);
 		}
 	}
 
