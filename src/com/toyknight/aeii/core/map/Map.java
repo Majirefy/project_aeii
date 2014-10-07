@@ -16,18 +16,18 @@ public class Map {
 
 	private final String author;
 
-	private Unit new_unit;
 	private final short[][] map_data;
+	private final Unit[][] upper_unit_layer;
 	private final HashMap<Point, Unit> unit_map;
 	private final ArrayList<Tomb> tomb_list;
 	private final Point[][] position_map;
 
 	public Map(short[][] map_data, String author) {
 		this.author = author;
-		new_unit = null;
 		this.map_data = map_data;
 		this.unit_map = new HashMap();
 		this.tomb_list = new ArrayList();
+		upper_unit_layer = new Unit[getWidth()][getHeight()];
 		position_map = new Point[getWidth()][getHeight()];
 		for (int x = 0; x < getWidth(); x++) {
 			for (int y = 0; y < getHeight(); y++) {
@@ -71,8 +71,23 @@ public class Map {
 		}
 	}
 
-	public void removeTomb(Tomb tomb) {
-		tomb_list.remove(tomb);
+	public void removeTomb(int x, int y) {
+		for (int i = 0; i < tomb_list.size(); i++) {
+			Tomb tomb = tomb_list.get(i);
+			if (tomb.x == x && tomb.y == y) {
+				tomb_list.remove(i);
+				break;
+			}
+		}
+	}
+
+	public boolean isTomb(int x, int y) {
+		for (Tomb tomb : tomb_list) {
+			if (tomb.x == x && tomb.y == y) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public ArrayList<Tomb> getTombList() {
@@ -83,16 +98,20 @@ public class Map {
 		int start_x = unit.getX();
 		int start_y = unit.getY();
 		Point start_position = getPosition(start_x, start_y);
-		if (UnitToolkit.isTheSameUnit(unit, unit_map.get(start_position))) {
-			unit_map.remove(start_position);
-		}
-		if (getUnit(dest_x, dest_y) == null) {
+		Point dest_position = getPosition(dest_x, dest_y);
+		if (canMove(dest_x, dest_y)) {
 			unit.setX(dest_x);
 			unit.setY(dest_y);
-			Point dest_position = getPosition(dest_x, dest_y);
-			unit_map.put(dest_position, unit);
-			if (UnitToolkit.isTheSameUnit(unit, new_unit)) {
-				new_unit = null;
+			if (UnitToolkit.isTheSameUnit(unit, upper_unit_layer[start_x][start_y])) {
+				upper_unit_layer[start_x][start_y] = null;
+			}
+			if (UnitToolkit.isTheSameUnit(unit, unit_map.get(start_position))) {
+				unit_map.remove(start_position);
+			}
+			if (unit_map.get(dest_position) == null) {
+				unit_map.put(dest_position, unit);
+			} else {
+				upper_unit_layer[dest_x][dest_y] = unit;
 			}
 		}
 	}
@@ -102,15 +121,15 @@ public class Map {
 		if (!unit_map.containsKey(position)) {
 			unit_map.put(position, unit);
 		} else {
-			if (new_unit == null) {
-				new_unit = unit;
+			if (upper_unit_layer[position.x][position.y] == null) {
+				upper_unit_layer[position.x][position.y] = unit;
 			}
 		}
 	}
 
 	public Unit getUnit(int x, int y) {
-		if (new_unit != null && new_unit.isAt(x, y)) {
-			return new_unit;
+		if (upper_unit_layer[x][y] != null) {
+			return upper_unit_layer[x][y];
 		} else {
 			return unit_map.get(getPosition(x, y));
 		}
@@ -136,10 +155,19 @@ public class Map {
 				count++;
 			}
 		}
-		if (new_unit != null && new_unit.getTeam() == team) {
-			count++;
+		for (Unit[] unit_row : upper_unit_layer) {
+			for (Unit unit : unit_row) {
+				if (unit != null && unit.getTeam() == team) {
+					count++;
+				}
+			}
 		}
 		return count;
+	}
+
+	public boolean canMove(int x, int y) {
+		Point dest_position = getPosition(x, y);
+		return unit_map.get(dest_position) == null || upper_unit_layer[x][y] == null;
 	}
 
 	private Point getPosition(int x, int y) {

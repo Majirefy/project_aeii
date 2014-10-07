@@ -23,6 +23,7 @@ public class GameManager implements GameListener {
 	public static final int STATE_RMOVE = 0x3;
 	public static final int STATE_ACTION = 0x4;
 	public static final int STATE_ATTACK = 0x5;
+	public static final int STATE_SUMMON = 0x6;
 
 	private int state;
 	private boolean is_new_unit_phase;
@@ -91,19 +92,25 @@ public class GameManager implements GameListener {
 	}
 
 	@Override
+	public void onSummon(Unit summoner, int target_x, int target_y) {
+		Animation summon_animation = animation_provider.getSummonAnimation(summoner, target_x, target_y);
+		submitAnimation(summon_animation);
+	}
+
+	@Override
 	public void onUnitAttack(Unit attacker, Unit defender, int damage) {
 		Animation attack_animation = animation_provider.getUnitAttackAnimation(attacker, defender, damage);
 		submitAnimation(attack_animation);
 	}
 
 	@Override
-	public void onUnitAttackFinished(Unit attacker, Unit defender) {
+	public void onUnitActionFinished(Unit unit) {
 		if (getGame().isLocalPlayer()) {
-			if (attacker.getCurrentHp() > 0 && attacker.getCurrentMovementPoint() > 0
-					&& attacker.hasAbility(Ability.CHARGER)) {
+			if (unit.getCurrentHp() > 0 && unit.getCurrentMovementPoint() > 0
+					&& unit.hasAbility(Ability.CHARGER)) {
 				beginRMovePhase();
 			} else {
-				getGame().standbyUnit(attacker.getX(), attacker.getY());
+				getGame().standbyUnit(unit.getX(), unit.getY());
 				setState(STATE_SELECT);
 			}
 		}
@@ -159,11 +166,18 @@ public class GameManager implements GameListener {
 		}
 	}
 
-	public void cancelAttackPhase() {
+	public void cancelActionPhase() {
 		if (canReverseMove()) {
 			setState(STATE_ACTION);
 		} else {
 			setState(STATE_SELECT);
+		}
+	}
+
+	public void beginSummonPhase() {
+		if (getUnitToolkit().isUnitAccessible(getSelectedUnit())) {
+			this.attackable_positions = unit_toolkit.createAttackablePositions(selected_unit);
+			setState(STATE_SUMMON);
 		}
 	}
 
@@ -219,12 +233,25 @@ public class GameManager implements GameListener {
 		}
 	}
 
+	public boolean canSummon(int x, int y) {
+		if (getGame().getMap().isTomb(x, y)) {
+			return getGame().getMap().getUnit(x, y) == null;
+		} else {
+			return false;
+		}
+	}
+
 	public void doAttack(int target_x, int target_y) {
-		Unit unit = getSelectedUnit();
 		if (canAttack(target_x, target_y)) {
-			int unit_x = unit.getX();
-			int unit_y = unit.getY();
-			getGame().doAttack(unit_x, unit_y, target_x, target_y);
+			Unit unit = getSelectedUnit();
+			getGame().doAttack(unit.getX(), unit.getY(), target_x, target_y);
+		}
+	}
+
+	public void doSummon(int target_x, int target_y) {
+		if (canSummon(target_x, target_y)) {
+			Unit summoner = getSelectedUnit();
+			getGame().doSummon(summoner.getX(), summoner.getY(), target_x, target_y);
 		}
 	}
 
@@ -270,7 +297,7 @@ public class GameManager implements GameListener {
 			beginMovePhase();
 		}
 	}
-	
+
 	public boolean canCancelMovePhase() {
 		return !is_new_unit_phase;
 	}

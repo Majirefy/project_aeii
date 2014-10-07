@@ -6,7 +6,6 @@ import com.toyknight.aeii.core.player.Player;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
-import java.util.Collection;
 
 /**
  *
@@ -60,10 +59,10 @@ public class BasicGame implements OperationListener {
 		return current_team;
 	}
 
-	public Player getPlayer(int team ){
+	public Player getPlayer(int team) {
 		return player_list[team];
 	}
-	
+
 	public int getMaxPopulation() {
 		return max_population;
 	}
@@ -93,7 +92,7 @@ public class BasicGame implements OperationListener {
 			int counter_damage = UnitToolkit.getDamage(defender, attacker, getMap());
 			doDamage(defender, attacker, counter_damage);
 		}
-		game_listener.onUnitAttackFinished(attacker, defender);
+		game_listener.onUnitActionFinished(attacker);
 	}
 
 	protected void doDamage(Unit attacker, Unit defender, int damage) {
@@ -105,11 +104,37 @@ public class BasicGame implements OperationListener {
 			damage = defender.getCurrentHp();
 			defender.setCurrentHp(0);
 			game_listener.onUnitAttack(attacker, defender, damage);
-			getMap().removeUnit(defender.getX(), defender.getY());
-			updatePopulation(getCurrentTeam());
-			game_listener.onUnitDestroyed(defender);
-			getMap().addTomb(defender.getX(), defender.getY());
+			destoryUnit(defender);
 		}
+	}
+
+	protected void destoryUnit(Unit unit) {
+		getMap().removeUnit(unit.getX(), unit.getY());
+		updatePopulation(getCurrentTeam());
+		game_listener.onUnitDestroyed(unit);
+		getMap().addTomb(unit.getX(), unit.getY());
+	}
+
+	@Override
+	public void doSummon(int summoner_x, int summoner_y, int target_x, int target_y) {
+		Unit summoner = getMap().getUnit(summoner_x, summoner_y);
+		if (summoner != null && 
+				UnitToolkit.isWithinRange(summoner, target_x, target_y) &&
+				getMap().isTomb(target_x, target_y)) {
+			doSummon(summoner, target_x, target_y);
+		}
+	}
+
+	protected void doSummon(Unit summoner, int target_x, int target_y) {
+		getMap().removeTomb(target_x, target_y);
+		Unit skeleton = UnitFactory.createUnit(10, getCurrentTeam());
+		skeleton.setX(target_x);
+		skeleton.setY(target_y);
+		skeleton.setStandby(true);
+		getMap().addUnit(skeleton);
+		updatePopulation(getCurrentTeam());
+		game_listener.onSummon(summoner, target_x, target_y);
+		game_listener.onUnitActionFinished(summoner);
 	}
 
 	@Override
@@ -128,15 +153,15 @@ public class BasicGame implements OperationListener {
 	public void buyUnit(int index, int x, int y) {
 		int current_cold = getCurrentPlayer().getGold();
 		int unit_price = UnitFactory.getUnitPrice(index);
-		if(current_cold >= unit_price) {
+		if (current_cold >= unit_price) {
 			getCurrentPlayer().setGold(current_cold - unit_price);
-			addUnit(index, x, y);
+			addUnit(index, getCurrentTeam(), x, y);
 		}
 	}
 
 	@Override
-	public void addUnit(int index, int x, int y) {
-		Unit unit = UnitFactory.createUnit(index);
+	public void addUnit(int index, int team, int x, int y) {
+		Unit unit = UnitFactory.createUnit(index, team);
 		unit.setX(x);
 		unit.setY(y);
 		getMap().addUnit(unit);
@@ -152,14 +177,16 @@ public class BasicGame implements OperationListener {
 	}
 
 	protected void moveUnit(Unit unit, int dest_x, int dest_y) {
-		if (unit != null && getMap().getUnit(dest_x, dest_y) == null) {
+		if (unit != null) {
 			int start_x = unit.getX();
 			int start_y = unit.getY();
-			getMap().moveUnit(unit, dest_x, dest_y);
-			game_listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
+			if (getMap().canMove(dest_x, dest_y)) {
+				getMap().moveUnit(unit, dest_x, dest_y);
+				game_listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
+			}
 		}
 	}
-	
+
 	protected void updatePopulation(int team) {
 		getPlayer(team).setPopulation(getMap().getUnitCount(team));
 	}

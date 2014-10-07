@@ -88,9 +88,9 @@ public class UnitFactory {
 		return units[index].getPrice();
 	}
 
-	public static Unit createUnit(int index) {
+	public static Unit createUnit(int index, int team) {
 		String unit_code = "#"+Long.toString(current_code++);
-		return createUnit(index, unit_code);
+		return createUnit(index, team, unit_code);
 	}
 	
 	public static Unit cloneUnit(Unit unit) {
@@ -98,8 +98,9 @@ public class UnitFactory {
 		return new Unit(unit, unit_code);
 	}
 	
-	public static Unit createUnit(int index, String unit_code) {
+	public static Unit createUnit(int index, int team, String unit_code) {
 		Unit unit = new Unit(units[index], unit_code);
+		unit.setTeam(team);
 		unit.setStandby(false);
 		unit.setCurrentHp(unit.getMaxHp());
 		unit.setCurrentMovementPoint(unit.getMovementPoint());

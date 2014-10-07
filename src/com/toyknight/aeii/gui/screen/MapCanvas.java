@@ -166,6 +166,9 @@ public class MapCanvas extends Screen {
 					case GameManager.STATE_ATTACK:
 						manager.doAttack(click_x, click_y);
 						break;
+					case GameManager.STATE_SUMMON:
+						manager.doSummon(click_x, click_y);
+						break;
 					default:
 					//do nothing
 				}
@@ -176,7 +179,7 @@ public class MapCanvas extends Screen {
 						action_bar.setVisible(false);
 						break;
 					case GameManager.STATE_MOVE:
-						if(manager.canCancelMovePhase()) {
+						if (manager.canCancelMovePhase()) {
 							manager.cancelMovePhase();
 							action_bar.display();
 						}
@@ -185,8 +188,10 @@ public class MapCanvas extends Screen {
 						manager.reverseMove();
 						break;
 					case GameManager.STATE_ATTACK:
-						manager.cancelAttackPhase();
+					case GameManager.STATE_SUMMON:
+						manager.cancelActionPhase();
 						action_bar.display();
+						break;
 					default:
 					//do nothing
 				}
@@ -394,6 +399,7 @@ public class MapCanvas extends Screen {
 					paintMovePath(g, ts);
 					break;
 				case GameManager.STATE_ATTACK:
+				case GameManager.STATE_SUMMON:
 					paintAttackAlpha(g);
 					break;
 				default:
@@ -528,11 +534,23 @@ public class MapCanvas extends Screen {
 			int sx = getXOnCanvas(cursor_x);
 			int sy = getYOnCanvas(cursor_y);
 			if (isWithinCanvas(sx, sy)) {
-				if (manager.getState() == GameManager.STATE_ATTACK
-						&& manager.canAttack(cursor_x, cursor_y)) {
-					attack_cursor.paint(g, sx, sy);
-				} else {
-					cursor.paint(g, sx, sy);
+				switch (manager.getState()) {
+					case GameManager.STATE_ATTACK:
+						if (manager.canAttack(cursor_x, cursor_y)) {
+							attack_cursor.paint(g, sx, sy);
+						} else {
+							cursor.paint(g, sx, sy);
+						}
+						break;
+					case GameManager.STATE_SUMMON:
+						if (manager.canSummon(cursor_x, cursor_y)) {
+							attack_cursor.paint(g, sx, sy);
+						} else {
+							cursor.paint(g, sx, sy);
+						}
+						break;
+					default:
+						cursor.paint(g, sx, sy);
 				}
 			}
 		}

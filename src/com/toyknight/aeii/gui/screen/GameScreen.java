@@ -10,6 +10,7 @@ import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SmokeAnimation;
+import com.toyknight.aeii.gui.animation.SummonAnimation;
 import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
 import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
 import com.toyknight.aeii.gui.animation.UnitMoveAnimation;
@@ -92,6 +93,14 @@ public class GameScreen extends Screen implements AnimationProvider {
 	@Override
 	public void onKeyRelease(KeyEvent e) {
 		map_canvas.onKeyRelease(e);
+	}
+	
+	@Override
+	public Animation getSummonAnimation(Unit summoner, int target_x, int target_y) {
+		SummonAnimation animation = new SummonAnimation(summoner, target_x, target_y, ts);
+		processAnimation(animation);
+		animation.setInterval(1);
+		return animation;
 	}
 	
 	@Override

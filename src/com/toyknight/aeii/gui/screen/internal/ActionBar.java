@@ -65,11 +65,16 @@ public class ActionBar extends JPanel {
 		btn_repair.setToolTipText(Language.getText("LB_REPAIR"));
 		btn_summon = new ActionButton(3);
 		btn_summon.setToolTipText(Language.getText("LB_SUMMON"));
+		btn_summon.registerKeyboardAction(
+				btn_summon_listener,
+				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		btn_summon.addActionListener(btn_summon_listener);
 		btn_standby = new ActionButton(5);
 		btn_standby.setToolTipText(Language.getText("LB_STANDBY"));
 		btn_standby.registerKeyboardAction(
 				btn_standby_listener,
-				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK),
+				KeyStroke.getKeyStroke(KeyEvent.VK_S, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_standby.addActionListener(btn_standby_listener);
 		btn_buy = new ActionButton(0);
@@ -147,6 +152,14 @@ public class ActionBar extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			manager.beginAttackPhase();
+			canvas.updateActionBar();
+		}
+	};
+	
+	private final ActionListener btn_summon_listener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			manager.beginSummonPhase();
 			canvas.updateActionBar();
 		}
 	};

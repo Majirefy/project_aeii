@@ -9,9 +9,11 @@ import com.toyknight.aeii.core.unit.Unit;
  */
 public interface GameListener {
 	
+	public void onSummon(Unit summoner, int target_x, int target_y);
+	
 	public void onUnitAttack(Unit attacker, Unit defender, int damage);
 	
-	public void onUnitAttackFinished(Unit attacker, Unit defender);
+	public void onUnitActionFinished(Unit unit);
 	
 	public void onUnitDestroyed(Unit unit);
 	

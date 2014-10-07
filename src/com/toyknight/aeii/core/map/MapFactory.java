@@ -7,7 +7,6 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  *
@@ -36,8 +35,7 @@ public class MapFactory {
 			int index = fis.readInt();
 			int x = fis.readInt();
 			int y = fis.readInt();
-			Unit unit = UnitFactory.createUnit(index);
-			unit.setTeam(team);
+			Unit unit = UnitFactory.createUnit(index, team);
 			unit.setX(x);
 			unit.setY(y);
 			map.addUnit(unit);
