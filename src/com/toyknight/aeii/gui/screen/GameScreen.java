@@ -1,5 +1,6 @@
 package com.toyknight.aeii.gui.screen;
 
+import com.toyknight.aeii.Language;
 import com.toyknight.aeii.core.BasicGame;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.Point;
@@ -9,6 +10,7 @@ import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.Screen;
+import com.toyknight.aeii.gui.animation.MessageAnimation;
 import com.toyknight.aeii.gui.animation.SmokeAnimation;
 import com.toyknight.aeii.gui.animation.SummonAnimation;
 import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
@@ -93,6 +95,20 @@ public class GameScreen extends Screen implements AnimationProvider {
 	@Override
 	public void onKeyRelease(KeyEvent e) {
 		map_canvas.onKeyRelease(e);
+	}
+	
+	@Override
+	public Animation getOccupiedMessageAnimation() {
+		MessageAnimation animation = new MessageAnimation(Language.getText("LB_MSG_OCCUPIED"), ts);
+		processAnimation(animation);
+		return animation;
+	}
+	
+	@Override
+	public Animation getRepairedMessageAnimation() {
+		MessageAnimation animation = new MessageAnimation(Language.getText("LB_MSG_REPAIRED"), ts);
+		processAnimation(animation);
+		return animation;
 	}
 	
 	@Override

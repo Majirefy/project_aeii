@@ -7,7 +7,7 @@ import com.toyknight.aeii.core.unit.UnitFactory;
  *
  * @author toyknight
  */
-public class UnitAnimation extends CanvasAnimation {
+public class UnitAnimation extends SwingAnimation {
 
 	private final Unit unit;
 

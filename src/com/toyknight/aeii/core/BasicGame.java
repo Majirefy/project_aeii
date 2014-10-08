@@ -4,6 +4,7 @@ import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
+import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
@@ -140,13 +141,23 @@ public class BasicGame implements OperationListener {
 	
 	@Override
 	public void doOccupy(int x, int y) {
-		Tile tile = getMap().getTile(x, y);
 		Unit conqueror = getMap().getUnit(x, y);
-		if((tile.isCastle() || tile.isVillage()) && 
-				tile.getTeam() != getCurrentTeam() && conqueror != null) {
+		if(canOccupy(conqueror, x, y)) {
+			Tile tile = getMap().getTile(x, y);
 			changeTile(tile.getCapturedTileIndex(getCurrentTeam()), x, y);
 			game_listener.onOccupy();
 			game_listener.onUnitActionFinished(conqueror);
+		}
+	}
+	
+	@Override
+	public void doRepair(int x, int y) {
+		Unit repairer = getMap().getUnit(x, y);
+		if(canRepair(repairer, x, y)) {
+			Tile tile = getMap().getTile(x, y);
+			changeTile(tile.getRepairedTileIndex(), x, y);
+			game_listener.onRepair();
+			game_listener.onUnitActionFinished(repairer);
 		}
 	}
 	
@@ -191,6 +202,39 @@ public class BasicGame implements OperationListener {
 		if (unit != null) {
 			moveUnit(unit, dest_x, dest_y);
 		}
+	}
+	
+	public boolean canOccupy(Unit conqueror, int x, int y) {
+		if(conqueror == null) {
+			return false;
+		}
+		if(conqueror.getTeam() != getCurrentTeam()) {
+			return false;
+		}
+		Tile tile = getMap().getTile(x, y);
+		if (tile.getTeam() != getCurrentTeam()) {
+			if (tile.isCastle()) {
+				return conqueror.getAbilities().contains(Ability.COMMANDER);
+			}
+			if (tile.isVillage()) {
+				return conqueror.getAbilities().contains(Ability.COMMANDER)
+						|| conqueror.getAbilities().contains(Ability.CONQUEROR);
+			}
+			return false;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean canRepair(Unit repairer, int x, int y) {
+		if(repairer == null) {
+			return false;
+		}
+		if(repairer.getTeam() != getCurrentTeam()) {
+			return false;
+		}
+		Tile tile = getMap().getTile(x, y);
+		return repairer.getAbilities().contains(Ability.REPAIRER) && tile.isRepairable();
 	}
 
 	protected void moveUnit(Unit unit, int dest_x, int dest_y) {

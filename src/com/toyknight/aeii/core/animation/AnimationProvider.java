@@ -9,6 +9,10 @@ import com.toyknight.aeii.core.unit.Unit;
  */
 public interface AnimationProvider {
 	
+	public Animation getOccupiedMessageAnimation();
+	
+	public Animation getRepairedMessageAnimation();
+	
 	public Animation getSummonAnimation(Unit summoner, int target_x, int target_y);
 	
 	public Animation getSmokeAnimation(int x, int y);

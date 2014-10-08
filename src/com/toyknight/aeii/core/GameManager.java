@@ -4,7 +4,6 @@ import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.animation.AnimationListener;
 import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.core.map.Tile;
-import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitToolkit;
@@ -93,7 +92,14 @@ public class GameManager implements GameListener {
 	
 	@Override
 	public void onOccupy() {
-		
+		Animation msg_animation = animation_provider.getOccupiedMessageAnimation();
+		submitAnimation(msg_animation);
+	}
+	
+	@Override
+	public void onRepair() {
+		Animation msg_animation = animation_provider.getRepairedMessageAnimation();
+		submitAnimation(msg_animation);
 	}
 
 	@Override
@@ -257,11 +263,15 @@ public class GameManager implements GameListener {
 		}
 	}
 	
-	public void doOccupy(int x, int y) {
-		Tile tile = getGame().getMap().getTile(x, y);
-		if((tile.isCastle() || tile.isVillage()) && 
-				tile.getTeam() != getGame().getCurrentTeam()) {
+	public void doOccupy(Unit conqueror, int x, int y) {
+		if(getGame().canOccupy(conqueror, x, y)) {
 			getGame().doOccupy(x, y);
+		}
+	}
+	
+	public void doRepair(Unit repairer, int x, int y) {
+		if(getGame().canRepair(repairer, x, y)) {
+			getGame().doRepair(x, y);
 		}
 	}
 
@@ -321,22 +331,6 @@ public class GameManager implements GameListener {
 		Tile tile = getGame().getMap().getTile(x, y);
 		if (tile.isCastle()) {
 			return tile.getTeam() == getGame().getCurrentTeam();
-		} else {
-			return false;
-		}
-	}
-
-	public boolean canCapture(Unit capturer, int x, int y) {
-		Tile tile = getGame().getMap().getTile(x, y);
-		if (tile.getTeam() != getGame().getCurrentTeam()) {
-			if (tile.isCastle()) {
-				return capturer.getAbilities().contains(Ability.COMMANDER);
-			}
-			if (tile.isVillage()) {
-				return capturer.getAbilities().contains(Ability.COMMANDER)
-						|| capturer.getAbilities().contains(Ability.CONQUEROR);
-			}
-			return false;
 		} else {
 			return false;
 		}

@@ -12,7 +12,7 @@ import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
-import com.toyknight.aeii.gui.animation.CanvasAnimation;
+import com.toyknight.aeii.gui.animation.SwingAnimation;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
 import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
 import com.toyknight.aeii.gui.screen.internal.ActionBar;
@@ -539,7 +539,7 @@ public class MapCanvas extends Screen {
 
 	private void paintAnimation(Graphics g) {
 		if (isAnimating()) {
-			CanvasAnimation animation = (CanvasAnimation) manager.getCurrentAnimation();
+			SwingAnimation animation = (SwingAnimation) manager.getCurrentAnimation();
 			animation.paint(g, this);
 		}
 	}

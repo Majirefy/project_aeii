@@ -11,6 +11,8 @@ public interface GameListener {
 	
 	public void onOccupy();
 	
+	public void onRepair();
+	
 	public void onSummon(Unit summoner, int target_x, int target_y);
 	
 	public void onUnitAttack(Unit attacker, Unit defender, int damage);

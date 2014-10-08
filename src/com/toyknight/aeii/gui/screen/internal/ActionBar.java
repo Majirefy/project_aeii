@@ -68,6 +68,11 @@ public class ActionBar extends JPanel {
 		btn_occupy.addActionListener(btn_occupy_listener);
 		btn_repair = new ActionButton(1);
 		btn_repair.setToolTipText(Language.getText("LB_REPAIR"));
+		btn_repair.registerKeyboardAction(
+				btn_repair_listener,
+				KeyStroke.getKeyStroke(KeyEvent.VK_R, 0),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		btn_repair.addActionListener(btn_repair_listener);
 		btn_summon = new ActionButton(3);
 		btn_summon.setToolTipText(Language.getText("LB_SUMMON"));
 		btn_summon.registerKeyboardAction(
@@ -112,8 +117,11 @@ public class ActionBar extends JPanel {
 					if (unit.hasAbility(Ability.NECROMANCER)) {
 						addButton(btn_summon);
 					}
-					if (manager.canCapture(unit, unit.getX(), unit.getY())) {
+					if (manager.getGame().canOccupy(unit, unit.getX(), unit.getY())) {
 						addButton(btn_occupy);
+					}
+					if (manager.getGame().canRepair(unit, unit.getX(), unit.getY())) {
+						addButton(btn_repair);
 					}
 				case GameManager.STATE_RMOVE:
 					addButton(btn_standby);
@@ -170,13 +178,22 @@ public class ActionBar extends JPanel {
 			canvas.updateActionBar();
 		}
 	};
-	
+
 	private final ActionListener btn_occupy_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Unit unit = manager.getSelectedUnit();
-			manager.doOccupy(unit.getX(), unit.getY());
-			canvas.updateActionBar();
+			manager.doOccupy(unit, unit.getX(), unit.getY());
+			setVisible(false);
+		}
+	};
+	
+	private final ActionListener btn_repair_listener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Unit unit = manager.getSelectedUnit();
+			manager.doRepair(unit, unit.getX(), unit.getY());
+			setVisible(false);
 		}
 	};
 

@@ -8,7 +8,7 @@ import java.awt.Graphics;
  *
  * @author toyknight
  */
-public class SmokeAnimation extends CanvasAnimation {
+public class SmokeAnimation extends SwingAnimation {
 
 	private final int ts;
 
