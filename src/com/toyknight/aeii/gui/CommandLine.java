@@ -7,82 +7,55 @@ import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.map.MapFactory;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Scanner;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 
 /**
  *
  * @author toyknight
  */
-public class CommandLineDialog extends JDialog {
+public class CommandLine extends Thread {
 
 	private final AEIIApplet context;
-	private JTextField tf_command;
-	private CommandWrapper command_wrapper;
+	private final CommandWrapper command_wrapper;
+	private final BufferedReader cin;
 
-	public CommandLineDialog(AEIIApplet context) {
-		super(Launcher.getWindow(), "Command Line");
+	public CommandLine(AEIIApplet context) {
+		super("command line thread");
 		this.context = context;
-		this.initComponents();
-		this.setResizable(false);
-		this.pack();
-		this.setModal(true);
-		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		this.command_wrapper = new CommandWrapper();
+		this.cin = new BufferedReader(new InputStreamReader(System.in));
 	}
 
-	private void initComponents() {
-		this.getContentPane().setPreferredSize(new Dimension(500, 20));
-		this.getContentPane().setLayout(null);
-		tf_command = new JTextField();
-		tf_command.setBounds(0, 0, 430, 20);
-		this.add(tf_command);
-		JButton btn_submit = new JButton("Submit");
-		btn_submit.setBounds(430, 0, 70, 20);
-		btn_submit.setFocusable(false);
-		ActionListener btn_submit_listener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				excute(tf_command.getText());
+	@Override
+	public void run() {
+		while (context.isRunning()) {
+			System.out.print(">");
+			try {
+				excute(cin.readLine());
+			} catch (IOException ex) {
+				//do nothing
 			}
-		};
-		btn_submit.addActionListener(btn_submit_listener);
-		btn_submit.registerKeyboardAction(
-				btn_submit_listener,
-				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-				JComponent.WHEN_IN_FOCUSED_WINDOW);
-		this.add(btn_submit);
-		command_wrapper = new CommandWrapper();
-	}
-
-	public void display() {
-		this.setLocationRelativeTo(getOwner());
-		tf_command.setText("");
-		this.setVisible(true);
+		}
 	}
 
 	public void excute(String input) {
-		this.dispose();
-		Scanner in = new Scanner(input);
-		if (in.hasNext()) {
-			String cmd = in.next();
-			ArrayList<Object> args = new ArrayList();
-			while (in.hasNext()) {
-				args.add(in.next());
+		if (input != null) {
+			Scanner in = new Scanner(input);
+			if (in.hasNext()) {
+				String cmd = in.next();
+				ArrayList<Object> args = new ArrayList();
+				while (in.hasNext()) {
+					args.add(in.next());
+				}
+				invoke(cmd, args.toArray());
 			}
-			invoke(cmd, args.toArray());
 		}
 	}
 
@@ -124,7 +97,7 @@ public class CommandLineDialog extends JDialog {
 				IllegalAccessException |
 				IllegalArgumentException |
 				InvocationTargetException ex) {
-			System.err.println(ex.getClass().toString() + ": " + ex.getMessage() + "\n" + ex.getCause().toString());
+			System.err.println(ex.getClass().toString() + ": " + ex.getMessage());
 		}
 	}
 
@@ -156,7 +129,7 @@ public class CommandLineDialog extends JDialog {
 				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
 				context.setCurrentFpsDelayToGame();
 			} catch (IOException ex) {
-
+				System.err.println(ex.getClass().toString() + ": " + ex.getMessage());
 			}
 		}
 

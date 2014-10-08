@@ -36,7 +36,7 @@ public class Launcher implements Runnable {
 		this.SCREEN_HEIGHT = height;
 		this.FULL_SCREEN = fs;
 	}
-	
+
 	@Override
 	public void run() {
 		try {
@@ -63,13 +63,19 @@ public class Launcher implements Runnable {
 			}
 			main_frame.setIconImage(
 					ImageIO.read(Launcher.class.getResource("gameicon.png")));
-			main_frame.addWindowListener(new AEIIWindowListener());
+			main_frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			main_frame.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent e) {
+					exit();
+				}
+			});
 			main_frame.setResizable(false);
 
 			aeii_applet = new AEIIApplet(TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT);
 			aeii_applet.init();
 			main_frame.setContentPane(aeii_applet.getContentPane());
-			
+
 			main_frame.pack();
 			main_frame.setLocationRelativeTo(null);
 			main_frame.setVisible(true);
@@ -90,6 +96,9 @@ public class Launcher implements Runnable {
 	public static void exit() {
 		aeii_applet.stop();
 		main_frame.dispose();
+		if(aeii_applet.isDebugMode()) {
+			System.exit(0);
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -99,7 +108,7 @@ public class Launcher implements Runnable {
 				int width = Integer.parseInt(args[1]);
 				int height = Integer.parseInt(args[2]);
 				boolean fs = Boolean.parseBoolean(args[3]);
-				validateParam(ts, width, height , fs);
+				validateParam(ts, width, height, fs);
 				EventQueue.invokeLater(new Launcher(ts, width, height, fs));
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -108,20 +117,11 @@ public class Launcher implements Runnable {
 			throw new AEIIException("缺少启动参数");
 		}
 	}
-	
-	private static void validateParam(int ts, int width, int height, boolean fs) throws Exception{
-		if (ts < 0 || ts%24 != 0) {
+
+	private static void validateParam(int ts, int width, int height, boolean fs) throws Exception {
+		if (ts < 0 || ts % 24 != 0) {
 			throw new AEIIException("TILE_SIZE 必须为 24的正整数倍");
 		}
-	}
-
-	private static final class AEIIWindowListener extends WindowAdapter {
-
-		@Override
-		public void windowClosing(WindowEvent e) {
-			exit();
-		}
-
 	}
 
 }

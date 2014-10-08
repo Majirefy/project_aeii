@@ -32,11 +32,12 @@ public class AEIIApplet {
 	public static final String ID_MAIN_MENU_SCREEN = "main_menu";
 	public static final String ID_GAME_SCREEN = "game";
 
-	private CommandLineDialog command_line;
+	private CommandLine command_line;
 
 	private final Object FPS_LOCK = new Object();
 
 	private boolean isRunning;
+	private final boolean isDebugMode = true;
 
 	private final long inMenuFpsDelay;
 	private final long inGameFpsDelay;
@@ -85,10 +86,18 @@ public class AEIIApplet {
 
 		CharPainter.init(TILE_SIZE);
 
-		command_line = new CommandLineDialog(this);
+		command_line = new CommandLine(this);
 
 		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		manager.addKeyEventPostProcessor(new GlobalKeyListener());
+	}
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+	
+	public boolean isDebugMode() {
+		return isDebugMode;
 	}
 
 	public void start() {
@@ -96,6 +105,9 @@ public class AEIIApplet {
 		setCurrentFpsDelayToMenu();
 		executor.submit(animation_thread);
 		current_screen.repaint();
+		if(isDebugMode()) {
+			command_line.start();
+		}
 		loadResources();
 	}
 
@@ -207,28 +219,22 @@ public class AEIIApplet {
 		}
 
 	}
-	
+
 	private class GlobalKeyListener implements KeyEventPostProcessor {
 
 		@Override
 		public boolean postProcessKeyEvent(KeyEvent e) {
-			if (!command_line.isVisible()) {
-				switch (e.getID()) {
-					case KeyEvent.KEY_PRESSED:
-						if (e.getKeyCode() == KeyEvent.VK_F9) {
-							command_line.display();
-						} else {
-							current_screen.onKeyPress(e);
-						}
-						break;
-					case KeyEvent.KEY_RELEASED:
-						current_screen.onKeyRelease(e);
-						break;
-				}
+			switch (e.getID()) {
+				case KeyEvent.KEY_PRESSED:
+					current_screen.onKeyPress(e);
+					break;
+				case KeyEvent.KEY_RELEASED:
+					current_screen.onKeyRelease(e);
+					break;
 			}
 			return false;
 		}
-		
+
 	}
 
 }
