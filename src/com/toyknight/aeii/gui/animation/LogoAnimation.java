@@ -4,7 +4,6 @@ import com.toyknight.aeii.Launcher;
 import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
-import com.toyknight.aeii.gui.util.ResourceUtil;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
