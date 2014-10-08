@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -168,8 +169,11 @@ public class UnitStore extends JInternalFrame {
 					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			String unit_name = Language.getText("LB_UNIT_NAME_" + index + "_0");
 			g.setColor(Color.WHITE);
-			g.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
-			g.drawString(unit_name, ts / 2 * 3, (ts / 2 * 3 - 16) / 2 + 16);
+			g.setFont(ResourceManager.getLabelFont());
+			FontMetrics fm = g.getFontMetrics();
+			g.drawString(unit_name,
+					fm.stringWidth(" ") + ts / 2 * 3,
+					(getHeight() - fm.getHeight()) / 2 + fm.getAscent());
 			((Graphics2D) g).setRenderingHint(
 					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 		}
@@ -182,14 +186,18 @@ public class UnitStore extends JInternalFrame {
 		public void paintComponent(Graphics g) {
 			int lw = ts / 24 * 8;
 			int lh = ts / 24 * 11;
-			int ch = ts / 24 * 13;
+			int interval = ts / 24 * 13;
 			int index = (int) unit_list.getSelectedValue();
 			((Graphics2D) g).setRenderingHint(
 					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g.setColor(Color.WHITE);
-			g.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
-			g.drawString(Language.getText("LB_UNIT_NAME_" + index + "_0"), ts * 6, ts / 2 + 16 + (lh - 16) / 2);
-			g.drawLine(ts * 6, ts / 2 + ch, ts * 10 + ts / 2, ts / 2 + ch);
+			g.setFont(ResourceManager.getLabelFont());
+			FontMetrics fm = g.getFontMetrics();
+			g.drawString(
+					Language.getText("LB_UNIT_NAME_" + index + "_0"),
+					ts * 6, (interval - fm.getHeight()) / 2 + fm.getAscent() + ts / 2
+			);
+			g.drawLine(ts * 6, ts / 2 + interval, ts * 10 + ts / 2, ts / 2 + interval);
 			g.drawImage(ResourceManager.getGoldIcon(), ts * 10 + ts / 2 - lw * 4 - ts / 24 * 11, ts / 2, this);
 			CharPainter.paintLNumber(g, UnitFactory.getUnitPrice(index), ts * 10 + ts / 2 - lw * 4, ts / 2);
 			((Graphics2D) g).setRenderingHint(

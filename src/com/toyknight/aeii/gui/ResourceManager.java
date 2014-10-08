@@ -5,6 +5,7 @@ import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.util.ResourceUtil;
 import com.toyknight.aeii.gui.util.SuffixFileFilter;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +45,8 @@ public class ResourceManager {
 	private static BufferedImage ldivision;
 	private static Color aeii_panel_bg;
 	private static Color move_path_color;
+	private static Font title_font;
+	private static Font label_font;
 
 	private ResourceManager() {
 	}
@@ -64,6 +67,8 @@ public class ResourceManager {
 		loadHudIcons(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		move_path_color = new Color(225, 0, 82);
+		title_font = new Font(Font.DIALOG, Font.BOLD, ts / 2);
+		label_font = new Font(Font.DIALOG, Font.BOLD, ts / 3);
 	}
 
 	private static void loadBorder() throws IOException {
@@ -276,7 +281,7 @@ public class ResourceManager {
 	public static BufferedImage getPopulationIcon() {
 		return population_icon;
 	}
-	
+
 	public static BufferedImage getGoldIcon() {
 		return gold_icon;
 	}
@@ -375,6 +380,14 @@ public class ResourceManager {
 
 	public static Color getMovePathColor() {
 		return move_path_color;
+	}
+
+	public static Font getTitleFont() {
+		return title_font;
+	}
+	
+	public static Font getLabelFont() {
+		return label_font;
 	}
 
 }

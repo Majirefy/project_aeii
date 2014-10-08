@@ -20,12 +20,10 @@ public class MessageAnimation extends SwingAnimation {
 	private float alpha = 1.0f;
 
 	private final int ts;
-	private final Font font;
 	private final String message;
 
 	public MessageAnimation(String message, int ts) {
 		this.ts = ts;
-		this.font = new Font(Font.DIALOG, Font.BOLD, ts / 2);
 		this.message = message;
 	}
 
@@ -52,14 +50,14 @@ public class MessageAnimation extends SwingAnimation {
 		g2d.fillRect(0, y, canvas.getWidth(), ts);
 		g2d.drawImage(ResourceManager.getBorderImage(1), 0, y, canvas.getWidth(), 16, canvas);
 		g2d.drawImage(ResourceManager.getBorderImage(6), 0, y + ts - 16, canvas.getWidth(), 16, canvas);
-		g2d.setFont(font);
+		g2d.setFont(ResourceManager.getTitleFont());
 		g2d.setColor(Color.WHITE);
 		FontMetrics fm = g.getFontMetrics();
 		((Graphics2D) g).setRenderingHint(
 				RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.drawString(message,
 				(canvas.getWidth() - fm.stringWidth(message)) / 2,
-				y + (ts - ts / 2) / 2 + ts / 2);
+				y + (ts - fm.getHeight()) / 2 + fm.getAscent());
 		((Graphics2D) g).setRenderingHint(
 				RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
