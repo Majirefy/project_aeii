@@ -49,27 +49,33 @@ public class TileRepository {
 			boolean is_capturable = din.nextBoolean();
 			tile_list[i].setCapturable(is_capturable);
 			if (is_capturable) {
-				int[] captured_tile_list = new int[4];
-				for (int t = 0; t < 4; t++) {
-					captured_tile_list[t] = din.nextInt();
+				short[] captured_tile_list = new short[5];
+				for (int t = 0; t < 5; t++) {
+					captured_tile_list[t] = din.nextShort();
 				}
 				tile_list[i].setCapturedTileList(captured_tile_list);
 			}
 			boolean is_destroyable = din.nextBoolean();
 			tile_list[i].setDestroyable(is_destroyable);
 			if (is_destroyable) {
-				tile_list[i].setDestroyedTileIndex(din.nextInt());
+				tile_list[i].setDestroyedTileIndex(din.nextShort());
 			}
 			boolean is_repairable = din.nextBoolean();
 			tile_list[i].setRepairable(is_repairable);
 			if (is_repairable) {
-				tile_list[i].setRepairedTileIndex(din.nextInt());
+				tile_list[i].setRepairedTileIndex(din.nextShort());
 			}
 			boolean is_animated = din.nextBoolean();
 			tile_list[i].setAnimated(is_animated);
 			if(is_animated) {
-				tile_list[i].setAnimationTileIndex(din.nextInt());
+				tile_list[i].setAnimationTileIndex(din.nextShort());
 			}
+			int mini_map_index = din.nextInt();
+			tile_list[i].setMiniMapIndex(mini_map_index);
+			boolean is_castle = din.nextBoolean();
+			tile_list[i].setCastle(is_castle);
+			boolean is_village = din.nextBoolean();
+			tile_list[i].setVillage(is_village);
 			} catch (java.util.NoSuchElementException ex) {
 				throw new AEIIException("bad tile data");
 			}

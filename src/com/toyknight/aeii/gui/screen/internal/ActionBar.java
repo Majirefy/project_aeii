@@ -61,6 +61,11 @@ public class ActionBar extends JPanel {
 		btn_move.addActionListener(btn_move_listener);
 		btn_occupy = new ActionButton(1);
 		btn_occupy.setToolTipText(Language.getText("LB_OCCUPY"));
+		btn_occupy.registerKeyboardAction(
+				btn_occupy_listener,
+				KeyStroke.getKeyStroke(KeyEvent.VK_O, 0),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		btn_occupy.addActionListener(btn_occupy_listener);
 		btn_repair = new ActionButton(1);
 		btn_repair.setToolTipText(Language.getText("LB_REPAIR"));
 		btn_summon = new ActionButton(3);
@@ -92,10 +97,9 @@ public class ActionBar extends JPanel {
 
 	public void display() {
 		this.removeAll();
-		int sx = canvas.getSelectedX();
-		int sy = canvas.getSelectedY();
-		int tile_index = manager.getGame().getMap().getTileIndex(sx, sy);
-		if (manager.isAccessibleCastle(tile_index)) {
+		int x = canvas.getSelectedX();
+		int y = canvas.getSelectedY();
+		if (manager.isAccessibleCastle(x, y)) {
 			addButton(btn_buy);
 		}
 		Unit unit = manager.getSelectedUnit();
@@ -107,6 +111,9 @@ public class ActionBar extends JPanel {
 					addButton(btn_attack);
 					if (unit.hasAbility(Ability.NECROMANCER)) {
 						addButton(btn_summon);
+					}
+					if (manager.canCapture(unit, unit.getX(), unit.getY())) {
+						addButton(btn_occupy);
 					}
 				case GameManager.STATE_RMOVE:
 					addButton(btn_standby);
@@ -155,11 +162,20 @@ public class ActionBar extends JPanel {
 			canvas.updateActionBar();
 		}
 	};
-	
+
 	private final ActionListener btn_summon_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			manager.beginSummonPhase();
+			canvas.updateActionBar();
+		}
+	};
+	
+	private final ActionListener btn_occupy_listener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Unit unit = manager.getSelectedUnit();
+			manager.doOccupy(unit.getX(), unit.getY());
 			canvas.updateActionBar();
 		}
 	};

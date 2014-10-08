@@ -90,6 +90,11 @@ public class GameManager implements GameListener {
 	public UnitToolkit getUnitToolkit() {
 		return unit_toolkit;
 	}
+	
+	@Override
+	public void onOccupy() {
+		
+	}
 
 	@Override
 	public void onSummon(Unit summoner, int target_x, int target_y) {
@@ -182,8 +187,7 @@ public class GameManager implements GameListener {
 	}
 
 	public void buyUnit(int unit_index, int x, int y) {
-		int tile_index = getGame().getMap().getTileIndex(x, y);
-		if (this.isAccessibleCastle(tile_index)) {
+		if (this.isAccessibleCastle(x, y)) {
 			getGame().buyUnit(unit_index, x, y);
 			selectUnit(x, y);
 			beginMovePhase();
@@ -214,16 +218,14 @@ public class GameManager implements GameListener {
 	}
 
 	public boolean canAttack(int x, int y) {
-		Unit unit = getSelectedUnit();
-		if (unit != null && UnitToolkit.isWithinRange(unit, x, y)) {
+		Unit attacker = getSelectedUnit();
+		if (attacker != null && UnitToolkit.isWithinRange(attacker, x, y)) {
 			Unit defender = getGame().getMap().getUnit(x, y);
 			if (defender != null) {
-				return UnitToolkit.isEnemy(unit, defender);
+				return UnitToolkit.isEnemy(attacker, defender);
 			} else {
-				if (unit.hasAbility(Ability.DESTROYER)) {
-					int tile_index = getGame().getMap().getTileIndex(x, y);
-					Tile tile = TileRepository.getTile(tile_index);
-					return tile.isDestroyable();
+				if (attacker.hasAbility(Ability.DESTROYER)) {
+					return getGame().getMap().getTile(x, y).isDestroyable();
 				} else {
 					return false;
 				}
@@ -252,6 +254,14 @@ public class GameManager implements GameListener {
 		if (canSummon(target_x, target_y)) {
 			Unit summoner = getSelectedUnit();
 			getGame().doSummon(summoner.getX(), summoner.getY(), target_x, target_y);
+		}
+	}
+	
+	public void doOccupy(int x, int y) {
+		Tile tile = getGame().getMap().getTile(x, y);
+		if((tile.isCastle() || tile.isVillage()) && 
+				tile.getTeam() != getGame().getCurrentTeam()) {
+			getGame().doOccupy(x, y);
 		}
 	}
 
@@ -307,10 +317,26 @@ public class GameManager implements GameListener {
 		return !unit.isAt(last_position.x, last_position.y);
 	}
 
-	public boolean isAccessibleCastle(int index) {
-		if (index == 39 || index == 41 || index == 43 || index == 45) {
-			Tile tile = TileRepository.getTile(index);
+	public boolean isAccessibleCastle(int x, int y) {
+		Tile tile = getGame().getMap().getTile(x, y);
+		if (tile.isCastle()) {
 			return tile.getTeam() == getGame().getCurrentTeam();
+		} else {
+			return false;
+		}
+	}
+
+	public boolean canCapture(Unit capturer, int x, int y) {
+		Tile tile = getGame().getMap().getTile(x, y);
+		if (tile.getTeam() != getGame().getCurrentTeam()) {
+			if (tile.isCastle()) {
+				return capturer.getAbilities().contains(Ability.COMMANDER);
+			}
+			if (tile.isVillage()) {
+				return capturer.getAbilities().contains(Ability.COMMANDER)
+						|| capturer.getAbilities().contains(Ability.CONQUEROR);
+			}
+			return false;
 		} else {
 			return false;
 		}

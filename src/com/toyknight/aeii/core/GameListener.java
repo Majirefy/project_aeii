@@ -9,6 +9,8 @@ import com.toyknight.aeii.core.unit.Unit;
  */
 public interface GameListener {
 	
+	public void onOccupy();
+	
 	public void onSummon(Unit summoner, int target_x, int target_y);
 	
 	public void onUnitAttack(Unit attacker, Unit defender, int damage);

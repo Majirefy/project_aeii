@@ -12,7 +12,7 @@ import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
-import com.toyknight.aeii.gui.animation.SwingAnimation;
+import com.toyknight.aeii.gui.animation.CanvasAnimation;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
 import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
 import com.toyknight.aeii.gui.screen.internal.ActionBar;
@@ -53,7 +53,6 @@ public class MapCanvas extends Screen {
 	private CursorSprite cursor;
 	private AttackCursorSprite attack_cursor;
 
-	private int selected_tile_index;
 	private int selected_x;
 	private int selected_y;
 	private boolean internal_frame_shown;
@@ -240,7 +239,6 @@ public class MapCanvas extends Screen {
 	}
 
 	private void doSelect(int x, int y) {
-		selected_tile_index = manager.getGame().getMap().getTileIndex(x, y);
 		Unit unit = manager.getUnit(x, y);
 		if (unit != null) {
 			manager.selectUnit(x, y);
@@ -250,7 +248,7 @@ public class MapCanvas extends Screen {
 				action_bar.setVisible(false);
 			}
 		} else {
-			if (manager.isAccessibleCastle(selected_tile_index)) {
+			if (manager.isAccessibleCastle(selected_x, selected_y)) {
 				action_bar.display();
 			} else {
 				action_bar.setVisible(false);
@@ -541,7 +539,7 @@ public class MapCanvas extends Screen {
 
 	private void paintAnimation(Graphics g) {
 		if (isAnimating()) {
-			SwingAnimation animation = (SwingAnimation) manager.getCurrentAnimation();
+			CanvasAnimation animation = (CanvasAnimation) manager.getCurrentAnimation();
 			animation.paint(g, this);
 		}
 	}

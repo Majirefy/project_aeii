@@ -1,6 +1,7 @@
 package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.map.Map;
+import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
 import com.toyknight.aeii.core.unit.Unit;
@@ -135,6 +136,22 @@ public class BasicGame implements OperationListener {
 		updatePopulation(getCurrentTeam());
 		game_listener.onSummon(summoner, target_x, target_y);
 		game_listener.onUnitActionFinished(summoner);
+	}
+	
+	@Override
+	public void doOccupy(int x, int y) {
+		Tile tile = getMap().getTile(x, y);
+		Unit conqueror = getMap().getUnit(x, y);
+		if((tile.isCastle() || tile.isVillage()) && 
+				tile.getTeam() != getCurrentTeam() && conqueror != null) {
+			changeTile(tile.getCapturedTileIndex(getCurrentTeam()), x, y);
+			game_listener.onOccupy();
+			game_listener.onUnitActionFinished(conqueror);
+		}
+	}
+	
+	protected void changeTile(short index, int x, int y) {
+		getMap().setTile(index, x, y);
 	}
 
 	@Override

@@ -63,6 +63,10 @@ public class Map {
 			return -1;
 		}
 	}
+	
+	public Tile getTile(int x, int y) {
+		return TileRepository.getTile(map_data[x][y]);
+	}
 
 	public void addTomb(int x, int y) {
 		Tomb tomb = new Tomb(x, y);

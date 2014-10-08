@@ -8,16 +8,16 @@ import java.awt.Graphics;
  *
  * @author toyknight
  */
-public class SwingAnimation extends Animation {
+public class CanvasAnimation extends Animation {
 
 	private int interval;
 	private int current_delay;
 
-	public SwingAnimation() {
+	public CanvasAnimation() {
 		this(-1, -1);
 	}
 
-	public SwingAnimation(int x, int y) {
+	public CanvasAnimation(int x, int y) {
 		if (x >= 0 && y >= 0) {
 			this.addLocation(x, y);
 		}

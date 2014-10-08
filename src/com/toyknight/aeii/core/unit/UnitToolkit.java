@@ -163,8 +163,7 @@ public class UnitToolkit {
 	}
 
 	public int getMovementPointCost(Unit unit, int x, int y) {
-		int tile_index = game.getMap().getTileIndex(x, y);
-		Tile tile = TileRepository.getTile(tile_index);
+		Tile tile = game.getMap().getTile(x, y);
 		int mp_cost = tile.getStepCost();
 		int tile_type = tile.getType();
 		if (unit.hasAbility(Ability.AIR_FORCE)) {

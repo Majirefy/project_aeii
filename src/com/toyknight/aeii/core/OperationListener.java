@@ -13,6 +13,8 @@ public interface OperationListener {
 	
 	public void doSummon(int summoner_x, int summoner_y, int target_x, int target_y);
 	
+	public void doOccupy(int x, int y);
+	
 	public void doAttack(int unit_x, int unit_y, int target_x, int target_y);
 	
 	public void standbyUnit(int unit_x, int unit_y);
