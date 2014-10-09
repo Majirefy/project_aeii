@@ -159,7 +159,7 @@ public class MapCanvas extends Screen {
 						break;
 					case GameManager.STATE_MOVE:
 					case GameManager.STATE_RMOVE:
-						if (manager.canSelectedUnitMove(click_x, click_x)) {
+						if (manager.canSelectedUnitMove(click_x, click_y)) {
 							manager.moveSelectedUnit(click_x, click_y);
 							action_bar.setVisible(false);
 						}
@@ -410,7 +410,7 @@ public class MapCanvas extends Screen {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		paintTiles(g, ts);
-		if (!isAnimating()) {
+		if (!isAnimating() && getGame().isLocalPlayer()) {
 			switch (manager.getState()) {
 				case GameManager.STATE_RMOVE:
 				case GameManager.STATE_MOVE:

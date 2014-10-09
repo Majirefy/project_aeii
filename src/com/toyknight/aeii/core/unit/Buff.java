@@ -7,6 +7,8 @@ package com.toyknight.aeii.core.unit;
  */
 public class Buff {
 	
+	public static final int POISONED = 0x1;
+	
 	private final int type;
 	private int remaining_turn;
 	

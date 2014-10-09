@@ -10,10 +10,13 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.KeyStroke;
 
 /**
  *
@@ -48,7 +51,12 @@ public class ActionPanel extends AEIIPanel {
 	public void initComponents(int ts) {
 		this.setLayout(null);
 		btn_end_turn.setBounds(ts / 2, getHeight() - ts, getWidth() - ts, ts / 2);
-		btn_end_turn.setToolTipText("Ctrl + Enter");
+		btn_end_turn.addActionListener(btn_end_turn_listener);
+		btn_end_turn.registerKeyboardAction(
+				btn_end_turn_listener, 
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_MASK), 
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		btn_end_turn.setToolTipText("Alt + Enter");
 		this.add(btn_end_turn);
 		btn_mini_map.setBounds(ts / 2, getHeight() - ts * 2, getWidth() - ts, ts / 2);
 		this.add(btn_mini_map);
@@ -83,5 +91,15 @@ public class ActionPanel extends AEIIPanel {
 	private boolean isOperatable() {
 		return manager.getGame().isLocalPlayer() && !game_screen.getCanvas().isAnimating();
 	}
+	
+	private final ActionListener btn_end_turn_listener = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			manager.getGame().endTurn();
+			game_screen.getCanvas().updateActionBar();
+		}
+		
+	};
 
 }

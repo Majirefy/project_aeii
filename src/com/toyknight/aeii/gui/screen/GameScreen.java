@@ -1,36 +1,23 @@
 package com.toyknight.aeii.gui.screen;
 
-import com.toyknight.aeii.Language;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameManager;
-import com.toyknight.aeii.core.Point;
-import com.toyknight.aeii.core.animation.Animation;
-import com.toyknight.aeii.core.animation.AnimationListener;
-import com.toyknight.aeii.core.animation.AnimationProvider;
-import com.toyknight.aeii.core.map.Tile;
-import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.Screen;
-import com.toyknight.aeii.gui.animation.MessageAnimation;
-import com.toyknight.aeii.gui.animation.SmokeAnimation;
-import com.toyknight.aeii.gui.animation.SummonAnimation;
-import com.toyknight.aeii.gui.animation.TileAttackedAnimation;
-import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
-import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
-import com.toyknight.aeii.gui.animation.UnitMoveAnimation;
+import com.toyknight.aeii.gui.animation.SwingAnimatingProvider;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 /**
  *
  * @author toyknight
  */
-public class GameScreen extends Screen implements AnimationProvider {
+public class GameScreen extends Screen {
 
 	private Game game;
 	private GameManager manager;
+	private SwingAnimatingProvider animation_provider;
 
 	private MapCanvas map_canvas;
 	private TilePanel tile_panel;
@@ -47,34 +34,40 @@ public class GameScreen extends Screen implements AnimationProvider {
 		int apw = 3; //action panel width(in column)
 		int width = getPreferredSize().width;
 		int height = getPreferredSize().height;
-		tile_panel = new TilePanel(this, ts);
-		tile_panel.setBounds(0, height - ts, ts, ts);
+		this.tile_panel = new TilePanel(this, ts);
+		this.tile_panel.setBounds(0, height - ts, ts, ts);
 		this.add(tile_panel);
-		status_panel = new StatusPanel(ts);
-		status_panel.setBounds(ts, height - ts, width - ts * (apw + 1), ts);
+		this.status_panel = new StatusPanel(ts);
+		this.status_panel.setBounds(ts, height - ts, width - ts * (apw + 1), ts);
 		this.add(status_panel);
 		Dimension canvas_size = new Dimension(width - ts * apw, height - ts);
-		map_canvas = new MapCanvas(canvas_size, getContext(), this);
-		map_canvas.setPreferredSize(canvas_size);
-		map_canvas.setBounds(0, 0, width - ts * apw, height - ts);
-		map_canvas.init();
+		this.map_canvas = new MapCanvas(canvas_size, getContext(), this);
+		this.map_canvas.setPreferredSize(canvas_size);
+		this.map_canvas.setBounds(0, 0, width - ts * apw, height - ts);
+		this.map_canvas.init();
 		this.add(map_canvas);
-		action_panel = new ActionPanel(this, ts);
-		action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
-		action_panel.initComponents(ts);
+		this.action_panel = new ActionPanel(this, ts);
+		this.action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
+		this.action_panel.initComponents(ts);
 		this.add(action_panel);
+		this.animation_provider = new SwingAnimatingProvider(this, ts);
 	}
 
 	public void setGame(Game game) {
 		this.game = game;
-		this.manager = new GameManager(game, this);
-		map_canvas.setGameManager(manager);
-		action_panel.setGameManager(manager);
-		status_panel.setGameManager(manager);
-		tile_panel.setGameManager(manager);
-		action_panel.update();
-		tile_panel.update();
+		this.manager = new GameManager(game, animation_provider);
+		this.animation_provider.setGameManager(manager);
+		this.map_canvas.setGameManager(manager);
+		this.action_panel.setGameManager(manager);
+		this.status_panel.setGameManager(manager);
+		this.tile_panel.setGameManager(manager);
+		this.action_panel.update();
+		this.tile_panel.update();
 		this.game.startTurn();
+	}
+
+	public Game getGame() {
+		return game;
 	}
 
 	public ActionPanel getActionPanel() {
@@ -98,81 +91,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 	public void onKeyRelease(KeyEvent e) {
 		map_canvas.onKeyRelease(e);
 	}
-	
-	@Override
-	public Animation getOccupiedMessageAnimation() {
-		MessageAnimation animation = new MessageAnimation(Language.getText("LB_MSG_OCCUPIED"), ts);
-		processAnimation(animation);
-		return animation;
-	}
-	
-	@Override
-	public Animation getRepairedMessageAnimation() {
-		MessageAnimation animation = new MessageAnimation(Language.getText("LB_MSG_REPAIRED"), ts);
-		processAnimation(animation);
-		return animation;
-	}
-	
-	@Override
-	public Animation getSummonAnimation(Unit summoner, int target_x, int target_y) {
-		SummonAnimation animation = new SummonAnimation(summoner, target_x, target_y, ts);
-		processAnimation(animation);
-		animation.setInterval(1);
-		return animation;
-	}
-	
-	@Override
-	public Animation getSmokeAnimation(int x, int y) {
-		SmokeAnimation animation = new SmokeAnimation(x, y, ts);
-		processAnimation(animation);
-		animation.setInterval(1);
-		return animation;
-	}
-	
-	@Override
-	public Animation getTileAttackedAnimation(int tile_index, int x, int y) {
-		TileAttackedAnimation animation = new TileAttackedAnimation(tile_index, x, y, ts);
-		processAnimation(animation);
-		return animation;
-	}
 
-	@Override
-	public Animation getUnitAttackAnimation(Unit attacker, Unit defender, int damage) {
-		UnitAttackAnimation animation = new UnitAttackAnimation(attacker, defender, damage, ts);
-		processAnimation(animation);
-		animation.setInterval(1);
-		return animation;
-	}
-	
-	@Override
-	public Animation getUnitDestroyedAnimation(Unit unit) {
-		UnitDestroyedAnimation animation = new UnitDestroyedAnimation(unit, ts);
-		processAnimation(animation);
-		animation.setInterval(1);
-		return animation;
-	}
-
-	@Override
-	public Animation getUnitMoveAnimation(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
-		ArrayList<Point> path = manager.getUnitToolkit().createMovePath(unit, start_x, start_y, dest_x, dest_y);
-		UnitMoveAnimation animation = new UnitMoveAnimation(unit, path, ts);
-		processAnimation(animation);
-		return animation;
-	}
-	
-	private Animation processAnimation(Animation animation) {
-		animation.addAnimationListener(new AnimationListener() {
-			@Override
-			public void animationCompleted(Animation animation) {
-				if (manager.getGame().isLocalPlayer()) {
-					action_panel.update();
-					map_canvas.updateActionBar();
-				}
-			}
-		});
-		return animation;
-	}
-	
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);

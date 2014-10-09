@@ -184,8 +184,8 @@ public class UnitStore extends JInternalFrame {
 
 		@Override
 		public void paintComponent(Graphics g) {
-			int lw = ts / 24 * 8;
-			int lh = ts / 24 * 11;
+			int lw = CharPainter.getLCharWidth();
+			int lh = CharPainter.getLCharHeight();
 			int interval = ts / 24 * 13;
 			int index = (int) unit_list.getSelectedValue();
 			((Graphics2D) g).setRenderingHint(
@@ -199,7 +199,8 @@ public class UnitStore extends JInternalFrame {
 			);
 			g.drawLine(ts * 6, ts / 2 + interval, ts * 10 + ts / 2, ts / 2 + interval);
 			g.drawImage(ResourceManager.getGoldIcon(), ts * 10 + ts / 2 - lw * 4 - ts / 24 * 11, ts / 2, this);
-			CharPainter.paintLNumber(g, UnitFactory.getUnitPrice(index), ts * 10 + ts / 2 - lw * 4, ts / 2);
+			CharPainter.paintLNumber(g, UnitFactory.getUnitPrice(index),
+					ts * 10 + ts / 2 - lw * 4, ts / 2 + (interval - lh) / 2);
 			((Graphics2D) g).setRenderingHint(
 					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 			super.paintComponent(g);

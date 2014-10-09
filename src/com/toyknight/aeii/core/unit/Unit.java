@@ -30,7 +30,6 @@ public class Unit {
 	private int current_movement_point;
 
 	private ArrayList<Integer> abilities;
-	private ArrayList<Integer> learnable_abilities;
 	private ArrayList<Buff> buff_list;
 
 	private int hp_growth;
@@ -46,12 +45,12 @@ public class Unit {
 	private int min_attack_range;   //最小攻击距离
 
 	private boolean is_standby;
-	
+
+	//private final Object BUFF_LOCK = new Object();
 	public Unit(int index, String unit_code) {
 		this.index = index;
 		this.level = 0;
 		this.abilities = new ArrayList();
-		this.learnable_abilities = new ArrayList();
 		this.buff_list = new ArrayList();
 		this.unit_code = unit_code;
 	}
@@ -84,7 +83,6 @@ public class Unit {
 		this.min_attack_range = unit.getMinAttackRange();
 		this.abilities = new ArrayList(unit.getAbilities());
 		this.buff_list = new ArrayList(unit.getBuffList());
-		this.learnable_abilities = new ArrayList(unit.getLearnableAbilities());
 	}
 
 	public int getIndex() {
@@ -190,7 +188,7 @@ public class Unit {
 	public void setCurrentMovementPoint(int current_movement_point) {
 		this.current_movement_point = current_movement_point;
 	}
-	
+
 	public boolean hasAbility(int ability) {
 		return abilities.contains(ability);
 	}
@@ -203,20 +201,20 @@ public class Unit {
 		this.abilities = abilities;
 	}
 
-	public ArrayList<Integer> getLearnableAbilities() {
-		return learnable_abilities;
+	public int getBuffCount() {
+		return buff_list.size();
 	}
 
-	public void setLearnableAbilities(ArrayList<Integer> learnable_abilities) {
-		this.learnable_abilities = learnable_abilities;
+	public Buff getBuff(int index) {
+		if (0 <= index && index <= buff_list.size()) {
+			return buff_list.get(index);
+		} else {
+			return null;
+		}
 	}
 
 	public ArrayList<Buff> getBuffList() {
 		return buff_list;
-	}
-
-	public void setBuffList(ArrayList<Buff> buff_list) {
-		this.buff_list = buff_list;
 	}
 
 	public int getHpGrowth() {
@@ -307,21 +305,30 @@ public class Unit {
 	}
 
 	public void attachBuff(Buff buff) {
-		if (buff_list.size() < 2) {
+		if (buff_list.size() < 2 && !buff_list.contains(buff)) {
 			buff_list.add(buff);
 		}
 	}
 
 	public void updateBuff() {
-		for (Buff buff : buff_list) {
+		ArrayList<Buff> tmp_buff_list = new ArrayList(buff_list);
+		for (Buff buff : tmp_buff_list) {
+			buff.update();
 			if (buff.getRemainingTurn() < 0) {
 				buff_list.remove(buff);
-			} else {
-				buff.update();
 			}
 		}
 	}
-	
+
+	public boolean hasBuff(int type) {
+		for (Buff buff : buff_list) {
+			if (buff.getType() == type) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean isAt(int x, int y) {
 		return this.x_position == x && this.y_position == y;
 	}

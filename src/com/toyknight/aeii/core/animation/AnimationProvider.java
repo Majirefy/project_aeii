@@ -1,7 +1,7 @@
 
 package com.toyknight.aeii.core.animation;
 
-import com.toyknight.aeii.core.map.Tile;
+import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -17,6 +17,8 @@ public interface AnimationProvider {
 	public Animation getSummonAnimation(Unit summoner, int target_x, int target_y);
 	
 	public Animation getSmokeAnimation(int x, int y);
+	
+	public Animation getUnitHpChangeAnimation(Unit unit, int change);
 	
 	public Animation getTileAttackedAnimation(int tile_index, int x, int y);
 	

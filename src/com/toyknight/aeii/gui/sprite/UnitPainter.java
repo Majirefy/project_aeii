@@ -1,9 +1,11 @@
 package com.toyknight.aeii.gui.sprite;
 
+import com.toyknight.aeii.core.unit.Buff;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.util.CharPainter;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 /**
  *
@@ -34,6 +36,18 @@ public class UnitPainter {
 			int hp_dx = 0;
 			int hp_dy = ts - CharPainter.getCharHeight();
 			CharPainter.paintNumber(g, unit.getCurrentHp(), x + hp_dx, y + hp_dy);
+		}
+		int sw = ts / 24 * 7;
+		int buff_count = unit.getBuffCount();
+		for (int i = 0; i < buff_count; i++) {
+			Buff buff = unit.getBuff(index);
+			switch (buff.getType()) {
+				case Buff.POISONED:
+					g.drawImage(ResourceManager.getPoisonedStatusImage(), x+i * sw, y, null);
+					break;
+				default:
+					//do nothing
+			}
 		}
 	}
 

@@ -89,13 +89,13 @@ public class GameManager implements GameListener {
 	public UnitToolkit getUnitToolkit() {
 		return unit_toolkit;
 	}
-	
+
 	@Override
 	public void onOccupy() {
 		Animation msg_animation = animation_provider.getOccupiedMessageAnimation();
 		submitAnimation(msg_animation);
 	}
-	
+
 	@Override
 	public void onRepair() {
 		Animation msg_animation = animation_provider.getRepairedMessageAnimation();
@@ -106,6 +106,12 @@ public class GameManager implements GameListener {
 	public void onSummon(Unit summoner, int target_x, int target_y) {
 		Animation summon_animation = animation_provider.getSummonAnimation(summoner, target_x, target_y);
 		submitAnimation(summon_animation);
+	}
+
+	@Override
+	public void onUnitHpChanged(Unit unit, int change) {
+		Animation change_animation = animation_provider.getUnitHpChangeAnimation(unit, change);
+		submitAnimation(change_animation);
 	}
 
 	@Override
@@ -134,7 +140,7 @@ public class GameManager implements GameListener {
 		Animation smoke_animation = animation_provider.getSmokeAnimation(unit.getX(), unit.getY());
 		submitAnimation(smoke_animation);
 	}
-	
+
 	@Override
 	public void onTileDestroyed(int tile_index, int x, int y) {
 		Animation animation = animation_provider.getTileAttackedAnimation(tile_index, x, y);
@@ -177,7 +183,7 @@ public class GameManager implements GameListener {
 			setState(STATE_SELECT);
 		}
 	}
-	
+
 	public boolean canCancelMovePhase() {
 		return !is_new_unit_phase;
 	}
@@ -214,7 +220,7 @@ public class GameManager implements GameListener {
 	}
 
 	public void selectUnit(int x, int y) {
-		
+
 		if (state == STATE_SELECT) {
 			Unit unit = getGame().getMap().getUnit(x, y);
 			if (unit != null) {
@@ -275,17 +281,17 @@ public class GameManager implements GameListener {
 			getGame().doSummon(summoner.getX(), summoner.getY(), target_x, target_y);
 		}
 	}
-	
+
 	public void doOccupy(int x, int y) {
 		Unit conqueror = getSelectedUnit();
-		if(getGame().canOccupy(conqueror, x, y) && isActionState()) {
+		if (getGame().canOccupy(conqueror, x, y) && isActionState()) {
 			getGame().doOccupy(conqueror.getX(), conqueror.getY(), x, y);
 		}
 	}
-	
+
 	public void doRepair(int x, int y) {
 		Unit repairer = getSelectedUnit();
-		if(getGame().canRepair(repairer, x, y) && isActionState()) {
+		if (getGame().canRepair(repairer, x, y) && isActionState()) {
 			getGame().doRepair(repairer.getX(), repairer.getY(), x, y);
 		}
 	}
@@ -303,7 +309,7 @@ public class GameManager implements GameListener {
 		if (unit != null && (state == STATE_MOVE || state == STATE_RMOVE)) {
 			int unit_x = unit.getX();
 			int unit_y = unit.getY();
-			if (canSelectedUnitMove(dest_x, dest_x)) {
+			if (canSelectedUnitMove(dest_x, dest_y)) {
 				int mp_remains = getUnitToolkit().getMovementPointRemains(unit, dest_x, dest_y);
 				getGame().moveUnit(unit_x, unit_y, dest_x, dest_y);
 				unit.setCurrentMovementPoint(mp_remains);
@@ -321,9 +327,9 @@ public class GameManager implements GameListener {
 			}
 		}
 	}
-	
+
 	public boolean canSelectedUnitMove(int dest_x, int dest_y) {
-		Point dest = getGame().getMap().getPosition(dest_x, dest_x);
+		Point dest = getGame().getMap().getPosition(dest_x, dest_y);
 		return movable_positions.contains(dest);
 	}
 
@@ -337,7 +343,7 @@ public class GameManager implements GameListener {
 			beginMovePhase();
 		}
 	}
-	
+
 	public boolean canReverseMove() {
 		Unit unit = getSelectedUnit();
 		return !unit.isAt(last_position.x, last_position.y);

@@ -5,9 +5,13 @@ import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
 import com.toyknight.aeii.core.unit.Ability;
+import com.toyknight.aeii.core.unit.Buff;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -81,8 +85,8 @@ public class Game implements OperationListener {
 			if (defender != null) {
 				doAttack(attacker, defender);
 			} else {
-				if(attacker.getAbilities().contains(Ability.DESTROYER) && 
-						getMap().getTile(target_x, target_y).isDestroyable()) {
+				if (attacker.getAbilities().contains(Ability.DESTROYER)
+						&& getMap().getTile(target_x, target_y).isDestroyable()) {
 					doDestroy(attacker, target_x, target_y);
 				}
 			}
@@ -99,7 +103,7 @@ public class Game implements OperationListener {
 		}
 		game_listener.onUnitActionFinished(attacker);
 	}
-	
+
 	protected void doDestroy(Unit destroyer, int x, int y) {
 		int tile_index = getMap().getTileIndex(x, y);
 		game_listener.onTileDestroyed(tile_index, x, y);
@@ -112,6 +116,9 @@ public class Game implements OperationListener {
 			defender.setCurrentHp(defender.getCurrentHp() - damage);
 			game_listener.onUnitAttack(attacker, defender, damage);
 			//deal with buff issues
+			if (attacker.getAbilities().contains(Ability.POISONER)) {
+				defender.attachBuff(new Buff(Buff.POISONED, 2));
+			}
 		} else {
 			damage = defender.getCurrentHp();
 			defender.setCurrentHp(0);
@@ -130,9 +137,9 @@ public class Game implements OperationListener {
 	@Override
 	public void doSummon(int summoner_x, int summoner_y, int target_x, int target_y) {
 		Unit summoner = getMap().getUnit(summoner_x, summoner_y);
-		if (summoner != null && 
-				UnitToolkit.isWithinRange(summoner, target_x, target_y) &&
-				getMap().isTomb(target_x, target_y)) {
+		if (summoner != null
+				&& UnitToolkit.isWithinRange(summoner, target_x, target_y)
+				&& getMap().isTomb(target_x, target_y)) {
 			doSummon(summoner, target_x, target_y);
 		}
 	}
@@ -144,44 +151,44 @@ public class Game implements OperationListener {
 		game_listener.onSummon(summoner, target_x, target_y);
 		game_listener.onUnitActionFinished(summoner);
 	}
-	
+
 	@Override
 	public void doOccupy(int conqueror_x, int conqueror_y, int x, int y) {
 		Unit conqueror = getMap().getUnit(conqueror_x, conqueror_y);
-		if(canOccupy(conqueror, x, y)) {
+		if (canOccupy(conqueror, x, y)) {
 			doOccupy(x, y);
 			game_listener.onUnitActionFinished(conqueror);
 		}
 	}
-	
+
 	@Override
 	public void doOccupy(int x, int y) {
 		Tile tile = getMap().getTile(x, y);
-		if(tile.isCapturable()) {
+		if (tile.isCapturable()) {
 			changeTile(tile.getCapturedTileIndex(getCurrentTeam()), x, y);
 			game_listener.onOccupy();
 		}
 	}
-	
+
 	@Override
 	public void doRepair(int repairer_x, int repairer_y, int x, int y) {
 		Unit repairer = getMap().getUnit(x, y);
-		if(canRepair(repairer, x, y)) {
+		if (canRepair(repairer, x, y)) {
 			doRepair(x, y);
 			game_listener.onUnitActionFinished(repairer);
 		}
 	}
-	
+
 	@Override
 	public void doRepair(int x, int y) {
 		Tile tile = getMap().getTile(x, y);
-		if(tile.isRepairable()) {
+		if (tile.isRepairable()) {
 			changeTile(tile.getRepairedTileIndex(), x, y);
 			game_listener.onRepair();
-			
+
 		}
 	}
-	
+
 	protected void changeTile(short index, int x, int y) {
 		getMap().setTile(index, x, y);
 	}
@@ -224,28 +231,38 @@ public class Game implements OperationListener {
 			moveUnit(unit, dest_x, dest_y);
 		}
 	}
-	
+
+	private void poisonUnit(Unit unit) {
+		int current_hp = unit.getCurrentHp();
+		int poison_damage = current_hp > 10 ? 10 : current_hp;
+		unit.setCurrentHp(current_hp - poison_damage);
+		game_listener.onUnitHpChanged(unit, -poison_damage);
+		if (unit.getCurrentHp() <= 0) {
+			destoryUnit(unit);
+		}
+	}
+
 	public boolean canOccupy(Unit conqueror, int x, int y) {
-		if(conqueror == null) {
+		if (conqueror == null) {
 			return false;
 		}
-		if(conqueror.getTeam() != getCurrentTeam()) {
+		if (conqueror.getTeam() != getCurrentTeam()) {
 			return false;
 		}
 		Tile tile = getMap().getTile(x, y);
 		if (tile.getTeam() != getCurrentTeam()) {
-			return (tile.isCastle() && conqueror.getAbilities().contains(Ability.COMMANDER)) ||
-					(tile.isVillage() && conqueror.getAbilities().contains(Ability.CONQUEROR));
+			return (tile.isCastle() && conqueror.getAbilities().contains(Ability.COMMANDER))
+					|| (tile.isVillage() && conqueror.getAbilities().contains(Ability.CONQUEROR));
 		} else {
 			return false;
 		}
 	}
-	
+
 	public boolean canRepair(Unit repairer, int x, int y) {
-		if(repairer == null) {
+		if (repairer == null) {
 			return false;
 		}
-		if(repairer.getTeam() != getCurrentTeam()) {
+		if (repairer.getTeam() != getCurrentTeam()) {
 			return false;
 		}
 		Tile tile = getMap().getTile(x, y);
@@ -272,12 +289,41 @@ public class Game implements OperationListener {
 	}
 
 	public void startTurn() {
+		Set<Point> position_set = new HashSet(getMap().getUnitPositionSet());
+		for (Point position : position_set) {
+			Unit unit = getMap().getUnit(position.x, position.y);
+			if (unit.getTeam() == getCurrentTeam()) {
+				//deal with buff issues
+				if (unit.hasBuff(Buff.POISONED)) {
+					poisonUnit(unit);
+				}
+				unit.updateBuff();
+			}
+		}
+	}
 
+	private void restoreUnit(Unit unit) {
+		unit.setCurrentMovementPoint(unit.getMovementPoint());
+		unit.setStandby(false);
 	}
 
 	@Override
 	public void endTurn() {
-
+		Collection<Unit> units = getMap().getUnitSet();
+		for (Unit unit : units) {
+			if (unit.getTeam() == getCurrentTeam()) {
+				restoreUnit(unit);
+			}
+		}
+		do {
+			if (current_team < 3) {
+				current_team++;
+			} else {
+				current_team = 0;
+			}
+		} while (getCurrentPlayer() == null);
+		//deal with various issues
+		startTurn();
 	}
 
 }

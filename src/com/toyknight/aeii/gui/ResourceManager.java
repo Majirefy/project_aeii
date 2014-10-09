@@ -20,6 +20,7 @@ public class ResourceManager {
 	private static BufferedImage img_logo;
 	private static BufferedImage gold_icon;
 	private static BufferedImage population_icon;
+	private static BufferedImage poisoned_status;
 	private static BufferedImage[][] action_buttons;
 	private static BufferedImage[] small_circles;
 	private static BufferedImage[] big_circles;
@@ -65,6 +66,7 @@ public class ResourceManager {
 		loadCircles(ts);
 		loadActionButtons(ts);
 		loadHudIcons(ts);
+		loadStatus(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		move_path_color = new Color(225, 0, 82);
 		title_font = new Font(Font.DIALOG, Font.BOLD, ts / 2);
@@ -270,6 +272,15 @@ public class ResourceManager {
 		population_icon = ResourceUtil.getImageClip(img_hud_icon2, 0, 0, i2w, i2h);
 	}
 
+	private static void loadStatus(int ts) throws IOException {
+		int sw = ts / 24 * 7;
+		int sh = ts / 24 * 9;
+		File status_file = new File("res\\img\\status.png");
+		BufferedImage status_list = new BufferedImage(sw * 2, sh, BufferedImage.TYPE_INT_ARGB);
+		status_list.getGraphics().drawImage(ImageIO.read(status_file), 0, 0, sw * 2, sh, null);
+		poisoned_status = ResourceUtil.getImageClip(status_list, 0, 0, sw, sh);
+	}
+
 	public static BufferedImage getLogoImage() {
 		return img_logo;
 	}
@@ -361,6 +372,10 @@ public class ResourceManager {
 	public static BufferedImage getLDivision() {
 		return ldivision;
 	}
+	
+	public static BufferedImage getPoisonedStatusImage() {
+		return poisoned_status;
+	}
 
 	public static BufferedImage getActionButtonImage(int index, int frame) {
 		return action_buttons[index][frame];
@@ -385,7 +400,7 @@ public class ResourceManager {
 	public static Font getTitleFont() {
 		return title_font;
 	}
-	
+
 	public static Font getLabelFont() {
 		return label_font;
 	}

@@ -49,11 +49,6 @@ public class UnitFactory {
 				for (int n = 0; n < ability_count; n++) {
 					ability_list.add(din.nextInt());
 				}
-				int learnable_ability_count = din.nextInt();
-				ArrayList<Integer> learnable_ability_list = new ArrayList();
-				for (int n = 0; n < learnable_ability_count; n++) {
-					learnable_ability_list.add(din.nextInt());
-				}
 				din.close();
 				Unit unit = new Unit(i);
 				unit.setPrice(price);
@@ -71,7 +66,6 @@ public class UnitFactory {
 				unit.setMaxAttackRange(max_atk_rng);
 				unit.setMinAttackRange(min_atk_rng);
 				unit.setAbilities(ability_list);
-				unit.setLearnableAbilities(learnable_ability_list);
 				units[i] = unit;
 			} catch (java.util.NoSuchElementException ex) {
 				throw new AEIIException("bad unit data");

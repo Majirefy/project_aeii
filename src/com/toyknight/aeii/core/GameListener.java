@@ -1,7 +1,6 @@
 
 package com.toyknight.aeii.core;
 
-import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -13,6 +12,8 @@ public interface GameListener {
 	public void onOccupy();
 	
 	public void onRepair();
+	
+	public void onUnitHpChanged(Unit unit, int change);
 	
 	public void onSummon(Unit summoner, int target_x, int target_y);
 	

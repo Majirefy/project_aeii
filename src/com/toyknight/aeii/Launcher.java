@@ -102,7 +102,7 @@ public class Launcher implements Runnable {
 	}
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(0x19);
+		System.out.println(0x9);
 		if (args.length >= 4) {
 			try {
 				int ts = Integer.parseInt(args[0]);
@@ -112,7 +112,7 @@ public class Launcher implements Runnable {
 				validateParam(ts, width, height, fs);
 				EventQueue.invokeLater(new Launcher(ts, width, height, fs));
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				System.err.println(ex.getClass().toString() + ": " + ex.getMessage());
 			}
 		} else {
 			throw new AEIIException("缺少启动参数");
