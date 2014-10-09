@@ -56,7 +56,7 @@ public class SwingAnimatingProvider implements AnimationProvider {
 	public Animation getSmokeAnimation(int x, int y) {
 		SmokeAnimation animation = new SmokeAnimation(x, y, ts);
 		processAnimation(animation);
-		animation.setInterval(1);
+		animation.setInterval(2);
 		return animation;
 	}
 	
@@ -94,6 +94,13 @@ public class SwingAnimatingProvider implements AnimationProvider {
 	public Animation getUnitMoveAnimation(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
 		ArrayList<Point> path = manager.getUnitToolkit().createMovePath(unit, start_x, start_y, dest_x, dest_y);
 		UnitMoveAnimation animation = new UnitMoveAnimation(unit, path, ts);
+		processAnimation(animation);
+		return animation;
+	}
+	
+	@Override
+	public Animation getTurnStartAnimation(int turn, int income, int team) {
+		NewTurnAnimation animation = new NewTurnAnimation(turn, income, team, ts);
 		processAnimation(animation);
 		return animation;
 	}

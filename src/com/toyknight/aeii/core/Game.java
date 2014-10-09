@@ -24,6 +24,8 @@ public class Game implements OperationListener {
 	private final Player[] player_list;
 	private GameListener game_listener;
 
+	private int turn;
+
 	private final int max_population;
 
 	public Game(Map map, Player[] players, int max_population) {
@@ -36,6 +38,7 @@ public class Game implements OperationListener {
 				break;
 			}
 		}
+		this.turn = 0;
 		this.max_population = max_population;
 	}
 
@@ -242,6 +245,28 @@ public class Game implements OperationListener {
 		}
 	}
 
+	private void checkTerrainHeal(Unit unit) {
+		int heal = 0;
+		Tile tile = getMap().getTile(unit.getX(), unit.getY());
+		if (unit.getCurrentHp() < unit.getMaxHp()) {
+			if (tile.getTeam() == -1) {
+				heal = tile.getHpRecovery();
+			} else {
+				if(tile.getTeam() == getCurrentTeam()) {
+					heal = tile.getHpRecovery();
+				}
+			}
+			if(unit.getMaxHp() - unit.getCurrentHp() <= heal) {
+				heal = unit.getMaxHp() - unit.getCurrentHp();
+			}
+		}
+		if(heal > 0) {
+			int new_hp = unit.getCurrentHp() + heal;
+			unit.setCurrentHp(new_hp);
+			game_listener.onUnitHpChanged(unit, heal);
+		}
+	}
+
 	public boolean canOccupy(Unit conqueror, int x, int y) {
 		if (conqueror == null) {
 			return false;
@@ -284,20 +309,55 @@ public class Game implements OperationListener {
 		getPlayer(team).setPopulation(getMap().getUnitCount(team));
 	}
 
+	protected int getIncome(int team) {
+		int income = 0;
+		for (int x = 0; x < getMap().getWidth(); x++) {
+			for (int y = 0; y < getMap().getHeight(); y++) {
+				Tile tile = getMap().getTile(x, y);
+				if (tile.getTeam() == team) {
+					if (tile.isVillage()) {
+						income += 100;
+					}
+					if (tile.isCastle()) {
+						income += 50;
+					}
+				}
+			}
+		}
+		return income;
+	}
+
+	public int getTurn() {
+		return turn;
+	}
+
 	public Map getMap() {
 		return map;
 	}
 
 	public void startTurn() {
+		turn++;
+		int income = getIncome(getCurrentTeam());
+		getCurrentPlayer().addGold(income);
+		if (isLocalPlayer()) {
+			game_listener.onTurnStart(turn, income, getCurrentTeam());
+		} else {
+			game_listener.onTurnStart(turn, -1, getCurrentTeam());
+		}
+
 		Set<Point> position_set = new HashSet(getMap().getUnitPositionSet());
 		for (Point position : position_set) {
 			Unit unit = getMap().getUnit(position.x, position.y);
 			if (unit.getTeam() == getCurrentTeam()) {
+				checkTerrainHeal(unit);
 				//deal with buff issues
 				if (unit.hasBuff(Buff.POISONED)) {
 					poisonUnit(unit);
 				}
-				unit.updateBuff();
+				//deal with ability issues
+				if (unit.getCurrentHp() > 0) {
+					unit.updateBuff();
+				}
 			}
 		}
 	}

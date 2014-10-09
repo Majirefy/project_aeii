@@ -37,6 +37,7 @@ public class UnitHpChangeAnimation extends UnitAnimation {
 	public void paint(Graphics g, MapCanvas canvas) {
 		int sx = canvas.getXOnCanvas(getUnit().getX());
 		int sy = canvas.getYOnCanvas(getUnit().getY());
+		canvas.locateViewport(getUnit().getX(), getUnit().getY());
 		int dx = (ts - CharPainter.getLNumberWidth(Math.abs(change), true)) / 2;
 		int dy = (ts - CharPainter.getLCharHeight()) / 2;
 		UnitPainter.paint(g, getUnit(), sx, sy, ts);

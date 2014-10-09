@@ -344,11 +344,13 @@ public class MapCanvas extends Screen {
 		}
 	}
 
-	public void locateViewport(int center_x, int center_y) {
+	public void locateViewport(int map_x, int map_y) {
+		int center_sx = map_x * ts;
+		int center_sy = map_y * ts;
 		int map_width = getGame().getMap().getWidth() * ts;
 		int map_height = getGame().getMap().getHeight() * ts;
 		if (viewport.width < map_width) {
-			viewport.x = center_x - (viewport.width - ts) / 2;
+			viewport.x = center_sx - (viewport.width - ts) / 2;
 			if (viewport.x < 0) {
 				viewport.x = 0;
 			}
@@ -359,7 +361,7 @@ public class MapCanvas extends Screen {
 			viewport.x = (map_width - viewport.width) / 2;
 		}
 		if (viewport.height < map_height) {
-			viewport.y = center_y - (viewport.height - ts) / 2;
+			viewport.y = center_sy - (viewport.height - ts) / 2;
 			if (viewport.y < 0) {
 				viewport.y = 0;
 			}

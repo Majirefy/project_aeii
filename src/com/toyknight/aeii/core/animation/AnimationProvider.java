@@ -1,7 +1,6 @@
 
 package com.toyknight.aeii.core.animation;
 
-import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -27,5 +26,7 @@ public interface AnimationProvider {
 	public Animation getUnitDestroyedAnimation(Unit unit);
 	
 	public Animation getUnitMoveAnimation(Unit unit, int start_x, int start_y, int dest_x, int dest_y);
+	
+	public Animation getTurnStartAnimation(int turn, int income, int team);
 	
 }

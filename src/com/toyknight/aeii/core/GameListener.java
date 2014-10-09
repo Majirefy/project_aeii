@@ -27,4 +27,6 @@ public interface GameListener {
 	
 	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y);
 	
+	public void onTurnStart(int turn, int income, int team);
+	
 }

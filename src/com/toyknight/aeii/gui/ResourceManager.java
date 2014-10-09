@@ -46,6 +46,7 @@ public class ResourceManager {
 	private static BufferedImage ldivision;
 	private static Color aeii_panel_bg;
 	private static Color move_path_color;
+	private static Color[] team_color;
 	private static Font title_font;
 	private static Font label_font;
 
@@ -69,6 +70,11 @@ public class ResourceManager {
 		loadStatus(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		move_path_color = new Color(225, 0, 82);
+		team_color = new Color[4];
+		team_color[0] = new Color(0, 100, 198);
+		team_color[1] = new Color(161, 0, 112);
+		team_color[2] = new Color(0, 153, 55);
+		team_color[3] = new Color(0, 43, 75);
 		title_font = new Font(Font.DIALOG, Font.BOLD, ts / 2);
 		label_font = new Font(Font.DIALOG, Font.BOLD, ts / 3);
 	}
@@ -372,7 +378,7 @@ public class ResourceManager {
 	public static BufferedImage getLDivision() {
 		return ldivision;
 	}
-	
+
 	public static BufferedImage getPoisonedStatusImage() {
 		return poisoned_status;
 	}
@@ -387,6 +393,10 @@ public class ResourceManager {
 
 	public static BufferedImage getBigCircleImage(int index) {
 		return big_circles[index];
+	}
+	
+	public static Color getTeamColor(int team) {
+		return team_color[team];
 	}
 
 	public static Color getAEIIPanelBg() {

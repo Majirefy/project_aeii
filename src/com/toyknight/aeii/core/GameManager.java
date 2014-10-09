@@ -154,6 +154,12 @@ public class GameManager implements GameListener {
 		Animation animation = animation_provider.getUnitMoveAnimation(unit, start_x, start_y, dest_x, dest_y);
 		submitAnimation(animation);
 	}
+	
+	@Override
+	public void onTurnStart(int turn, int income, int team) {
+		Animation animation = animation_provider.getTurnStartAnimation(turn, income, team);
+		submitAnimation(animation);
+	}
 
 	public ArrayList<Point> getMovablePositions() {
 		return movable_positions;

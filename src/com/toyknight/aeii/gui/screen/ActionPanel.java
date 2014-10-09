@@ -97,6 +97,7 @@ public class ActionPanel extends AEIIPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			manager.getGame().endTurn();
+			updateButtons();
 			game_screen.getCanvas().updateActionBar();
 		}
 		

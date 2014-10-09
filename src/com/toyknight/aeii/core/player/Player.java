@@ -22,6 +22,18 @@ public abstract class Player {
 		this.gold = gold;
 	}
 	
+	public void addGold(int addition) {
+		this.gold += addition;
+	}
+	
+	public void reduceGold(int reduction) {
+		if(gold > reduction) {
+			this.gold -= reduction;
+		} else {
+			this.gold = 0;
+		}
+	}
+	
 	public int getGold() {
 		return gold;
 	}

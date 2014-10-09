@@ -102,7 +102,6 @@ public class Launcher implements Runnable {
 	}
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(0x9);
 		if (args.length >= 4) {
 			try {
 				int ts = Integer.parseInt(args[0]);
