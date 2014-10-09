@@ -21,7 +21,7 @@ public class UnitAttackAnimation extends UnitAnimation {
 	private final Unit defender;
 	private final Random random;
 
-	private int current_frame;
+	private int current_frame = 0;
 	private int unit_dx;
 	private int unit_dy;
 
@@ -29,7 +29,6 @@ public class UnitAttackAnimation extends UnitAnimation {
 		super(null, defender.getX(), defender.getY());
 		addLocation(attacker.getX(), attacker.getY());
 		this.ts = ts;
-		this.current_frame = 0;
 		this.damage = damage;
 		this.attacker = UnitFactory.cloneUnit(attacker);
 		this.defender = UnitFactory.cloneUnit(defender);

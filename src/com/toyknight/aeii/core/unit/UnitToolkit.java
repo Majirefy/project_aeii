@@ -1,6 +1,6 @@
 package com.toyknight.aeii.core.unit;
 
-import com.toyknight.aeii.core.BasicGame;
+import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.map.Tile;
@@ -20,7 +20,7 @@ public class UnitToolkit {
 	private int dest_y;
 	private Unit current_unit;
 
-	private final BasicGame game;
+	private final Game game;
 
 	private int[][] move_mark_map;
 	private ArrayList<Point> move_path;
@@ -30,7 +30,7 @@ public class UnitToolkit {
 	private final int[] x_dir = {1, -1, 0, 0};
 	private final int[] y_dir = {0, 0, 1, -1};
 
-	public UnitToolkit(BasicGame game) {
+	public UnitToolkit(Game game) {
 		this.game = game;
 	}
 

@@ -1,7 +1,7 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Configuration;
-import com.toyknight.aeii.core.BasicGame;
+import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.Animation;
@@ -159,8 +159,10 @@ public class MapCanvas extends Screen {
 						break;
 					case GameManager.STATE_MOVE:
 					case GameManager.STATE_RMOVE:
-						manager.moveSelectedUnit(click_x, click_y);
-						action_bar.setVisible(false);
+						if (manager.canSelectedUnitMove(click_x, click_x)) {
+							manager.moveSelectedUnit(click_x, click_y);
+							action_bar.setVisible(false);
+						}
 						break;
 					case GameManager.STATE_ATTACK:
 						manager.doAttack(click_x, click_y);
@@ -259,7 +261,7 @@ public class MapCanvas extends Screen {
 	public boolean isWithinPaintArea(int sx, int sy) {
 		return -ts < sx && sx < viewport.width && -ts < sy && sy < viewport.height;
 	}
-	
+
 	public boolean isWithinCanvas(int sx, int sy) {
 		return 0 < sx && sx < viewport.width && 0 < sy && sy < viewport.height;
 	}
@@ -310,7 +312,7 @@ public class MapCanvas extends Screen {
 		return selected_y;
 	}
 
-	private BasicGame getGame() {
+	private Game getGame() {
 		return manager.getGame();
 	}
 

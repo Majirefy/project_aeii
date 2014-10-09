@@ -1,6 +1,7 @@
 
 package com.toyknight.aeii.core;
 
+import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -18,6 +19,8 @@ public interface GameListener {
 	public void onUnitAttack(Unit attacker, Unit defender, int damage);
 	
 	public void onUnitActionFinished(Unit unit);
+	
+	public void onTileDestroyed(int tile_index, int x, int y);
 	
 	public void onUnitDestroyed(Unit unit);
 	

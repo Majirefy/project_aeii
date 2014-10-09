@@ -16,11 +16,11 @@ public class GameFactory {
 		this.map = map;
 	}
 
-	public BasicGame createBasicGame(Player[] players, int start_gold, int max_population) {
+	public Game createBasicGame(Player[] players, int start_gold, int max_population) {
 		for (Player player : players) {
 			player.setGold(start_gold);
 		}
-		BasicGame game = new BasicGame(map, players, max_population);
+		Game game = new Game(map, players, max_population);
 		game.init();
 		return game;
 	}

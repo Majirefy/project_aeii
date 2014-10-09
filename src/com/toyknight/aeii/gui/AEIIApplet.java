@@ -95,7 +95,7 @@ public class AEIIApplet {
 	public boolean isRunning() {
 		return isRunning;
 	}
-	
+
 	public boolean isDebugMode() {
 		return isDebugMode;
 	}
@@ -105,9 +105,6 @@ public class AEIIApplet {
 		setCurrentFpsDelayToMenu();
 		executor.submit(animation_thread);
 		current_screen.repaint();
-		if(isDebugMode()) {
-			command_line.start();
-		}
 		loadResources();
 	}
 
@@ -127,6 +124,9 @@ public class AEIIApplet {
 					UnitFactory.init(unit_data_dir);
 					ResourceManager.init(getTileSize());
 					logo_screen.setResourceLoaded(true);
+					if (isDebugMode()) {
+						command_line.start();
+					}
 				} catch (IOException | AEIIException ex) {
 					DialogUtil.showError(Launcher.getWindow(), ex.getMessage());
 					Launcher.exit();

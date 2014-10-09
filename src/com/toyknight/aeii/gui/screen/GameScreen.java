@@ -1,18 +1,20 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
-import com.toyknight.aeii.core.BasicGame;
+import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.animation.AnimationListener;
 import com.toyknight.aeii.core.animation.AnimationProvider;
+import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.MessageAnimation;
 import com.toyknight.aeii.gui.animation.SmokeAnimation;
 import com.toyknight.aeii.gui.animation.SummonAnimation;
+import com.toyknight.aeii.gui.animation.TileAttackedAnimation;
 import com.toyknight.aeii.gui.animation.UnitAttackAnimation;
 import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
 import com.toyknight.aeii.gui.animation.UnitMoveAnimation;
@@ -27,7 +29,7 @@ import java.util.ArrayList;
  */
 public class GameScreen extends Screen implements AnimationProvider {
 
-	private BasicGame game;
+	private Game game;
 	private GameManager manager;
 
 	private MapCanvas map_canvas;
@@ -63,7 +65,7 @@ public class GameScreen extends Screen implements AnimationProvider {
 		this.add(action_panel);
 	}
 
-	public void setGame(BasicGame game) {
+	public void setGame(Game game) {
 		this.game = game;
 		this.manager = new GameManager(game, this);
 		map_canvas.setGameManager(manager);
@@ -124,6 +126,13 @@ public class GameScreen extends Screen implements AnimationProvider {
 		SmokeAnimation animation = new SmokeAnimation(x, y, ts);
 		processAnimation(animation);
 		animation.setInterval(1);
+		return animation;
+	}
+	
+	@Override
+	public Animation getTileAttackedAnimation(int tile_index, int x, int y) {
+		TileAttackedAnimation animation = new TileAttackedAnimation(tile_index, x, y, ts);
+		processAnimation(animation);
 		return animation;
 	}
 

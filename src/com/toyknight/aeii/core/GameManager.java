@@ -26,7 +26,7 @@ public class GameManager implements GameListener {
 
 	private int state;
 	private boolean is_new_unit_phase;
-	private final BasicGame game;
+	private final Game game;
 	private final UnitToolkit unit_toolkit;
 	private final AnimationProvider animation_provider;
 
@@ -38,7 +38,7 @@ public class GameManager implements GameListener {
 	private ArrayList<Point> movable_positions;
 	private ArrayList<Point> attackable_positions;
 
-	public GameManager(BasicGame game, AnimationProvider provider) {
+	public GameManager(Game game, AnimationProvider provider) {
 		this.game = game;
 		this.animation_provider = provider;
 		this.state = STATE_SELECT;
@@ -56,7 +56,7 @@ public class GameManager implements GameListener {
 		}
 	}
 
-	public BasicGame getGame() {
+	public Game getGame() {
 		return game;
 	}
 
@@ -134,6 +134,14 @@ public class GameManager implements GameListener {
 		Animation smoke_animation = animation_provider.getSmokeAnimation(unit.getX(), unit.getY());
 		submitAnimation(smoke_animation);
 	}
+	
+	@Override
+	public void onTileDestroyed(int tile_index, int x, int y) {
+		Animation animation = animation_provider.getTileAttackedAnimation(tile_index, x, y);
+		submitAnimation(animation);
+		Animation smoke_animation = animation_provider.getSmokeAnimation(x, y);
+		submitAnimation(smoke_animation);
+	}
 
 	@Override
 	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
@@ -169,9 +177,13 @@ public class GameManager implements GameListener {
 			setState(STATE_SELECT);
 		}
 	}
+	
+	public boolean canCancelMovePhase() {
+		return !is_new_unit_phase;
+	}
 
 	public void beginAttackPhase() {
-		if (getUnitToolkit().isUnitAccessible(getSelectedUnit())) {
+		if (getUnitToolkit().isUnitAccessible(getSelectedUnit()) && isActionState()) {
 			this.attackable_positions = unit_toolkit.createAttackablePositions(selected_unit);
 			setState(STATE_ATTACK);
 		}
@@ -202,6 +214,7 @@ public class GameManager implements GameListener {
 	}
 
 	public void selectUnit(int x, int y) {
+		
 		if (state == STATE_SELECT) {
 			Unit unit = getGame().getMap().getUnit(x, y);
 			if (unit != null) {
@@ -250,7 +263,7 @@ public class GameManager implements GameListener {
 	}
 
 	public void doAttack(int target_x, int target_y) {
-		if (canAttack(target_x, target_y)) {
+		if (canAttack(target_x, target_y) && state == STATE_ATTACK) {
 			Unit unit = getSelectedUnit();
 			getGame().doAttack(unit.getX(), unit.getY(), target_x, target_y);
 		}
@@ -263,15 +276,17 @@ public class GameManager implements GameListener {
 		}
 	}
 	
-	public void doOccupy(Unit conqueror, int x, int y) {
-		if(getGame().canOccupy(conqueror, x, y)) {
-			getGame().doOccupy(x, y);
+	public void doOccupy(int x, int y) {
+		Unit conqueror = getSelectedUnit();
+		if(getGame().canOccupy(conqueror, x, y) && isActionState()) {
+			getGame().doOccupy(conqueror.getX(), conqueror.getY(), x, y);
 		}
 	}
 	
-	public void doRepair(Unit repairer, int x, int y) {
-		if(getGame().canRepair(repairer, x, y)) {
-			getGame().doRepair(x, y);
+	public void doRepair(int x, int y) {
+		Unit repairer = getSelectedUnit();
+		if(getGame().canRepair(repairer, x, y) && isActionState()) {
+			getGame().doRepair(repairer.getX(), repairer.getY(), x, y);
 		}
 	}
 
@@ -288,7 +303,7 @@ public class GameManager implements GameListener {
 		if (unit != null && (state == STATE_MOVE || state == STATE_RMOVE)) {
 			int unit_x = unit.getX();
 			int unit_y = unit.getY();
-			if (movable_positions.contains(new Point(dest_x, dest_y))) {
+			if (canSelectedUnitMove(dest_x, dest_x)) {
 				int mp_remains = getUnitToolkit().getMovementPointRemains(unit, dest_x, dest_y);
 				getGame().moveUnit(unit_x, unit_y, dest_x, dest_y);
 				unit.setCurrentMovementPoint(mp_remains);
@@ -306,6 +321,11 @@ public class GameManager implements GameListener {
 			}
 		}
 	}
+	
+	public boolean canSelectedUnitMove(int dest_x, int dest_y) {
+		Point dest = getGame().getMap().getPosition(dest_x, dest_x);
+		return movable_positions.contains(dest);
+	}
 
 	public void reverseMove() {
 		Unit unit = getSelectedUnit();
@@ -317,14 +337,14 @@ public class GameManager implements GameListener {
 			beginMovePhase();
 		}
 	}
-
-	public boolean canCancelMovePhase() {
-		return !is_new_unit_phase;
-	}
-
+	
 	public boolean canReverseMove() {
 		Unit unit = getSelectedUnit();
 		return !unit.isAt(last_position.x, last_position.y);
+	}
+
+	public boolean isActionState() {
+		return state == STATE_SELECT || state == STATE_ACTION;
 	}
 
 	public boolean isAccessibleCastle(int x, int y) {

@@ -1,6 +1,6 @@
 package com.toyknight.aeii.gui.screen;
 
-import com.toyknight.aeii.core.BasicGame;
+import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;

@@ -13,7 +13,7 @@ import com.toyknight.aeii.core.unit.UnitToolkit;
  *
  * @author toyknight
  */
-public class BasicGame implements OperationListener {
+public class Game implements OperationListener {
 
 	private final Map map;
 	private int current_team;
@@ -22,7 +22,7 @@ public class BasicGame implements OperationListener {
 
 	private final int max_population;
 
-	public BasicGame(Map map, Player[] players, int max_population) {
+	public Game(Map map, Player[] players, int max_population) {
 		this.map = map;
 		player_list = new Player[4];
 		for (int team = 0; team < 4; team++) {
@@ -81,7 +81,10 @@ public class BasicGame implements OperationListener {
 			if (defender != null) {
 				doAttack(attacker, defender);
 			} else {
-
+				if(attacker.getAbilities().contains(Ability.DESTROYER) && 
+						getMap().getTile(target_x, target_y).isDestroyable()) {
+					doDestroy(attacker, target_x, target_y);
+				}
 			}
 		}
 	}
@@ -95,6 +98,13 @@ public class BasicGame implements OperationListener {
 			doDamage(defender, attacker, counter_damage);
 		}
 		game_listener.onUnitActionFinished(attacker);
+	}
+	
+	protected void doDestroy(Unit destroyer, int x, int y) {
+		int tile_index = getMap().getTileIndex(x, y);
+		game_listener.onTileDestroyed(tile_index, x, y);
+		getMap().setTile(getMap().getTile(x, y).getDestroyedTileIndex(), x, y);
+		game_listener.onUnitActionFinished(destroyer);
 	}
 
 	protected void doDamage(Unit attacker, Unit defender, int damage) {
@@ -129,35 +139,46 @@ public class BasicGame implements OperationListener {
 
 	protected void doSummon(Unit summoner, int target_x, int target_y) {
 		getMap().removeTomb(target_x, target_y);
-		Unit skeleton = UnitFactory.createUnit(10, getCurrentTeam());
-		skeleton.setX(target_x);
-		skeleton.setY(target_y);
-		skeleton.setStandby(true);
-		getMap().addUnit(skeleton);
-		updatePopulation(getCurrentTeam());
+		addUnit(10, getCurrentTeam(), target_x, target_y);
+		getMap().getUnit(target_x, target_y).setStandby(true);
 		game_listener.onSummon(summoner, target_x, target_y);
 		game_listener.onUnitActionFinished(summoner);
 	}
 	
 	@Override
-	public void doOccupy(int x, int y) {
-		Unit conqueror = getMap().getUnit(x, y);
+	public void doOccupy(int conqueror_x, int conqueror_y, int x, int y) {
+		Unit conqueror = getMap().getUnit(conqueror_x, conqueror_y);
 		if(canOccupy(conqueror, x, y)) {
-			Tile tile = getMap().getTile(x, y);
-			changeTile(tile.getCapturedTileIndex(getCurrentTeam()), x, y);
-			game_listener.onOccupy();
+			doOccupy(x, y);
 			game_listener.onUnitActionFinished(conqueror);
 		}
 	}
 	
 	@Override
-	public void doRepair(int x, int y) {
+	public void doOccupy(int x, int y) {
+		Tile tile = getMap().getTile(x, y);
+		if(tile.isCapturable()) {
+			changeTile(tile.getCapturedTileIndex(getCurrentTeam()), x, y);
+			game_listener.onOccupy();
+		}
+	}
+	
+	@Override
+	public void doRepair(int repairer_x, int repairer_y, int x, int y) {
 		Unit repairer = getMap().getUnit(x, y);
 		if(canRepair(repairer, x, y)) {
-			Tile tile = getMap().getTile(x, y);
+			doRepair(x, y);
+			game_listener.onUnitActionFinished(repairer);
+		}
+	}
+	
+	@Override
+	public void doRepair(int x, int y) {
+		Tile tile = getMap().getTile(x, y);
+		if(tile.isRepairable()) {
 			changeTile(tile.getRepairedTileIndex(), x, y);
 			game_listener.onRepair();
-			game_listener.onUnitActionFinished(repairer);
+			
 		}
 	}
 	
@@ -213,14 +234,8 @@ public class BasicGame implements OperationListener {
 		}
 		Tile tile = getMap().getTile(x, y);
 		if (tile.getTeam() != getCurrentTeam()) {
-			if (tile.isCastle()) {
-				return conqueror.getAbilities().contains(Ability.COMMANDER);
-			}
-			if (tile.isVillage()) {
-				return conqueror.getAbilities().contains(Ability.COMMANDER)
-						|| conqueror.getAbilities().contains(Ability.CONQUEROR);
-			}
-			return false;
+			return (tile.isCastle() && conqueror.getAbilities().contains(Ability.COMMANDER)) ||
+					(tile.isVillage() && conqueror.getAbilities().contains(Ability.CONQUEROR));
 		} else {
 			return false;
 		}

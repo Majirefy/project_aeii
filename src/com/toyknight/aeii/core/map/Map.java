@@ -174,7 +174,7 @@ public class Map {
 		return unit_map.get(dest_position) == null || upper_unit_layer[x][y] == null;
 	}
 
-	private Point getPosition(int x, int y) {
+	public Point getPosition(int x, int y) {
 		return position_map[x][y];
 	}
 

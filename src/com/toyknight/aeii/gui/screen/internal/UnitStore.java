@@ -11,7 +11,6 @@ import com.toyknight.aeii.gui.util.CharPainter;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -54,13 +53,6 @@ public class UnitStore extends JInternalFrame {
 		this.initComponents();
 		this.pack();
 		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
-		KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-		this.getRootPane().registerKeyboardAction(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				close();
-			}
-		}, stroke, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		this.addInternalFrameListener(new InternalFrameAdapter() {
 			@Override
 			public void internalFrameClosing(InternalFrameEvent e) {
@@ -100,6 +92,13 @@ public class UnitStore extends JInternalFrame {
 				close();
 			}
 		});
+		KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+		btn_close.registerKeyboardAction(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				close();
+			}
+		}, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
 		this.getContentPane().add(btn_close);
 	}
 
@@ -118,6 +117,7 @@ public class UnitStore extends JInternalFrame {
 		unit_list.setSelectedIndex(0);
 		canvas.setInternalFrameShown(true);
 		this.show();
+		canvas.getDesktopManager().activateFrame(this);
 	}
 
 	public void close() {

@@ -183,7 +183,7 @@ public class ActionBar extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Unit unit = manager.getSelectedUnit();
-			manager.doOccupy(unit, unit.getX(), unit.getY());
+			manager.doOccupy(unit.getX(), unit.getY());
 			setVisible(false);
 		}
 	};
@@ -192,7 +192,7 @@ public class ActionBar extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Unit unit = manager.getSelectedUnit();
-			manager.doRepair(unit, unit.getX(), unit.getY());
+			manager.doRepair(unit.getX(), unit.getY());
 			setVisible(false);
 		}
 	};

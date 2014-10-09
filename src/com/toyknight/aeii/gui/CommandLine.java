@@ -1,7 +1,7 @@
 package com.toyknight.aeii.gui;
 
 import com.toyknight.aeii.Launcher;
-import com.toyknight.aeii.core.BasicGame;
+import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameFactory;
 import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.map.MapFactory;
@@ -124,7 +124,7 @@ public class CommandLine extends Thread {
 				for (int i = 0; i < 4; i++) {
 					players[i] = new LocalPlayer();
 				}
-				BasicGame game = game_factory.createBasicGame(players, 1000, 20);
+				Game game = game_factory.createBasicGame(players, 1000, 20);
 				context.getGameScreen().setGame(game);
 				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
 				context.setCurrentFpsDelayToGame();

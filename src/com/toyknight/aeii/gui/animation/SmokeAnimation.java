@@ -36,7 +36,7 @@ public class SmokeAnimation extends SwingAnimation {
 	public void paint(Graphics g, MapCanvas canvas) {
 		int sx_smoke = canvas.getXOnCanvas(x);
 		int sy_smoke = canvas.getYOnCanvas(y);
-		g.drawImage(ResourceManager.getSmokeImage(frame), sx_smoke, sy_smoke - frame * ts / 24, canvas);
+		g.drawImage(ResourceManager.getSmokeImage(frame), sx_smoke, sy_smoke - frame * ts / 6, canvas);
 	}
 
 }
