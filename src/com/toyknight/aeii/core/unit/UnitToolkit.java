@@ -74,7 +74,7 @@ public class UnitToolkit {
 			Step current_step = current_steps.poll();
 			int step_x = current_step.getPosition().x;
 			int step_y = current_step.getPosition().y;
-			if (game.getMap().getUnit(step_x, step_y) == null) {
+			if (game.getMap().canMove(step_x, step_y)) {
 				movable_positions.add(current_step.getPosition());
 			}
 			for (int i = 0; i < 4; i++) {

@@ -1,4 +1,3 @@
-
 package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.map.Tile;
@@ -12,48 +11,51 @@ import java.util.ArrayList;
  * @author toyknight
  */
 public class GameManager {
-	
+
 	public static final int STATE_SELECT = 0x1;
 	public static final int STATE_MOVE = 0x2;
 	public static final int STATE_RMOVE = 0x3;
 	public static final int STATE_ACTION = 0x4;
 	public static final int STATE_ATTACK = 0x5;
 	public static final int STATE_SUMMON = 0x6;
-	
+
 	private int state;
+	private int last_state;
 	private boolean is_new_unit_phase;
 	private final Game game;
 	private final UnitToolkit unit_toolkit;
-	
+
 	private Unit selected_unit;
 	private Point last_position;
 	private ArrayList<Point> movable_positions;
 	private ArrayList<Point> attackable_positions;
-	
+
 	public GameManager(Game game) {
 		this.game = game;
 		this.state = STATE_SELECT;
+		this.last_state = state;
 		this.is_new_unit_phase = false;
 		this.selected_unit = null;
 		this.unit_toolkit = new UnitToolkit(game);
 	}
-	
+
 	public Game getGame() {
 		return game;
 	}
 
 	protected void setState(int state) {
+		this.last_state = this.state;
 		this.state = state;
 	}
 
 	public int getState() {
 		return state;
 	}
-	
+
 	public UnitToolkit getUnitToolkit() {
 		return unit_toolkit;
 	}
-	
+
 	public ArrayList<Point> getMovablePositions() {
 		return movable_positions;
 	}
@@ -165,7 +167,7 @@ public class GameManager {
 			return false;
 		}
 	}
-	
+
 	protected void onUnitActionFinished(Unit unit) {
 		if (getGame().isLocalPlayer()) {
 			if (UnitToolkit.canRemove(unit)) {
@@ -208,11 +210,23 @@ public class GameManager {
 		}
 	}
 
+	public void restoreCommander(int x, int y) {
+		int team = getGame().getCurrentTeam();
+		if (!getGame().isCommanderAlive(team)) {
+			getGame().restoreCommander(team, x, y);
+			selectUnit(x, y);
+			beginMovePhase();
+			is_new_unit_phase = true;
+		}
+	}
+
 	public void standbySelectedUnit() {
 		Unit unit = getSelectedUnit();
-		if (unit != null && isActionState()) {
-			getGame().standbyUnit(unit.getX(), unit.getY());
-			setState(STATE_SELECT);
+		if (unit != null && (isActionState() || (isNewUnitPhase() && state == STATE_MOVE))) {
+			if (getGame().getMap().canStandby(unit)) {
+				getGame().standbyUnit(unit.getX(), unit.getY());
+				setState(STATE_SELECT);
+			}
 		}
 	}
 
@@ -242,7 +256,7 @@ public class GameManager {
 
 	public boolean canSelectedUnitMove(int dest_x, int dest_y) {
 		Point dest = getGame().getMap().getPosition(dest_x, dest_y);
-		return movable_positions.contains(dest);
+		return movable_positions.contains(dest) && getGame().getMap().canMove(dest_x, dest_y);
 	}
 
 	public void reverseMove() {
@@ -257,12 +271,17 @@ public class GameManager {
 	}
 
 	public boolean canReverseMove() {
-		Unit unit = getSelectedUnit();
-		return !unit.isAt(last_position.x, last_position.y);
+//		Unit unit = getSelectedUnit();
+//		return !unit.isAt(last_position.x, last_position.y);
+		return last_state == STATE_MOVE;
 	}
 
 	public boolean isActionState() {
 		return state == STATE_SELECT || state == STATE_ACTION;
+	}
+
+	public boolean isNewUnitPhase() {
+		return is_new_unit_phase;
 	}
 
 	public boolean isAccessibleCastle(int x, int y) {
@@ -273,5 +292,5 @@ public class GameManager {
 			return false;
 		}
 	}
-	
+
 }

@@ -8,7 +8,7 @@ package com.toyknight.aeii.audio;
 
 /**
  *
- * @author s1407003
+ * @author adams
  */
 public interface AudioListenerVolumn {
     

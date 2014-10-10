@@ -21,8 +21,8 @@ public class UnitFactory {
 
 	public static void init(File unit_data_dir)
 			throws IOException, AEIIException {
-		int unit_count = 
-				unit_data_dir.listFiles(new SuffixFileFilter("dat")).length;
+		int unit_count
+				= unit_data_dir.listFiles(new SuffixFileFilter("dat")).length;
 		units = new Unit[unit_count];
 		for (int i = 0; i < unit_count; i++) {
 			File unit_data = new File(
@@ -50,7 +50,7 @@ public class UnitFactory {
 					ability_list.add(din.nextInt());
 				}
 				din.close();
-				Unit unit = new Unit(i);
+				Unit unit = i == 9 ? new Unit(i, true) : new Unit(i, false);
 				unit.setPrice(price);
 				unit.setMaxHp(max_hp);
 				unit.setMovementPoint(mp);
@@ -73,25 +73,25 @@ public class UnitFactory {
 		}
 		current_code = 0;
 	}
-	
+
 	public static int getUnitCount() {
 		return units.length;
 	}
-	
-	public static int getUnitPrice(int index) {
-		return units[index].getPrice();
+
+	public static Unit getSample(int index) {
+		return units[index];
 	}
 
 	public static Unit createUnit(int index, int team) {
-		String unit_code = "#"+Long.toString(current_code++);
+		String unit_code = "#" + Long.toString(current_code++);
 		return createUnit(index, team, unit_code);
 	}
-	
+
 	public static Unit cloneUnit(Unit unit) {
 		String unit_code = unit.getUnitCode();
 		return new Unit(unit, unit_code);
 	}
-	
+
 	public static Unit createUnit(int index, int team, String unit_code) {
 		Unit unit = new Unit(units[index], unit_code);
 		unit.setTeam(team);

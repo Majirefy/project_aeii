@@ -63,7 +63,7 @@ public class Map {
 			return -1;
 		}
 	}
-	
+
 	public Tile getTile(int x, int y) {
 		return TileRepository.getTile(map_data[x][y]);
 	}
@@ -172,6 +172,15 @@ public class Map {
 	public boolean canMove(int x, int y) {
 		Point dest_position = getPosition(x, y);
 		return unit_map.get(dest_position) == null || upper_unit_layer[x][y] == null;
+	}
+
+	public boolean canStandby(Unit unit) {
+		Point position = getPosition(unit.getX(), unit.getY());
+		if (UnitToolkit.isTheSameUnit(unit, upper_unit_layer[unit.getX()][unit.getY()])) {
+			return unit_map.get(position) == null;
+		} else {
+			return UnitToolkit.isTheSameUnit(unit, unit_map.get(position));
+		}
 	}
 
 	public Point getPosition(int x, int y) {

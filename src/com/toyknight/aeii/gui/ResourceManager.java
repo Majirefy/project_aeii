@@ -19,6 +19,8 @@ public class ResourceManager {
 
 	private static BufferedImage img_logo;
 	private static BufferedImage gold_icon;
+	private static BufferedImage attack_icon;
+	private static BufferedImage defence_icon;
 	private static BufferedImage population_icon;
 	private static BufferedImage poisoned_status;
 	private static BufferedImage[] action_icons;
@@ -29,6 +31,7 @@ public class ResourceManager {
 	private static BufferedImage[] top_tiles;
 	private static BufferedImage tomb;
 	private static BufferedImage[][][] units;
+	private static BufferedImage[] small_units;
 	private static BufferedImage[][] standby_units;
 	private static BufferedImage[] cursor;
 	private static BufferedImage move_target;
@@ -45,6 +48,7 @@ public class ResourceManager {
 	private static BufferedImage lminus;
 	private static BufferedImage ldivision;
 	private static Color aeii_panel_bg;
+	private static Color text_background;
 	private static Color move_path_color;
 	private static Color[] team_color;
 	private static Font title_font;
@@ -70,6 +74,7 @@ public class ResourceManager {
 		loadHudIcons(ts);
 		loadStatus(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
+		text_background = new Color(206, 206, 206);
 		move_path_color = new Color(225, 0, 82);
 		team_color = new Color[4];
 		team_color[0] = new Color(0, 100, 198);
@@ -147,6 +152,15 @@ public class ResourceManager {
 				standby_units[team][index] = ResourceUtil.getGrayScaledImage(unit_f0);
 			}
 		}
+		int sus = ts / 24 * 10;
+		small_units = new BufferedImage[unit_count];
+		File small_unit_file = new File("res\\img\\unit_icons_small.png");
+		BufferedImage img_small_unit = new BufferedImage(sus * unit_count, sus, BufferedImage.TYPE_INT_ARGB);
+		img_small_unit.getGraphics().drawImage(ImageIO.read(small_unit_file), 0, 0, sus * unit_count, sus, null);
+		for (int index = 0; index < unit_count; index++) {
+			small_units[index] = ResourceUtil.getImageClip(img_small_unit, sus * index, 0, sus, sus);
+		}
+
 	}
 
 	private static void loadCursors(int ts) throws IOException {
@@ -261,6 +275,13 @@ public class ResourceManager {
 	}
 
 	private static void loadHudIcons(int ts) throws IOException {
+		int hw = ts / 24 * 13;
+		int hh = ts / 24 * 16;
+		File hud_icon_file = new File("res\\img\\hud_icons.png");
+		BufferedImage img_hud_icon = new BufferedImage(hw * 3, hh, BufferedImage.TYPE_INT_ARGB);
+		img_hud_icon.getGraphics().drawImage(ImageIO.read(hud_icon_file), 0, 0, hw * 3, hh, null);
+		attack_icon = ResourceUtil.getImageClip(img_hud_icon, 0, 0, hw, hh);
+		defence_icon = ResourceUtil.getImageClip(img_hud_icon, hw, 0, hw, hh);
 		int i2w = ts / 24 * 11;
 		int i2h = ts / 24 * 11;
 		File hud_icon2_file = new File("res\\img\\hud_icons_2.png");
@@ -285,6 +306,14 @@ public class ResourceManager {
 
 	public static BufferedImage getBorderImage(int index) {
 		return borders[index];
+	}
+	
+	public static BufferedImage getAttackIcon() {
+		return attack_icon;
+	}
+	
+	public static BufferedImage getDefenceIcon() {
+		return defence_icon;
 	}
 
 	public static BufferedImage getPopulationIcon() {
@@ -313,6 +342,10 @@ public class ResourceManager {
 
 	public static BufferedImage getStandbyUnitImage(int team, int index) {
 		return standby_units[team][index];
+	}
+
+	public static BufferedImage getSmallUnitImage(int index) {
+		return small_units[index];
 	}
 
 	public static BufferedImage getCursorImage(int index) {
@@ -374,7 +407,7 @@ public class ResourceManager {
 	public static BufferedImage getPoisonedStatusImage() {
 		return poisoned_status;
 	}
-	
+
 	public static BufferedImage getActionIcon(int index) {
 		return action_icons[index];
 	}
@@ -386,13 +419,17 @@ public class ResourceManager {
 	public static BufferedImage getBigCircleImage(int index) {
 		return big_circles[index];
 	}
-	
+
 	public static Color getTeamColor(int team) {
 		return team_color[team];
 	}
 
 	public static Color getAEIIPanelBg() {
 		return aeii_panel_bg;
+	}
+	
+	public static Color getTextBackgroundColor() {
+		return text_background;
 	}
 
 	public static Color getMovePathColor() {
@@ -406,7 +443,7 @@ public class ResourceManager {
 	public static Font getLabelFont() {
 		return label_font;
 	}
-	
+
 	public static Font getTextFont() {
 		return text_font;
 	}

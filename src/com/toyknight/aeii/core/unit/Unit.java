@@ -12,6 +12,7 @@ public class Unit {
 	public static final int ATTACK_MAGICAL = 1;
 
 	private final int index;
+	private final boolean is_commander;
 
 	private int price;
 
@@ -49,20 +50,21 @@ public class Unit {
 	private boolean is_standby;
 
 	//private final Object BUFF_LOCK = new Object();
-	public Unit(int index, String unit_code) {
-		this.index = index;
+	public Unit(int index, boolean commander, String unit_code) {
 		this.level = 0;
+		this.index = index;
+		this.is_commander = commander;
 		this.abilities = new ArrayList();
 		this.buff_list = new ArrayList();
 		this.unit_code = unit_code;
 	}
 
-	public Unit(int index) {
-		this(index, "#");
+	public Unit(int index, boolean commander) {
+		this(index, commander, "#");
 	}
 
 	public Unit(Unit unit, String unit_code) {
-		this(unit.getIndex(), unit_code);
+		this(unit.getIndex(), unit.isCommander(), unit_code);
 		this.level = unit.getLevel();
 		this.experience = unit.getTotalExperience();
 		this.price = unit.getPrice();
@@ -90,6 +92,10 @@ public class Unit {
 
 	public int getIndex() {
 		return index;
+	}
+	
+	public boolean isCommander() {
+		return is_commander;
 	}
 
 	public int getPrice() {
