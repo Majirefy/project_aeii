@@ -16,6 +16,8 @@ public class Unit {
 	private int price;
 
 	private int level;     //等级（初始等级为0，最高可以升级到3级）
+	private int experience = 0;
+	private final int[] level_up_experience = {100, 150, 250};
 
 	private final String unit_code;
 	private int team;
@@ -62,6 +64,7 @@ public class Unit {
 	public Unit(Unit unit, String unit_code) {
 		this(unit.getIndex(), unit_code);
 		this.level = unit.getLevel();
+		this.experience = unit.getTotalExperience();
 		this.price = unit.getPrice();
 		this.team = unit.getTeam();
 		this.max_hp = unit.getMaxHp();
@@ -297,6 +300,34 @@ public class Unit {
 			this.movement_point += this.getMovementGrowth();
 			this.physical_defence += this.getPhysicalDefenceGrowth();
 			this.magical_defence += this.getMagicalDefenceGrowth();
+		}
+	}
+
+	public void gainExperience(int exp) {
+		if (level < 3) {
+			
+		} else {
+			
+		}
+	}
+
+	public int getTotalExperience() {
+		return experience;
+	}
+
+	public int getCurrentExperience() {
+		int exp = experience;
+		for (int i = 1; i <= level; i++) {
+			exp -= level_up_experience[i];
+		}
+		return exp;
+	}
+
+	public int getLevelUpExperience() {
+		if (0 <= level && level < 3) {
+			return level_up_experience[level];
+		} else {
+			return -1;
 		}
 	}
 

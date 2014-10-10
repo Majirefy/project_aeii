@@ -1,7 +1,7 @@
 package com.toyknight.aeii.gui.screen.internal;
 
 import com.toyknight.aeii.Language;
-import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.ResourceManager;
@@ -24,10 +24,9 @@ import javax.swing.KeyStroke;
  */
 public class ActionBar extends JPanel {
 
-	private final int ts;
 	private final int bw;
 	private final int bh;
-	private GameManager manager;
+	private LocalGameManager manager;
 	private final MapCanvas canvas;
 
 	private final ActionButton btn_buy;
@@ -39,55 +38,54 @@ public class ActionBar extends JPanel {
 	private final ActionButton btn_summon;
 
 	public ActionBar(MapCanvas canvas, int ts) {
-		this.ts = ts;
 		this.bw = ts / 24 * 20;
 		this.bh = ts / 24 * 21;
 		this.canvas = canvas;
 		this.setLayout(null);
 		this.setOpaque(false);
-		btn_attack = new ActionButton(2);
+		btn_attack = new ActionButton(2, ts);
 		btn_attack.setToolTipText(Language.getText("LB_ATTACK"));
 		btn_attack.registerKeyboardAction(
 				btn_attack_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_A, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_attack.addActionListener(btn_attack_listener);
-		btn_move = new ActionButton(4);
+		btn_move = new ActionButton(4, ts);
 		btn_move.setToolTipText(Language.getText("LB_MOVE"));
 		btn_move.registerKeyboardAction(
 				btn_move_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_M, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_move.addActionListener(btn_move_listener);
-		btn_occupy = new ActionButton(1);
+		btn_occupy = new ActionButton(1, ts);
 		btn_occupy.setToolTipText(Language.getText("LB_OCCUPY"));
 		btn_occupy.registerKeyboardAction(
 				btn_occupy_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_O, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_occupy.addActionListener(btn_occupy_listener);
-		btn_repair = new ActionButton(1);
+		btn_repair = new ActionButton(1, ts);
 		btn_repair.setToolTipText(Language.getText("LB_REPAIR"));
 		btn_repair.registerKeyboardAction(
 				btn_repair_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_R, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_repair.addActionListener(btn_repair_listener);
-		btn_summon = new ActionButton(3);
+		btn_summon = new ActionButton(3, ts);
 		btn_summon.setToolTipText(Language.getText("LB_SUMMON"));
 		btn_summon.registerKeyboardAction(
 				btn_summon_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_summon.addActionListener(btn_summon_listener);
-		btn_standby = new ActionButton(5);
+		btn_standby = new ActionButton(5, ts);
 		btn_standby.setToolTipText(Language.getText("LB_STANDBY"));
 		btn_standby.registerKeyboardAction(
 				btn_standby_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_S, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_standby.addActionListener(btn_standby_listener);
-		btn_buy = new ActionButton(0);
+		btn_buy = new ActionButton(0, ts);
 		btn_buy.setToolTipText(Language.getText("LB_BUY"));
 		btn_buy.registerKeyboardAction(
 				btn_buy_listener,
@@ -96,7 +94,7 @@ public class ActionBar extends JPanel {
 		btn_buy.addActionListener(btn_buy_listener);
 	}
 
-	public void setGameManager(GameManager manager) {
+	public void setGameManager(LocalGameManager manager) {
 		this.manager = manager;
 	}
 
@@ -110,9 +108,9 @@ public class ActionBar extends JPanel {
 		Unit unit = manager.getSelectedUnit();
 		if (manager.getUnitToolkit().isUnitAccessible(unit)) {
 			switch (manager.getState()) {
-				case GameManager.STATE_SELECT:
+				case LocalGameManager.STATE_SELECT:
 					addButton(btn_move);
-				case GameManager.STATE_ACTION:
+				case LocalGameManager.STATE_ACTION:
 					addButton(btn_attack);
 					if (unit.hasAbility(Ability.NECROMANCER)) {
 						addButton(btn_summon);
@@ -123,7 +121,7 @@ public class ActionBar extends JPanel {
 					if (manager.getGame().canRepair(unit, unit.getX(), unit.getY())) {
 						addButton(btn_repair);
 					}
-				case GameManager.STATE_RMOVE:
+				case LocalGameManager.STATE_RMOVE:
 					addButton(btn_standby);
 					break;
 				default:

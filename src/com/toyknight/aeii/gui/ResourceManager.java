@@ -21,7 +21,7 @@ public class ResourceManager {
 	private static BufferedImage gold_icon;
 	private static BufferedImage population_icon;
 	private static BufferedImage poisoned_status;
-	private static BufferedImage[][] action_buttons;
+	private static BufferedImage[] action_icons;
 	private static BufferedImage[] small_circles;
 	private static BufferedImage[] big_circles;
 	private static BufferedImage[] borders;
@@ -49,6 +49,7 @@ public class ResourceManager {
 	private static Color[] team_color;
 	private static Font title_font;
 	private static Font label_font;
+	private static Font text_font;
 
 	private ResourceManager() {
 	}
@@ -77,6 +78,7 @@ public class ResourceManager {
 		team_color[3] = new Color(0, 43, 75);
 		title_font = new Font(Font.DIALOG, Font.BOLD, ts / 2);
 		label_font = new Font(Font.DIALOG, Font.BOLD, ts / 3);
+		text_font = new Font(Font.DIALOG, Font.PLAIN, ts / 4);
 	}
 
 	private static void loadBorder() throws IOException {
@@ -249,22 +251,12 @@ public class ResourceManager {
 	private static void loadActionButtons(int ts) throws IOException {
 		int iw = ts / 24 * 16;
 		int ih = ts / 24 * 16;
-		int cw = ts / 24 * 20;
-		int ch = ts / 24 * 21;
 		File icons_file = new File("res\\img\\action_icons.png");
-		BufferedImage action_icons = new BufferedImage(iw * 7, ih, BufferedImage.TYPE_INT_ARGB);
-		action_icons.getGraphics().drawImage(ImageIO.read(icons_file), 0, 0, iw * 7, ih, null);
-		BufferedImage[] icon_list = new BufferedImage[7];
+		BufferedImage action_icon_image = new BufferedImage(iw * 7, ih, BufferedImage.TYPE_INT_ARGB);
+		action_icon_image.getGraphics().drawImage(ImageIO.read(icons_file), 0, 0, iw * 7, ih, null);
+		action_icons = new BufferedImage[7];
 		for (int i = 0; i < 7; i++) {
-			icon_list[i] = ResourceUtil.getImageClip(action_icons, iw * i, 0, iw, ih);
-		}
-		action_buttons = new BufferedImage[7][2];
-		for (int i = 0; i < 7; i++) {
-			for (int j = 0; j < 2; j++) {
-				action_buttons[i][j] = new BufferedImage(cw, ch, BufferedImage.TYPE_INT_ARGB);
-				action_buttons[i][j].getGraphics().drawImage(small_circles[j], 0, 0, null);
-				action_buttons[i][j].getGraphics().drawImage(icon_list[i], (cw - iw) / 2, (ch - ih) / 2, null);
-			}
+			action_icons[i] = ResourceUtil.getImageClip(action_icon_image, iw * i, 0, iw, ih);
 		}
 	}
 
@@ -382,9 +374,9 @@ public class ResourceManager {
 	public static BufferedImage getPoisonedStatusImage() {
 		return poisoned_status;
 	}
-
-	public static BufferedImage getActionButtonImage(int index, int frame) {
-		return action_buttons[index][frame];
+	
+	public static BufferedImage getActionIcon(int index) {
+		return action_icons[index];
 	}
 
 	public static BufferedImage getSmallCircleImage(int index) {
@@ -413,6 +405,10 @@ public class ResourceManager {
 
 	public static Font getLabelFont() {
 		return label_font;
+	}
+	
+	public static Font getTextFont() {
+		return text_font;
 	}
 
 }

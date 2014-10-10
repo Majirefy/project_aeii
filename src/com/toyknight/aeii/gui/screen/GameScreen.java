@@ -1,7 +1,7 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.core.Game;
-import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SwingAnimatingProvider;
@@ -16,7 +16,7 @@ import java.awt.event.KeyEvent;
 public class GameScreen extends Screen {
 
 	private Game game;
-	private GameManager manager;
+	private LocalGameManager manager;
 	private SwingAnimatingProvider animation_provider;
 
 	private MapCanvas map_canvas;
@@ -31,23 +31,23 @@ public class GameScreen extends Screen {
 	@Override
 	public void initComponents() {
 		this.setLayout(null);
-		int apw = 3; //action panel width(in column)
+		int apw = ts * 3 + ts / 4; //action panel width
 		int width = getPreferredSize().width;
 		int height = getPreferredSize().height;
 		this.tile_panel = new TilePanel(this, ts);
 		this.tile_panel.setBounds(0, height - ts, ts, ts);
 		this.add(tile_panel);
 		this.status_panel = new StatusPanel(ts);
-		this.status_panel.setBounds(ts, height - ts, width - ts * (apw + 1), ts);
+		this.status_panel.setBounds(ts, height - ts, width - apw - ts, ts);
 		this.add(status_panel);
-		Dimension canvas_size = new Dimension(width - ts * apw, height - ts);
+		Dimension canvas_size = new Dimension(width - apw, height - ts);
 		this.map_canvas = new MapCanvas(canvas_size, getContext(), this);
 		this.map_canvas.setPreferredSize(canvas_size);
-		this.map_canvas.setBounds(0, 0, width - ts * apw, height - ts);
+		this.map_canvas.setBounds(0, 0, width - apw, height - ts);
 		this.map_canvas.init();
 		this.add(map_canvas);
 		this.action_panel = new ActionPanel(this, ts);
-		this.action_panel.setBounds(width - ts * apw, 0, ts * apw, height);
+		this.action_panel.setBounds(width - apw, 0, apw, height);
 		this.action_panel.initComponents(ts);
 		this.add(action_panel);
 		this.animation_provider = new SwingAnimatingProvider(this, ts);
@@ -55,7 +55,7 @@ public class GameScreen extends Screen {
 
 	public void setGame(Game game) {
 		this.game = game;
-		this.manager = new GameManager(game, animation_provider);
+		this.manager = new LocalGameManager(game, animation_provider);
 		this.animation_provider.setGameManager(manager);
 		this.map_canvas.setGameManager(manager);
 		this.action_panel.setGameManager(manager);

@@ -2,7 +2,7 @@
 package com.toyknight.aeii.gui.animation;
 
 import com.toyknight.aeii.Language;
-import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.animation.AnimationListener;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class SwingAnimatingProvider implements AnimationProvider {
 	
 	private final int ts;
-	private GameManager manager;
+	private LocalGameManager manager;
 	private final GameScreen game_screen;
 	
 	public SwingAnimatingProvider(GameScreen screen, int ts) {
@@ -26,7 +26,7 @@ public class SwingAnimatingProvider implements AnimationProvider {
 		this.game_screen = screen;
 	}
 	
-	public void setGameManager(GameManager manager) {
+	public void setGameManager(LocalGameManager manager) {
 		this.manager = manager;
 	}
 	

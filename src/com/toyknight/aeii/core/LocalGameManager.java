@@ -15,7 +15,7 @@ import java.util.Queue;
  *
  * @author toyknight
  */
-public class GameManager implements GameListener {
+public class LocalGameManager implements GameListener {
 
 	public static final int STATE_SELECT = 0x1;
 	public static final int STATE_MOVE = 0x2;
@@ -38,7 +38,7 @@ public class GameManager implements GameListener {
 	private ArrayList<Point> movable_positions;
 	private ArrayList<Point> attackable_positions;
 
-	public GameManager(Game game, AnimationProvider provider) {
+	public LocalGameManager(Game game, AnimationProvider provider) {
 		this.game = game;
 		this.animation_provider = provider;
 		this.state = STATE_SELECT;

@@ -1,6 +1,6 @@
 package com.toyknight.aeii.gui.screen;
 
-import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.util.CharPainter;
@@ -15,7 +15,7 @@ public class StatusPanel extends AEIIPanel {
 	private final int ts;
 	private final int i2w;
 	private final int margin;
-	private GameManager manager;
+	private LocalGameManager manager;
 
 	public StatusPanel(int ts) {
 		this.ts = ts;
@@ -23,7 +23,7 @@ public class StatusPanel extends AEIIPanel {
 		this.margin = (ts - i2w) / 2;
 	}
 
-	public void setGameManager(GameManager manager) {
+	public void setGameManager(LocalGameManager manager) {
 		this.manager = manager;
 	}
 

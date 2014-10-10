@@ -1,7 +1,7 @@
 package com.toyknight.aeii.gui.screen.internal;
 
 import com.toyknight.aeii.Language;
-import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
@@ -39,7 +39,7 @@ public class UnitStore extends JInternalFrame {
 
 	private final int ts;
 	private final MapCanvas canvas;
-	private GameManager manager;
+	private LocalGameManager manager;
 
 	private final JList unit_list;
 	private final AEIIButton btn_buy;
@@ -102,7 +102,7 @@ public class UnitStore extends JInternalFrame {
 		this.getContentPane().add(btn_close);
 	}
 
-	public void setGameManager(GameManager manager) {
+	public void setGameManager(LocalGameManager manager) {
 		this.manager = manager;
 	}
 
@@ -193,6 +193,7 @@ public class UnitStore extends JInternalFrame {
 			g.setColor(Color.WHITE);
 			g.setFont(ResourceManager.getLabelFont());
 			FontMetrics fm = g.getFontMetrics();
+			//paint unit info title
 			g.drawString(
 					Language.getText("LB_UNIT_NAME_" + index + "_0"),
 					ts * 6, (interval - fm.getHeight()) / 2 + fm.getAscent() + ts / 2
@@ -201,6 +202,9 @@ public class UnitStore extends JInternalFrame {
 			g.drawImage(ResourceManager.getGoldIcon(), ts * 10 + ts / 2 - lw * 4 - ts / 24 * 11, ts / 2, this);
 			CharPainter.paintLNumber(g, UnitFactory.getUnitPrice(index),
 					ts * 10 + ts / 2 - lw * 4, ts / 2 + (interval - lh) / 2);
+			//paint unit property
+			g.drawLine(ts * 6, ts / 2 + interval * 3, ts * 10 + ts / 2, ts / 2 + interval * 3);
+			//paint unit description
 			((Graphics2D) g).setRenderingHint(
 					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 			super.paintComponent(g);

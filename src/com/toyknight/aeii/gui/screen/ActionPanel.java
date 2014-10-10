@@ -1,12 +1,13 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
-import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.control.AEIIButton;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,7 +26,7 @@ import javax.swing.KeyStroke;
 public class ActionPanel extends AEIIPanel {
 
 	private final int ts;
-	private GameManager manager;
+	private LocalGameManager manager;
 	private final GameScreen game_screen;
 
 	private final JLabel lb_unit_icon;
@@ -53,8 +54,8 @@ public class ActionPanel extends AEIIPanel {
 		btn_end_turn.setBounds(ts / 2, getHeight() - ts, getWidth() - ts, ts / 2);
 		btn_end_turn.addActionListener(btn_end_turn_listener);
 		btn_end_turn.registerKeyboardAction(
-				btn_end_turn_listener, 
-				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_MASK), 
+				btn_end_turn_listener,
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_MASK),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_end_turn.setToolTipText("Alt + Enter");
 		this.add(btn_end_turn);
@@ -66,7 +67,7 @@ public class ActionPanel extends AEIIPanel {
 		this.add(lb_unit_icon);
 	}
 
-	public void setGameManager(GameManager manager) {
+	public void setGameManager(LocalGameManager manager) {
 		this.manager = manager;
 	}
 
@@ -88,10 +89,33 @@ public class ActionPanel extends AEIIPanel {
 		}
 	}
 
+	@Override
+	public void paintComponent(Graphics g) {
+		g.setColor(Color.WHITE);
+		g.setFont(ResourceManager.getTextFont());
+		FontMetrics fm = g.getFontMetrics();
+		int margin = ts / 24;
+		g.drawString("HP", ts / 2 + ts / 3 * 4 + margin, ts / 2 + fm.getAscent());
+		g.drawString("XP", ts / 2 + ts / 3 * 4 + margin, ts / 2 + fm.getHeight() * 2 + fm.getAscent());
+		Unit unit = manager.getSelectedUnit();
+		if (unit != null) {
+			String str_hp = unit.getCurrentHp() + "/" + unit.getMaxHp();
+			g.setColor(Color.GREEN);
+			g.drawString(str_hp, ts / 2 + ts / 3 * 4 + margin, ts / 2 + fm.getHeight() + fm.getAscent());
+			int level_up_exp = unit.getLevelUpExperience();
+			String str_exp = level_up_exp > 0
+					? unit.getCurrentExperience() + "/" + level_up_exp
+					: unit.getCurrentExperience() + "/-";
+			g.setColor(Color.CYAN);
+			g.drawString(str_exp, ts / 2 + ts / 3 * 4 + margin, ts / 2 + fm.getHeight() * 3 + fm.getAscent());
+		}
+		super.paintComponent(g);
+	}
+
 	private boolean isOperatable() {
 		return manager.getGame().isLocalPlayer() && !game_screen.getCanvas().isAnimating();
 	}
-	
+
 	private final ActionListener btn_end_turn_listener = new ActionListener() {
 
 		@Override
@@ -100,7 +124,7 @@ public class ActionPanel extends AEIIPanel {
 			updateButtons();
 			game_screen.getCanvas().updateActionBar();
 		}
-		
+
 	};
 
 }

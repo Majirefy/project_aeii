@@ -2,7 +2,7 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.core.Game;
-import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.map.Tile;
@@ -37,7 +37,7 @@ import java.util.Set;
  */
 public class MapCanvas extends Screen {
 
-	private GameManager manager;
+	private LocalGameManager manager;
 	private final GameScreen game_screen;
 	private final int SPRITE_INTERVAL = 8;
 
@@ -94,7 +94,7 @@ public class MapCanvas extends Screen {
 		viewport = new Rectangle(0, 0, getWidth(), getHeight());
 	}
 
-	public void setGameManager(GameManager manager) {
+	public void setGameManager(LocalGameManager manager) {
 		this.manager = manager;
 		this.action_bar.setGameManager(manager);
 		this.unit_store.setGameManager(manager);
@@ -154,20 +154,20 @@ public class MapCanvas extends Screen {
 				this.selected_x = click_x;
 				this.selected_y = click_y;
 				switch (manager.getState()) {
-					case GameManager.STATE_SELECT:
+					case LocalGameManager.STATE_SELECT:
 						doSelect(click_x, click_y);
 						break;
-					case GameManager.STATE_MOVE:
-					case GameManager.STATE_RMOVE:
+					case LocalGameManager.STATE_MOVE:
+					case LocalGameManager.STATE_RMOVE:
 						if (manager.canSelectedUnitMove(click_x, click_y)) {
 							manager.moveSelectedUnit(click_x, click_y);
 							action_bar.setVisible(false);
 						}
 						break;
-					case GameManager.STATE_ATTACK:
+					case LocalGameManager.STATE_ATTACK:
 						manager.doAttack(click_x, click_y);
 						break;
-					case GameManager.STATE_SUMMON:
+					case LocalGameManager.STATE_SUMMON:
 						manager.doSummon(click_x, click_y);
 						break;
 					default:
@@ -176,20 +176,20 @@ public class MapCanvas extends Screen {
 			}
 			if (e.getButton() == MouseEvent.BUTTON3) {
 				switch (manager.getState()) {
-					case GameManager.STATE_SELECT:
+					case LocalGameManager.STATE_SELECT:
 						action_bar.setVisible(false);
 						break;
-					case GameManager.STATE_MOVE:
+					case LocalGameManager.STATE_MOVE:
 						if (manager.canCancelMovePhase()) {
 							manager.cancelMovePhase();
 							action_bar.display();
 						}
 						break;
-					case GameManager.STATE_ACTION:
+					case LocalGameManager.STATE_ACTION:
 						manager.reverseMove();
 						break;
-					case GameManager.STATE_ATTACK:
-					case GameManager.STATE_SUMMON:
+					case LocalGameManager.STATE_ATTACK:
+					case LocalGameManager.STATE_SUMMON:
 						manager.cancelActionPhase();
 						action_bar.display();
 						break;
@@ -333,11 +333,11 @@ public class MapCanvas extends Screen {
 	public void updateActionBar() {
 		if (!isAnimating()) {
 			switch (manager.getState()) {
-				case GameManager.STATE_RMOVE:
-				case GameManager.STATE_ACTION:
+				case LocalGameManager.STATE_RMOVE:
+				case LocalGameManager.STATE_ACTION:
 					action_bar.display();
 					break;
-				case GameManager.STATE_SELECT:
+				case LocalGameManager.STATE_SELECT:
 				default:
 					action_bar.setVisible(false);
 			}
@@ -373,15 +373,17 @@ public class MapCanvas extends Screen {
 		}
 	}
 
-	public void moveViewport(int delta_x, int delta_y) {
+	public void dragViewport(int delta_x, int delta_y) {
 		int map_width = getGame().getMap().getWidth() * ts;
 		int map_height = getGame().getMap().getHeight() * ts;
-		if (0 <= viewport.x + delta_x && viewport.x + delta_x <= map_width - viewport.width) {
+		if (0 <= viewport.x + delta_x
+				&& viewport.x + delta_x <= map_width - viewport.width) {
 			viewport.x += delta_x;
 		} else {
 			viewport.x = viewport.x + delta_x < 0 ? 0 : map_width - viewport.width;
 		}
-		if (0 <= viewport.y + delta_y && viewport.y + delta_y <= map_height - viewport.height) {
+		if (0 <= viewport.y + delta_y
+				&& viewport.y + delta_y <= map_height - viewport.height) {
 			viewport.y += delta_y;
 		} else {
 			viewport.y = viewport.y + delta_y < 0 ? 0 : map_height - viewport.height;
@@ -390,19 +392,17 @@ public class MapCanvas extends Screen {
 
 	private void updateViewport() {
 		if (isOperatable()) {
-			int map_width = getGame().getMap().getWidth() * ts;
-			int map_height = getGame().getMap().getHeight() * ts;
-			if (down_pressed && viewport.y < map_height - viewport.height) {
-				viewport.y += ts / 3;
+			if (down_pressed) {
+				dragViewport(0, ts / 3);
 			}
-			if (up_pressed && viewport.y > 0) {
-				viewport.y -= ts / 3;
+			if (up_pressed) {
+				dragViewport(0, -ts / 3);
 			}
-			if (right_pressed && viewport.x < map_width - viewport.width) {
-				viewport.x += ts / 3;
+			if (right_pressed) {
+				dragViewport(ts / 3, 0);
 			}
-			if (left_pressed && viewport.x > 0) {
-				viewport.x -= ts / 3;
+			if (left_pressed) {
+				dragViewport(-ts / 3, 0);
 			}
 		}
 	}
@@ -414,13 +414,13 @@ public class MapCanvas extends Screen {
 		paintTiles(g, ts);
 		if (!isAnimating() && getGame().isLocalPlayer()) {
 			switch (manager.getState()) {
-				case GameManager.STATE_RMOVE:
-				case GameManager.STATE_MOVE:
+				case LocalGameManager.STATE_RMOVE:
+				case LocalGameManager.STATE_MOVE:
 					paintMoveAlpha(g);
 					paintMovePath(g, ts);
 					break;
-				case GameManager.STATE_ATTACK:
-				case GameManager.STATE_SUMMON:
+				case LocalGameManager.STATE_ATTACK:
+				case LocalGameManager.STATE_SUMMON:
 					paintAttackAlpha(g);
 					break;
 				default:
@@ -556,14 +556,14 @@ public class MapCanvas extends Screen {
 			int sy = getYOnCanvas(cursor_y);
 			if (isWithinPaintArea(sx, sy)) {
 				switch (manager.getState()) {
-					case GameManager.STATE_ATTACK:
+					case LocalGameManager.STATE_ATTACK:
 						if (manager.canAttack(cursor_x, cursor_y)) {
 							attack_cursor.paint(g, sx, sy);
 						} else {
 							cursor.paint(g, sx, sy);
 						}
 						break;
-					case GameManager.STATE_SUMMON:
+					case LocalGameManager.STATE_SUMMON:
 						if (manager.canSummon(cursor_x, cursor_y)) {
 							attack_cursor.paint(g, sx, sy);
 						} else {
