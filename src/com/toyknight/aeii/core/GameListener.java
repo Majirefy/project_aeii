@@ -19,8 +19,6 @@ public interface GameListener {
 	
 	public void onUnitAttack(Unit attacker, Unit defender, int damage);
 	
-	public void onUnitActionFinished(Unit unit);
-	
 	public void onTileDestroyed(int tile_index, int x, int y);
 	
 	public void onUnitDestroyed(Unit unit);

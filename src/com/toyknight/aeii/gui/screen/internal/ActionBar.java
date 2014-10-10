@@ -1,6 +1,7 @@
 package com.toyknight.aeii.gui.screen.internal;
 
 import com.toyknight.aeii.Language;
+import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
@@ -108,9 +109,9 @@ public class ActionBar extends JPanel {
 		Unit unit = manager.getSelectedUnit();
 		if (manager.getUnitToolkit().isUnitAccessible(unit)) {
 			switch (manager.getState()) {
-				case LocalGameManager.STATE_SELECT:
+				case GameManager.STATE_SELECT:
 					addButton(btn_move);
-				case LocalGameManager.STATE_ACTION:
+				case GameManager.STATE_ACTION:
 					addButton(btn_attack);
 					if (unit.hasAbility(Ability.NECROMANCER)) {
 						addButton(btn_summon);
@@ -121,7 +122,7 @@ public class ActionBar extends JPanel {
 					if (manager.getGame().canRepair(unit, unit.getX(), unit.getY())) {
 						addButton(btn_repair);
 					}
-				case LocalGameManager.STATE_RMOVE:
+				case GameManager.STATE_RMOVE:
 					addButton(btn_standby);
 					break;
 				default:

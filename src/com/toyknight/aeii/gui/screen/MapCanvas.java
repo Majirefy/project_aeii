@@ -2,6 +2,7 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.core.Game;
+import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.Animation;
@@ -154,20 +155,20 @@ public class MapCanvas extends Screen {
 				this.selected_x = click_x;
 				this.selected_y = click_y;
 				switch (manager.getState()) {
-					case LocalGameManager.STATE_SELECT:
+					case GameManager.STATE_SELECT:
 						doSelect(click_x, click_y);
 						break;
-					case LocalGameManager.STATE_MOVE:
-					case LocalGameManager.STATE_RMOVE:
+					case GameManager.STATE_MOVE:
+					case GameManager.STATE_RMOVE:
 						if (manager.canSelectedUnitMove(click_x, click_y)) {
 							manager.moveSelectedUnit(click_x, click_y);
 							action_bar.setVisible(false);
 						}
 						break;
-					case LocalGameManager.STATE_ATTACK:
+					case GameManager.STATE_ATTACK:
 						manager.doAttack(click_x, click_y);
 						break;
-					case LocalGameManager.STATE_SUMMON:
+					case GameManager.STATE_SUMMON:
 						manager.doSummon(click_x, click_y);
 						break;
 					default:
@@ -176,20 +177,21 @@ public class MapCanvas extends Screen {
 			}
 			if (e.getButton() == MouseEvent.BUTTON3) {
 				switch (manager.getState()) {
-					case LocalGameManager.STATE_SELECT:
+					case GameManager.STATE_SELECT:
 						action_bar.setVisible(false);
 						break;
-					case LocalGameManager.STATE_MOVE:
+					case GameManager.STATE_MOVE:
 						if (manager.canCancelMovePhase()) {
 							manager.cancelMovePhase();
 							action_bar.display();
 						}
 						break;
-					case LocalGameManager.STATE_ACTION:
+					case GameManager.STATE_ACTION:
 						manager.reverseMove();
+						action_bar.setVisible(false);
 						break;
-					case LocalGameManager.STATE_ATTACK:
-					case LocalGameManager.STATE_SUMMON:
+					case GameManager.STATE_ATTACK:
+					case GameManager.STATE_SUMMON:
 						manager.cancelActionPhase();
 						action_bar.display();
 						break;
@@ -333,11 +335,11 @@ public class MapCanvas extends Screen {
 	public void updateActionBar() {
 		if (!isAnimating()) {
 			switch (manager.getState()) {
-				case LocalGameManager.STATE_RMOVE:
-				case LocalGameManager.STATE_ACTION:
+				case GameManager.STATE_RMOVE:
+				case GameManager.STATE_ACTION:
 					action_bar.display();
 					break;
-				case LocalGameManager.STATE_SELECT:
+				case GameManager.STATE_SELECT:
 				default:
 					action_bar.setVisible(false);
 			}
@@ -414,13 +416,13 @@ public class MapCanvas extends Screen {
 		paintTiles(g, ts);
 		if (!isAnimating() && getGame().isLocalPlayer()) {
 			switch (manager.getState()) {
-				case LocalGameManager.STATE_RMOVE:
-				case LocalGameManager.STATE_MOVE:
+				case GameManager.STATE_RMOVE:
+				case GameManager.STATE_MOVE:
 					paintMoveAlpha(g);
 					paintMovePath(g, ts);
 					break;
-				case LocalGameManager.STATE_ATTACK:
-				case LocalGameManager.STATE_SUMMON:
+				case GameManager.STATE_ATTACK:
+				case GameManager.STATE_SUMMON:
 					paintAttackAlpha(g);
 					break;
 				default:
@@ -556,14 +558,14 @@ public class MapCanvas extends Screen {
 			int sy = getYOnCanvas(cursor_y);
 			if (isWithinPaintArea(sx, sy)) {
 				switch (manager.getState()) {
-					case LocalGameManager.STATE_ATTACK:
+					case GameManager.STATE_ATTACK:
 						if (manager.canAttack(cursor_x, cursor_y)) {
 							attack_cursor.paint(g, sx, sy);
 						} else {
 							cursor.paint(g, sx, sy);
 						}
 						break;
-					case LocalGameManager.STATE_SUMMON:
+					case GameManager.STATE_SUMMON:
 						if (manager.canSummon(cursor_x, cursor_y)) {
 							attack_cursor.paint(g, sx, sy);
 						} else {

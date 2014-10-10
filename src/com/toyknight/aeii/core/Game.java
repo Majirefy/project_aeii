@@ -104,14 +104,13 @@ public class Game implements OperationListener {
 			int counter_damage = UnitToolkit.getDamage(defender, attacker, getMap());
 			doDamage(defender, attacker, counter_damage);
 		}
-		game_listener.onUnitActionFinished(attacker);
+		onUnitActionFinished(attacker);
 	}
 
 	protected void doDestroy(Unit destroyer, int x, int y) {
 		int tile_index = getMap().getTileIndex(x, y);
 		game_listener.onTileDestroyed(tile_index, x, y);
 		getMap().setTile(getMap().getTile(x, y).getDestroyedTileIndex(), x, y);
-		game_listener.onUnitActionFinished(destroyer);
 	}
 
 	protected void doDamage(Unit attacker, Unit defender, int damage) {
@@ -152,7 +151,7 @@ public class Game implements OperationListener {
 		addUnit(10, getCurrentTeam(), target_x, target_y);
 		getMap().getUnit(target_x, target_y).setStandby(true);
 		game_listener.onSummon(summoner, target_x, target_y);
-		game_listener.onUnitActionFinished(summoner);
+		onUnitActionFinished(summoner);
 	}
 
 	@Override
@@ -160,7 +159,7 @@ public class Game implements OperationListener {
 		Unit conqueror = getMap().getUnit(conqueror_x, conqueror_y);
 		if (canOccupy(conqueror, x, y)) {
 			doOccupy(x, y);
-			game_listener.onUnitActionFinished(conqueror);
+			conqueror.setStandby(true);
 		}
 	}
 
@@ -178,7 +177,7 @@ public class Game implements OperationListener {
 		Unit repairer = getMap().getUnit(x, y);
 		if (canRepair(repairer, x, y)) {
 			doRepair(x, y);
-			game_listener.onUnitActionFinished(repairer);
+			repairer.setStandby(true);
 		}
 	}
 
@@ -188,7 +187,6 @@ public class Game implements OperationListener {
 		if (tile.isRepairable()) {
 			changeTile(tile.getRepairedTileIndex(), x, y);
 			game_listener.onRepair();
-
 		}
 	}
 
@@ -230,12 +228,19 @@ public class Game implements OperationListener {
 	@Override
 	public void moveUnit(int unit_x, int unit_y, int dest_x, int dest_y) {
 		Unit unit = getMap().getUnit(unit_x, unit_y);
-		if (unit != null) {
-			moveUnit(unit, dest_x, dest_y);
+		if (unit != null && getMap().canMove(dest_x, dest_y)) {
+			int start_x = unit.getX();
+			int start_y = unit.getY();
+			doMoveUnit(unit, dest_x, dest_y);
+			game_listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
 		}
 	}
 
-	private void poisonUnit(Unit unit) {
+	protected void doMoveUnit(Unit unit, int dest_x, int dest_y) {
+		getMap().moveUnit(unit, dest_x, dest_y);
+	}
+
+	protected void poisonUnit(Unit unit) {
 		int current_hp = unit.getCurrentHp();
 		int poison_damage = current_hp > 10 ? 10 : current_hp;
 		unit.setCurrentHp(current_hp - poison_damage);
@@ -245,25 +250,31 @@ public class Game implements OperationListener {
 		}
 	}
 
-	private void checkTerrainHeal(Unit unit) {
+	protected void checkTerrainHeal(Unit unit) {
 		int heal = 0;
 		Tile tile = getMap().getTile(unit.getX(), unit.getY());
 		if (unit.getCurrentHp() < unit.getMaxHp()) {
 			if (tile.getTeam() == -1) {
 				heal = tile.getHpRecovery();
 			} else {
-				if(tile.getTeam() == getCurrentTeam()) {
+				if (tile.getTeam() == getCurrentTeam()) {
 					heal = tile.getHpRecovery();
 				}
 			}
-			if(unit.getMaxHp() - unit.getCurrentHp() <= heal) {
+			if (unit.getMaxHp() - unit.getCurrentHp() <= heal) {
 				heal = unit.getMaxHp() - unit.getCurrentHp();
 			}
 		}
-		if(heal > 0) {
+		if (heal > 0) {
 			int new_hp = unit.getCurrentHp() + heal;
 			unit.setCurrentHp(new_hp);
 			game_listener.onUnitHpChanged(unit, heal);
+		}
+	}
+
+	protected void onUnitActionFinished(Unit unit) {
+		if (!UnitToolkit.canRemove(unit)) {
+			unit.setStandby(true);
 		}
 	}
 
@@ -292,17 +303,6 @@ public class Game implements OperationListener {
 		}
 		Tile tile = getMap().getTile(x, y);
 		return repairer.getAbilities().contains(Ability.REPAIRER) && tile.isRepairable();
-	}
-
-	protected void moveUnit(Unit unit, int dest_x, int dest_y) {
-		if (unit != null) {
-			int start_x = unit.getX();
-			int start_y = unit.getY();
-			if (getMap().canMove(dest_x, dest_y)) {
-				getMap().moveUnit(unit, dest_x, dest_y);
-				game_listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
-			}
-		}
 	}
 
 	protected void updatePopulation(int team) {
