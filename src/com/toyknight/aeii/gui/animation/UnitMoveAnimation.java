@@ -62,8 +62,9 @@ public class UnitMoveAnimation extends UnitAnimation {
 			Point current = path.get(current_location);
 			int sx = canvas.getXOnCanvas(current.x);
 			int sy = canvas.getYOnCanvas(current.y);
-			UnitPainter.paint(g, getUnit(), sx + x_offset, sy + y_offset, ts);
 			validateViewport(canvas, sx, sy);
+			UnitPainter.paint(g, getUnit(), sx + x_offset, sy + y_offset, ts);
+			
 		}
 	}
 
@@ -82,7 +83,8 @@ public class UnitMoveAnimation extends UnitAnimation {
 				canvas.dragViewport(0, -ts / 4);
 			}
 		} else {
-			canvas.locateViewport(sx, sy);
+			Point current = path.get(current_location);
+			canvas.locateViewport(current.x, current.y);
 		}
 	}
 
