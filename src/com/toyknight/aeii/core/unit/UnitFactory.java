@@ -79,7 +79,7 @@ public class UnitFactory {
 	}
 
 	public static Unit getSample(int index) {
-		return units[index];
+		return cloneUnit(units[index]);
 	}
 
 	public static Unit createUnit(int index, int team) {

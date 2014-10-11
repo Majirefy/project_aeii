@@ -26,7 +26,7 @@ public class Game implements OperationListener {
 
 	private int turn;
 
-	private Unit[] commanders;
+	private final Unit[] commanders;
 	private final int max_population;
 	private final int[] commander_price_delta;
 
@@ -47,8 +47,13 @@ public class Game implements OperationListener {
 		Set<Point> position_set = new HashSet(getMap().getUnitPositionSet());
 		for (Point position : position_set) {
 			Unit unit = getMap().getUnit(position.x, position.y);
-			if(unit.isCommander()) {
+			if (unit.isCommander()) {
 				commanders[unit.getTeam()] = unit;
+			}
+		}
+		for (int team = 0; team < 4; team++) {
+			if(commanders[team] == null) {
+				commanders[team] = UnitFactory.createUnit(9, team);
 			}
 		}
 	}
@@ -99,7 +104,7 @@ public class Game implements OperationListener {
 			if (defender != null) {
 				doAttack(attacker, defender);
 			} else {
-				if (attacker.getAbilities().contains(Ability.DESTROYER)
+				if (attacker.hasAbility(Ability.DESTROYER)
 						&& getMap().getTile(target_x, target_y).isDestroyable()) {
 					doDestroy(attacker, target_x, target_y);
 				}
@@ -130,7 +135,7 @@ public class Game implements OperationListener {
 			defender.setCurrentHp(defender.getCurrentHp() - damage);
 			game_listener.onUnitAttack(attacker, defender, damage);
 			//deal with buff issues
-			if (attacker.getAbilities().contains(Ability.POISONER)) {
+			if (attacker.hasAbility(Ability.POISONER)) {
 				defender.attachBuff(new Buff(Buff.POISONED, 2));
 			}
 		} else {
@@ -146,7 +151,7 @@ public class Game implements OperationListener {
 		updatePopulation(getCurrentTeam());
 		game_listener.onUnitDestroyed(unit);
 		getMap().addTomb(unit.getX(), unit.getY());
-		if(unit.isCommander()) {
+		if (unit.isCommander()) {
 			int team = getCurrentTeam();
 			commander_price_delta[unit.getTeam()] += 500;
 		}
@@ -221,9 +226,9 @@ public class Game implements OperationListener {
 	protected void standbyUnit(Unit unit) {
 		unit.setStandby(true);
 	}
-	
+
 	public void restoreCommander(int team, int x, int y) {
-		if(!isCommanderAlive(team)) {
+		if (!isCommanderAlive(team)) {
 			getMap().addUnit(commanders[team]);
 			commanders[team].setCurrentHp(commanders[team].getMaxHp());
 			restoreUnit(commanders[team]);
@@ -312,8 +317,8 @@ public class Game implements OperationListener {
 		}
 		Tile tile = getMap().getTile(x, y);
 		if (tile.getTeam() != getCurrentTeam()) {
-			return (tile.isCastle() && conqueror.getAbilities().contains(Ability.COMMANDER))
-					|| (tile.isVillage() && conqueror.getAbilities().contains(Ability.CONQUEROR));
+			return (tile.isCastle() && conqueror.hasAbility(Ability.COMMANDER))
+					|| (tile.isVillage() && conqueror.hasAbility(Ability.CONQUEROR));
 		} else {
 			return false;
 		}
@@ -327,22 +332,22 @@ public class Game implements OperationListener {
 			return false;
 		}
 		Tile tile = getMap().getTile(x, y);
-		return repairer.getAbilities().contains(Ability.REPAIRER) && tile.isRepairable();
+		return repairer.hasAbility(Ability.REPAIRER) && tile.isRepairable();
 	}
-	
+
 	public int getCommanderPrice(int team) {
-		if(commander_price_delta[team] > 0) {
+		if (commander_price_delta[team] > 0) {
 			return UnitFactory.getSample(9).getPrice() + commander_price_delta[team];
 		} else {
 			return -1;
 		}
 	}
-	
+
 	public boolean isCommanderAlive(int team) {
 		Set<Point> position_set = new HashSet(getMap().getUnitPositionSet());
 		for (Point position : position_set) {
 			Unit unit = getMap().getUnit(position.x, position.y);
-			if(unit.getTeam() == team && unit.isCommander()) {
+			if (unit.getTeam() == team && unit.isCommander()) {
 				return true;
 			}
 		}

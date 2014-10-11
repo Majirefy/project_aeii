@@ -202,7 +202,7 @@ public class Unit {
 		return abilities.contains(ability);
 	}
 
-	public ArrayList<Integer> getAbilities() {
+	private ArrayList<Integer> getAbilities() {
 		return abilities;
 	}
 

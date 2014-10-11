@@ -48,6 +48,7 @@ public class UnitStore extends JInternalFrame {
 
 	private int current_team;
 	private boolean commander_alive;
+	private Unit selected_unit;
 
 	public UnitStore(MapCanvas canvas, int ts) {
 		super("Buy Unit", false, true, false, false);
@@ -79,8 +80,13 @@ public class UnitStore extends JInternalFrame {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (unit_list.getSelectedIndex() >= 0) {
+					int select = unit_list.getSelectedIndex();
+					int unit_index = (int) unit_list.getModel().getElementAt(select);
+					selected_unit = UnitFactory.getSample(unit_index);
 					last_selection = unit_list.getSelectedIndex();
 					updateButton();
+				} else {
+					selected_unit = null;
 				}
 			}
 		});
@@ -90,8 +96,8 @@ public class UnitStore extends JInternalFrame {
 		this.getContentPane().add(sp_unit_list);
 		btn_buy.setBounds(ts * 6, ts * 7 + ts / 2, ts * 2, ts / 2);
 		btn_buy.registerKeyboardAction(
-				btn_buy_listener, 
-				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
+				btn_buy_listener,
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_buy.addActionListener(btn_buy_listener);
 		this.getContentPane().add(btn_buy);
@@ -147,7 +153,7 @@ public class UnitStore extends JInternalFrame {
 	}
 
 	private void buyUnit(int index) {
-		if (UnitFactory.getSample(index).isCommander()) {
+		if (selected_unit.isCommander()) {
 			manager.restoreCommander(canvas.getSelectedX(), canvas.getSelectedY());
 		} else {
 			manager.buyUnit(index, canvas.getSelectedX(), canvas.getSelectedY());
@@ -156,15 +162,12 @@ public class UnitStore extends JInternalFrame {
 	}
 
 	private void updateButton() {
-		int select = unit_list.getSelectedIndex();
-		if (select >= 0) {
-			int index = (int) unit_list.getModel().getElementAt(select);
-			Unit unit = UnitFactory.getSample(index);
-			if (unit.isCommander()) {
+		if (selected_unit != null) {
+			if (selected_unit.isCommander()) {
 				btn_buy.setEnabled(!commander_alive
 						&& manager.getGame().getCurrentPlayer().getGold() > manager.getGame().getCommanderPrice(current_team));
 			} else {
-				btn_buy.setEnabled(manager.getGame().getCurrentPlayer().getGold() >= unit.getPrice());
+				btn_buy.setEnabled(manager.getGame().getCurrentPlayer().getGold() >= selected_unit.getPrice());
 			}
 		} else {
 			btn_buy.setEnabled(false);
@@ -209,9 +212,9 @@ public class UnitStore extends JInternalFrame {
 					ResourceManager.getGoldIcon(),
 					ts * 10 + ts / 2 - lw * 4 - ts / 24 * 11,
 					ts / 2, this);
-			int price = UnitFactory.getSample(index).isCommander()
+			int price = selected_unit.isCommander()
 					? manager.getGame().getCommanderPrice(current_team)
-					: UnitFactory.getSample(index).getPrice();
+					: selected_unit.getPrice();
 			if (price > 0) {
 				CharPainter.paintLNumber(g, price,
 						ts * 10 + ts / 2 - lw * 4,
@@ -236,10 +239,10 @@ public class UnitStore extends JInternalFrame {
 					ts / 2 + interval + (itemh - tfh) / 2,
 					ts * 2 + ts / 4 - scw / 2 - ts / 12, tfh);
 			CharPainter.paintNumber(
-					g, UnitFactory.getSample(index).getAttack(),
+					g, selected_unit.getAttack(),
 					ts * 6 + scw + ts / 12,
 					ts / 2 + interval + (itemh - CharPainter.getCharHeight()) / 2);
-			switch (UnitFactory.getSample(index).getAttackType()) {
+			switch (selected_unit.getAttackType()) {
 				case Unit.ATTACK_PHYSICAL:
 					g.drawImage(
 							ResourceManager.getSmallUnitImage(7),
@@ -269,7 +272,7 @@ public class UnitStore extends JInternalFrame {
 					ts / 2 + interval + (itemh - tfh) / 2,
 					ts * 2 + ts / 4 - scw / 2 - ts / 12, tfh);
 			CharPainter.paintNumber(
-					g, UnitFactory.getSample(index).getMovementPoint(),
+					g, selected_unit.getMovementPoint(),
 					ts * 8 + ts / 4 + scw + ts / 12,
 					ts / 2 + interval + (itemh - CharPainter.getCharHeight()) / 2);
 			g.drawImage(
