@@ -240,7 +240,7 @@ public class MapCanvas extends Screen {
 
 	private void doSelect(int x, int y) {
 		Unit unit = manager.getUnit(x, y);
-		if (unit != null) {
+		if (unit != null && manager.getUnitToolkit().isUnitAccessible(unit)) {
 			manager.selectUnit(x, y);
 			if (manager.getUnitToolkit().isUnitAccessible(unit)) {
 				action_bar.display();

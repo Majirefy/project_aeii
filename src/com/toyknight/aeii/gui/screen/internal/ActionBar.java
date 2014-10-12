@@ -101,14 +101,15 @@ public class ActionBar extends JPanel {
 
 	public void display() {
 		this.removeAll();
-		int x = canvas.getSelectedX();
-		int y = canvas.getSelectedY();
-		if (manager.isAccessibleCastle(x, y) && 
-				manager.getState() == GameManager.STATE_SELECT) {
+		int click_x = canvas.getSelectedX();
+		int click_y = canvas.getSelectedY();
+		if (manager.isAccessibleCastle(click_x, click_y)
+				&& manager.getState() == GameManager.STATE_SELECT) {
 			addButton(btn_buy);
 		}
 		Unit unit = manager.getSelectedUnit();
-		if (manager.getUnitToolkit().isUnitAccessible(unit)) {
+		if (manager.getUnitToolkit().isUnitAccessible(unit)
+				&& unit.getX() == click_x && unit.getY() == click_y) {
 			switch (manager.getState()) {
 				case GameManager.STATE_SELECT:
 					addButton(btn_move);
@@ -188,7 +189,7 @@ public class ActionBar extends JPanel {
 			setVisible(false);
 		}
 	};
-	
+
 	private final ActionListener btn_repair_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
