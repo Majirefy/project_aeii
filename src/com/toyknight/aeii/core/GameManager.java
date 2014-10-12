@@ -106,7 +106,7 @@ public class GameManager {
 
 	public void beginAttackPhase() {
 		if (getUnitToolkit().isUnitAccessible(getSelectedUnit()) && isActionState()) {
-			this.attackable_positions = unit_toolkit.createAttackablePositions(selected_unit);
+			this.attackable_positions = getUnitToolkit().createAttackablePositions(selected_unit);
 			setState(STATE_ATTACK);
 		}
 	}
@@ -121,7 +121,7 @@ public class GameManager {
 
 	public void beginSummonPhase() {
 		if (getUnitToolkit().isUnitAccessible(getSelectedUnit()) && isActionState()) {
-			this.attackable_positions = unit_toolkit.createAttackablePositions(selected_unit);
+			this.attackable_positions = getUnitToolkit().createAttackablePositions(selected_unit);
 			setState(STATE_SUMMON);
 		}
 	}
@@ -258,7 +258,12 @@ public class GameManager {
 				is_selected_unit_moved = true;
 				switch (state) {
 					case STATE_MOVE:
-						setState(STATE_ACTION);
+						if (unit.hasAbility(Ability.SIEGE_MACHINE)) {
+							getGame().standbyUnit(unit.getX(), unit.getY());
+							setState(STATE_SELECT);
+						} else {
+							setState(STATE_ACTION);
+						}
 						break;
 					case STATE_RMOVE:
 						getGame().standbyUnit(unit.getX(), unit.getY());

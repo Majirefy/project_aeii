@@ -25,7 +25,7 @@ public class UnitToolkit {
 	private int[][] move_mark_map;
 	private ArrayList<Point> move_path;
 	private HashSet<Point> movable_positions;
-	private HashSet<Point> attackable_positions;
+	//private HashSet<Point> attackable_positions;
 
 	private final int[] x_dir = {1, -1, 0, 0};
 	private final int[] y_dir = {0, 0, 1, -1};
@@ -40,7 +40,7 @@ public class UnitToolkit {
 		this.dest_y = -1;
 		this.move_path = new ArrayList();
 		this.movable_positions = null;
-		this.attackable_positions = null;
+		//this.attackable_positions = null;
 	}
 
 	private void createMoveMarkMap() {
@@ -193,13 +193,17 @@ public class UnitToolkit {
 		int unit_y = unit.getY();
 		int min_ar = unit.getMinAttackRange();
 		int max_ar = unit.getMaxAttackRange();
-		attackable_positions = new HashSet();
+		HashSet<Point> attackable_positions = new HashSet();
 		for (int ar = min_ar; ar <= max_ar; ar++) {
 			for (int dx = -ar; dx <= ar; dx++) {
 				int dy = dx >= 0 ? ar - dx : -ar - dx;
-				attackable_positions.add(new Point(unit_x + dx, unit_y + dy));
+				if (game.getMap().isWithinMap(unit_x + dx, unit_y + dy)) {
+					attackable_positions.add(new Point(unit_x + dx, unit_y + dy));
+				}
 				if (dy != 0) {
-					attackable_positions.add(new Point(unit_x + dx, unit_y - dy));
+					if (game.getMap().isWithinMap(unit_x + dx, unit_y - dy)) {
+						attackable_positions.add(new Point(unit_x + dx, unit_y - dy));
+					}
 				}
 			}
 		}
@@ -273,14 +277,30 @@ public class UnitToolkit {
 		}
 	}
 
-	public static int getAttackBonus(Unit attacker, int tile_index) {
-		return 0;
+	public static int getAttackBonus(Unit attacker, Unit defender, int tile_index) {
+		int bonus = 0;
+		if (attacker.hasAbility(Ability.FIGHTER_OF_THE_MOUNTAIN)
+				&& TileRepository.getTile(tile_index).getType() == Tile.TYPE_MOUNTAIN) {
+			bonus += 10;
+		}
+		if (attacker.hasAbility(Ability.FIGHTER_OF_THE_FOREST)
+				&& TileRepository.getTile(tile_index).getType() == Tile.TYPE_FOREST) {
+			bonus += 10;
+		}
+		if (attacker.hasAbility(Ability.FIGHTER_OF_THE_SEA)
+				&& TileRepository.getTile(tile_index).getType() == Tile.TYPE_WATER) {
+			bonus += 10;
+		}
+		if (attacker.hasAbility(Ability.MARKSMAN) && defender.hasAbility(Ability.AIR_FORCE)) {
+			bonus += 10;
+		}
+		return bonus;
 	}
 
 	public static int getDamage(Unit attacker, Unit defender, Map map) {
 		int attacker_tile_index = map.getTileIndex(attacker.getX(), attacker.getY());
 		int defender_tile_index = map.getTileIndex(defender.getX(), defender.getY());
-		int attack_bonus = getAttackBonus(attacker, attacker_tile_index);
+		int attack_bonus = getAttackBonus(attacker, defender, attacker_tile_index);
 		int attack = attacker.getAttack() + attack_bonus;
 		int defence_bonus = getDefenceBonus(defender, defender_tile_index);
 		int defence = attacker.getAttackType() == Unit.ATTACK_PHYSICAL

@@ -83,6 +83,9 @@ public class UnitStore extends JInternalFrame {
 					int select = unit_list.getSelectedIndex();
 					int unit_index = (int) unit_list.getModel().getElementAt(select);
 					selected_unit = UnitFactory.getSample(unit_index);
+					if (selected_unit.isCommander()) {
+						selected_unit = manager.getGame().getCommander(selected_unit.getTeam());
+					}
 					last_selection = unit_list.getSelectedIndex();
 					updateButton();
 				} else {
@@ -266,7 +269,7 @@ public class UnitStore extends JInternalFrame {
 					ResourceManager.getAttackIcon(),
 					ts * 6 + (scw - hw) / 2,
 					ts / 2 + interval + (itemh - sch) / 2 + (sch - hh) / 2, this);
-			//paint unit defence
+			//paint unit movement point
 			g.fillRect(
 					ts * 8 + ts / 4 + scw / 2,
 					ts / 2 + interval + (itemh - tfh) / 2,
@@ -283,6 +286,40 @@ public class UnitStore extends JInternalFrame {
 					ResourceManager.getActionIcon(4),
 					ts * 8 + ts / 4 + (scw - acs) / 2,
 					ts / 2 + interval + (itemh - sch) / 2 + (sch - hh) / 2, this);
+			//paint unit physical defence
+			g.fillRect(
+					ts * 6 + scw / 2,
+					ts / 2 + interval + itemh + (itemh - tfh) / 2,
+					ts * 2 + ts / 4 - scw / 2 - ts / 12, tfh);
+			CharPainter.paintNumber(
+					g, selected_unit.getPhysicalDefence(),
+					ts * 6 + scw + ts / 12,
+					ts / 2 + interval + itemh + (itemh - CharPainter.getCharHeight()) / 2);
+			g.drawImage(
+					ResourceManager.getSmallCircleImage(0),
+					ts * 6,
+					ts / 2 + interval + itemh + (itemh - sch) / 2, this);
+			g.drawImage(
+					ResourceManager.getRedDefenceIcon(),
+					ts * 6 + (scw - hw) / 2,
+					ts / 2 + interval + itemh + (itemh - sch) / 2 + (sch - hh) / 2, this);
+			//paint unit magical defence
+			g.fillRect(
+					ts * 8 + ts / 4 + scw / 2,
+					ts / 2 + interval + itemh + (itemh - tfh) / 2,
+					ts * 2 + ts / 4 - scw / 2 - ts / 12, tfh);
+			CharPainter.paintNumber(
+					g, selected_unit.getMagicalDefence(),
+					ts * 8 + ts / 4 + scw + ts / 12,
+					ts / 2 + interval + itemh + (itemh - CharPainter.getCharHeight()) / 2);
+			g.drawImage(
+					ResourceManager.getSmallCircleImage(0),
+					ts * 8 + ts / 4,
+					ts / 2 + interval + itemh + (itemh - sch) / 2, this);
+			g.drawImage(
+					ResourceManager.getBlueDefenceIcon(),
+					ts * 8 + ts / 4 + (scw - hw) / 2,
+					ts / 2 + interval + itemh + (itemh - sch) / 2 + (sch - hh) / 2, this);
 			g.setColor(Color.WHITE);
 			g.drawLine(ts * 6, ts / 2 + interval + itemh * 2, ts * 10 + ts / 2, ts / 2 + interval + itemh * 2);
 			//paint unit description

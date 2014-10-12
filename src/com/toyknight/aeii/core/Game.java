@@ -9,6 +9,7 @@ import com.toyknight.aeii.core.unit.Buff;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class Game implements OperationListener {
 			}
 		}
 		for (int team = 0; team < 4; team++) {
-			if(commanders[team] == null) {
+			if (commanders[team] == null) {
 				commanders[team] = UnitFactory.createUnit(9, team);
 			}
 		}
@@ -283,23 +284,56 @@ public class Game implements OperationListener {
 	protected void checkTerrainHeal(Unit unit) {
 		int heal = 0;
 		Tile tile = getMap().getTile(unit.getX(), unit.getY());
-		if (unit.getCurrentHp() < unit.getMaxHp()) {
-			if (tile.getTeam() == -1) {
-				heal = tile.getHpRecovery();
-			} else {
-				if (tile.getTeam() == getCurrentTeam()) {
-					heal = tile.getHpRecovery();
+		if (tile.getTeam() == -1) {
+			heal += tile.getHpRecovery();
+		} else {
+			if (tile.getTeam() == getCurrentTeam()) {
+				heal += tile.getHpRecovery();
+			}
+		}
+		if (unit.hasAbility(Ability.SON_OF_THE_MOUNTAIN) && tile.getType() == Tile.TYPE_MOUNTAIN) {
+			heal += 10;
+		}
+		if (unit.hasAbility(Ability.SON_OF_THE_FOREST) && tile.getType() == Tile.TYPE_FOREST) {
+			heal += 10;
+		}
+		if (unit.hasAbility(Ability.SON_OF_THE_SEA) && tile.getType() == Tile.TYPE_WATER) {
+			heal += 10;
+		}
+		healUnit(unit, heal);
+	}
+
+	protected void healAllys(Unit healer) {
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dy = -1; dy <= 1; dy++) {
+				if (dx != 0 && dy != 0) {
+					int x = healer.getX() + dx;
+					int y = healer.getY() + dy;
+					if (getMap().isWithinMap(x, y)) {
+						Unit unit = getMap().getUnit(x, y);
+						if (unit != null && unit.getTeam() == healer.getTeam()) {
+							healUnit(unit, 10);
+						}
+					}
 				}
 			}
-			if (unit.getMaxHp() - unit.getCurrentHp() <= heal) {
-				heal = unit.getMaxHp() - unit.getCurrentHp();
-			}
+		}
+	}
+
+	protected void healUnit(Unit unit, int heal) {
+		//validate heal
+		if (unit.getMaxHp() - unit.getCurrentHp() <= heal) {
+			heal = unit.getMaxHp() - unit.getCurrentHp();
 		}
 		if (heal > 0) {
-			int new_hp = unit.getCurrentHp() + heal;
-			unit.setCurrentHp(new_hp);
-			game_listener.onUnitHpChanged(unit, heal);
+			doHealUnit(unit, heal);
 		}
+	}
+
+	protected void doHealUnit(Unit unit, int heal) {
+		int new_hp = unit.getCurrentHp() + heal;
+		unit.setCurrentHp(new_hp);
+		game_listener.onUnitHpChanged(unit, heal);
 	}
 
 	protected void onUnitActionFinished(Unit unit) {
@@ -341,6 +375,10 @@ public class Game implements OperationListener {
 		} else {
 			return -1;
 		}
+	}
+
+	public Unit getCommander(int team) {
+		return commanders[team];
 	}
 
 	public boolean isCommanderAlive(int team) {
@@ -404,6 +442,9 @@ public class Game implements OperationListener {
 					poisonUnit(unit);
 				}
 				//deal with ability issues
+				if (unit.hasAbility(Ability.HEALING_AURA)) {
+					healAllys(unit);
+				}
 				if (unit.getCurrentHp() > 0) {
 					unit.updateBuff();
 				}

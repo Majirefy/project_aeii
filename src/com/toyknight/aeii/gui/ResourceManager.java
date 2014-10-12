@@ -20,7 +20,8 @@ public class ResourceManager {
 	private static BufferedImage img_logo;
 	private static BufferedImage gold_icon;
 	private static BufferedImage attack_icon;
-	private static BufferedImage defence_icon;
+	private static BufferedImage red_defence_icon;
+	private static BufferedImage blue_defence_icon;
 	private static BufferedImage population_icon;
 	private static BufferedImage poisoned_status;
 	private static BufferedImage[] action_icons;
@@ -278,10 +279,11 @@ public class ResourceManager {
 		int hw = ts / 24 * 13;
 		int hh = ts / 24 * 16;
 		File hud_icon_file = new File("res\\img\\hud_icons.png");
-		BufferedImage img_hud_icon = new BufferedImage(hw * 3, hh, BufferedImage.TYPE_INT_ARGB);
-		img_hud_icon.getGraphics().drawImage(ImageIO.read(hud_icon_file), 0, 0, hw * 3, hh, null);
+		BufferedImage img_hud_icon = new BufferedImage(hw * 4, hh, BufferedImage.TYPE_INT_ARGB);
+		img_hud_icon.getGraphics().drawImage(ImageIO.read(hud_icon_file), 0, 0, hw * 4, hh, null);
 		attack_icon = ResourceUtil.getImageClip(img_hud_icon, 0, 0, hw, hh);
-		defence_icon = ResourceUtil.getImageClip(img_hud_icon, hw, 0, hw, hh);
+		red_defence_icon = ResourceUtil.getImageClip(img_hud_icon, hw, 0, hw, hh);
+		blue_defence_icon = ResourceUtil.getImageClip(img_hud_icon, hw * 2, 0, hw, hh);
 		int i2w = ts / 24 * 11;
 		int i2h = ts / 24 * 11;
 		File hud_icon2_file = new File("res\\img\\hud_icons_2.png");
@@ -307,13 +309,17 @@ public class ResourceManager {
 	public static BufferedImage getBorderImage(int index) {
 		return borders[index];
 	}
-	
+
 	public static BufferedImage getAttackIcon() {
 		return attack_icon;
 	}
-	
-	public static BufferedImage getDefenceIcon() {
-		return defence_icon;
+
+	public static BufferedImage getRedDefenceIcon() {
+		return red_defence_icon;
+	}
+
+	public static BufferedImage getBlueDefenceIcon() {
+		return blue_defence_icon;
 	}
 
 	public static BufferedImage getPopulationIcon() {
@@ -427,7 +433,7 @@ public class ResourceManager {
 	public static Color getAEIIPanelBg() {
 		return aeii_panel_bg;
 	}
-	
+
 	public static Color getTextBackgroundColor() {
 		return text_background;
 	}
