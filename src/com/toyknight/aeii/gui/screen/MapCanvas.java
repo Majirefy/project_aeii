@@ -2,8 +2,8 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.core.Game;
-import com.toyknight.aeii.core.manager.GameManager;
-import com.toyknight.aeii.core.manager.LocalGameManager;
+import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.map.Tile;
@@ -111,7 +111,7 @@ public class MapCanvas extends Screen {
 	}
 
 	public boolean isAnimating() {
-		return manager.getCurrentAnimation() != null;
+		return manager.isAnimating();
 	}
 
 	public boolean internalFrameShown() {
@@ -123,8 +123,12 @@ public class MapCanvas extends Screen {
 	}
 
 	private boolean isOnUnitAnimation(int x, int y) {
-		Animation current_animation = manager.getCurrentAnimation();
-		return isAnimating() && current_animation.hasLocation(x, y) && current_animation instanceof UnitAnimation;
+		if (isAnimating()) {
+			Animation current_animation = manager.getCurrentAnimation();
+			return current_animation.hasLocation(x, y) && current_animation instanceof UnitAnimation;
+		} else {
+			return false;
+		}
 	}
 
 	private boolean needTombDisplay(int x, int y) {
@@ -160,10 +164,7 @@ public class MapCanvas extends Screen {
 						break;
 					case GameManager.STATE_MOVE:
 					case GameManager.STATE_RMOVE:
-						if (manager.canSelectedUnitMove(click_x, click_y)) {
-							manager.moveSelectedUnit(click_x, click_y);
-							action_bar.setVisible(false);
-						}
+						manager.moveSelectedUnit(click_x, click_y);
 						break;
 					case GameManager.STATE_ATTACK:
 						manager.doAttack(click_x, click_y);
@@ -185,12 +186,10 @@ public class MapCanvas extends Screen {
 						break;
 					case GameManager.STATE_ACTION:
 						manager.reverseMove();
-						action_bar.setVisible(false);
 						break;
 					case GameManager.STATE_ATTACK:
 					case GameManager.STATE_SUMMON:
 						manager.cancelActionPhase();
-						action_bar.display();
 						break;
 					default:
 					//do nothing
@@ -347,6 +346,8 @@ public class MapCanvas extends Screen {
 				default:
 					action_bar.setVisible(false);
 			}
+		} else {
+			action_bar.setVisible(false);
 		}
 	}
 

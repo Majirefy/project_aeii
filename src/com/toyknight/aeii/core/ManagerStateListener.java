@@ -1,5 +1,5 @@
 
-package com.toyknight.aeii.core.manager;
+package com.toyknight.aeii.core;
 
 /**
  *

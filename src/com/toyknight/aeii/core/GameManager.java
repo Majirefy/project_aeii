@@ -1,7 +1,5 @@
-package com.toyknight.aeii.core.manager;
+package com.toyknight.aeii.core;
 
-import com.toyknight.aeii.core.Game;
-import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;

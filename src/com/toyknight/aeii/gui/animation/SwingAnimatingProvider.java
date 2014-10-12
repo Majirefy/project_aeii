@@ -2,7 +2,7 @@
 package com.toyknight.aeii.gui.animation;
 
 import com.toyknight.aeii.Language;
-import com.toyknight.aeii.core.manager.GameManager;
+import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.animation.AnimationListener;

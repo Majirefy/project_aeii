@@ -1,9 +1,9 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.core.Game;
-import com.toyknight.aeii.core.manager.GameManager;
-import com.toyknight.aeii.core.manager.LocalGameManager;
-import com.toyknight.aeii.core.manager.ManagerStateListener;
+import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.LocalGameManager;
+import com.toyknight.aeii.core.ManagerStateListener;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SwingAnimatingProvider;
@@ -66,6 +66,7 @@ public class GameScreen extends Screen implements ManagerStateListener {
 		this.tile_panel.setGameManager(manager);
 		this.action_panel.update();
 		this.tile_panel.update();
+		this.game.setGameListener(manager);
 		this.game.startTurn();
 	}
 

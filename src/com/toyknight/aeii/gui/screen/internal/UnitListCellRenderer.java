@@ -6,7 +6,7 @@
 package com.toyknight.aeii.gui.screen.internal;
 
 import com.toyknight.aeii.Language;
-import com.toyknight.aeii.core.manager.GameManager;
+import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.gui.ResourceManager;
 import java.awt.Color;
 import java.awt.Component;

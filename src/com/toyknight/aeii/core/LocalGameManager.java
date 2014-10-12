@@ -1,8 +1,7 @@
-package com.toyknight.aeii.core.manager;
+package com.toyknight.aeii.core;
 
-import com.toyknight.aeii.core.Game;
-import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.animation.Animation;
+import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.animation.AnimationListener;
 import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.core.unit.Unit;
@@ -13,7 +12,7 @@ import java.util.Queue;
  *
  * @author toyknight
  */
-public class LocalGameManager extends GameManager implements GameListener {
+public class LocalGameManager extends GameManager implements GameListener, AnimationDispatcher {
 	
 	private final AnimationProvider animation_provider;
 
@@ -25,15 +24,16 @@ public class LocalGameManager extends GameManager implements GameListener {
 		this.animation_provider = provider;
 		this.animation_dispatcher = new LinkedList();
 		current_animation = null;
-		getGame().setGameListener(this);
 	}
 
+	@Override
 	public void updateAnimation() {
 		if (current_animation != null) {
 			current_animation.update();
 		}
 	}
 
+	@Override
 	public void submitAnimation(Animation animation) {
 		animation.addAnimationListener(new AnimationListener() {
 			@Override
@@ -48,8 +48,14 @@ public class LocalGameManager extends GameManager implements GameListener {
 		}
 	}
 
+	@Override
 	public Animation getCurrentAnimation() {
 		return current_animation;
+	}
+	
+	@Override
+	public boolean isAnimating() {
+		return current_animation != null;
 	}
 	
 	public void reverseMove() {

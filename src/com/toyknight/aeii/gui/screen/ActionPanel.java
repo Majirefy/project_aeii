@@ -1,7 +1,7 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
-import com.toyknight.aeii.core.manager.LocalGameManager;
+import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.ResourceManager;
