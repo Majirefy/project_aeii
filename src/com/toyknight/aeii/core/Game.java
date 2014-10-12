@@ -9,7 +9,6 @@ import com.toyknight.aeii.core.unit.Buff;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -412,6 +411,40 @@ public class Game implements OperationListener {
 			}
 		}
 		return income;
+	}
+
+	public Point getTurnStartPosition(int team) {
+		Set<Point> position_set = new HashSet(getMap().getUnitPositionSet());
+		Unit first_unit = null;
+		for (Point position : position_set) {
+			Unit unit = getMap().getUnit(position.x, position.y);
+			if (first_unit == null) {
+				first_unit = unit;
+			}
+			if (unit.getTeam() == team && unit.isCommander()) {
+				return getMap().getPosition(unit.getX(), unit.getY());
+			}
+		}
+		if (first_unit != null) {
+			return getMap().getPosition(first_unit.getX(), first_unit.getY());
+		}
+		Point first_tile_position = null;
+		for (int x = 0; x < getMap().getWidth(); x++) {
+			for (int y = 0; y < getMap().getHeight(); y++) {
+				if (getMap().getTile(x, y).getTeam() == team) {
+					if (first_tile_position == null) {
+						first_tile_position = getMap().getPosition(x, y);
+					}
+					if (getMap().getTile(x, y).isCastle()) {
+						return getMap().getPosition(x, y);
+					}
+				}
+			}
+		}
+		if (first_tile_position != null) {
+			return first_tile_position;
+		}
+		return getMap().getPosition(0, 0);
 	}
 
 	public int getTurn() {

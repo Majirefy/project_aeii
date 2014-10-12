@@ -123,6 +123,7 @@ public class ActionPanel extends AEIIPanel {
 			manager.getGame().endTurn();
 			updateButtons();
 			game_screen.getCanvas().updateActionBar();
+			game_screen.getCanvas().resetSelection();
 		}
 
 	};

@@ -104,6 +104,7 @@ public class MapCanvas extends Screen {
 		mouse_y = 0;
 		current_delay = 0;
 		internal_frame_shown = false;
+		resetSelection();
 	}
 
 	public boolean isOperatable() {
@@ -349,6 +350,11 @@ public class MapCanvas extends Screen {
 		} else {
 			action_bar.setVisible(false);
 		}
+	}
+	
+	public void resetSelection() {
+		this.selected_x = -1;
+		this.selected_y = -1;
 	}
 
 	public void locateViewport(int map_x, int map_y) {

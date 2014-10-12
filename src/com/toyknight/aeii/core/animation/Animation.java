@@ -11,6 +11,7 @@ import java.util.HashSet;
  */
 public class Animation {
 	
+	private boolean is_complete = false;
 	private final HashSet<Point> locations = new HashSet();
 	private final ArrayList<AnimationListener> listeners = new ArrayList();
 	
@@ -26,10 +27,15 @@ public class Animation {
 		listeners.add(0, listener);
 	}
 	
+	public boolean isComplete() {
+		return is_complete;
+	}
+	
 	protected final void complete() {
 		for(AnimationListener listener: listeners) {
 			listener.animationCompleted(this);
 		}
+		this.is_complete = true;
 	}
 	
 	public void update() {
