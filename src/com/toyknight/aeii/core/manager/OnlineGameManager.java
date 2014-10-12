@@ -1,6 +1,7 @@
 
-package com.toyknight.aeii.core;
+package com.toyknight.aeii.core.manager;
 
+import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.animation.AnimationProvider;
 
 /**

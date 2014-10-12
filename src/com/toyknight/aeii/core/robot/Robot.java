@@ -1,7 +1,7 @@
 
 package com.toyknight.aeii.core.robot;
 
-import com.toyknight.aeii.core.GameManager;
+import com.toyknight.aeii.core.manager.GameManager;
 
 /**
  *
@@ -15,7 +15,7 @@ public abstract class Robot implements Runnable {
 		this.manager = manager;
 	}
 	
-	protected final GameManager getManager() {
+	public final GameManager getManager() {
 		return manager;
 	}
 	

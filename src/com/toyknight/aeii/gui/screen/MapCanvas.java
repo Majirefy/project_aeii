@@ -2,8 +2,8 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.core.Game;
-import com.toyknight.aeii.core.GameManager;
-import com.toyknight.aeii.core.LocalGameManager;
+import com.toyknight.aeii.core.manager.GameManager;
+import com.toyknight.aeii.core.manager.LocalGameManager;
 import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.Animation;
 import com.toyknight.aeii.core.map.Tile;
@@ -181,10 +181,7 @@ public class MapCanvas extends Screen {
 						action_bar.setVisible(false);
 						break;
 					case GameManager.STATE_MOVE:
-						if (manager.canCancelMovePhase()) {
-							manager.cancelMovePhase();
-							action_bar.display();
-						}
+						manager.cancelMovePhase();
 						break;
 					case GameManager.STATE_ACTION:
 						manager.reverseMove();
@@ -340,6 +337,13 @@ public class MapCanvas extends Screen {
 					action_bar.display();
 					break;
 				case GameManager.STATE_SELECT:
+					Unit selected_unit = manager.getSelectedUnit();
+					if (manager.getUnitToolkit().isUnitAccessible(selected_unit)) {
+						action_bar.display();
+					} else {
+						action_bar.setVisible(false);
+					}
+					break;
 				default:
 					action_bar.setVisible(false);
 			}

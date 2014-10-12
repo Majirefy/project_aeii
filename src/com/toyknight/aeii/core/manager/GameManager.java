@@ -1,5 +1,7 @@
-package com.toyknight.aeii.core;
+package com.toyknight.aeii.core.manager;
 
+import com.toyknight.aeii.core.Game;
+import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
@@ -24,9 +26,11 @@ public class GameManager {
 	private boolean is_new_unit_phase;
 	private final Game game;
 	private final UnitToolkit unit_toolkit;
+	private ManagerStateListener state_listener;
 
 	private Unit selected_unit;
-	private Point last_position;
+	protected Point last_position;
+	protected boolean is_selected_unit_moved;
 	private ArrayList<Point> movable_positions;
 	private ArrayList<Point> attackable_positions;
 
@@ -43,13 +47,26 @@ public class GameManager {
 		return game;
 	}
 
+	public void setStateListener(ManagerStateListener listener) {
+		this.state_listener = listener;
+	}
+
 	protected void setState(int state) {
-		this.last_state = this.state;
-		this.state = state;
+		if (state != this.state) {
+			this.last_state = this.state;
+			this.state = state;
+			if (state_listener != null) {
+				state_listener.managerStateChanged(this);
+			}
+		}
 	}
 
 	public int getState() {
 		return state;
+	}
+
+	public int getLastState() {
+		return last_state;
 	}
 
 	public UnitToolkit getUnitToolkit() {
@@ -80,7 +97,7 @@ public class GameManager {
 	}
 
 	public void cancelMovePhase() {
-		if (!is_new_unit_phase) {
+		if (canCancelMovePhase()) {
 			setState(STATE_SELECT);
 		}
 	}
@@ -97,10 +114,10 @@ public class GameManager {
 	}
 
 	public void cancelActionPhase() {
-		if (canReverseMove()) {
-			setState(STATE_ACTION);
+		if (state == STATE_ATTACK || state == STATE_SUMMON) {
+			setState(last_state);
 		} else {
-			setState(STATE_SELECT);
+			setState(last_state);
 		}
 	}
 
@@ -127,6 +144,7 @@ public class GameManager {
 				selected_unit = unit;
 				last_position = new Point(x, y);
 				unit_toolkit.setCurrentUnit(selected_unit);
+				is_selected_unit_moved = false;
 				if (is_new_unit_phase) {
 					is_new_unit_phase = false;
 				}
@@ -239,6 +257,7 @@ public class GameManager {
 				int mp_remains = getUnitToolkit().getMovementPointRemains(unit, dest_x, dest_y);
 				getGame().moveUnit(unit_x, unit_y, dest_x, dest_y);
 				unit.setCurrentMovementPoint(mp_remains);
+				is_selected_unit_moved = true;
 				switch (state) {
 					case STATE_MOVE:
 						setState(STATE_ACTION);
@@ -257,23 +276,6 @@ public class GameManager {
 	public boolean canSelectedUnitMove(int dest_x, int dest_y) {
 		Point dest = getGame().getMap().getPosition(dest_x, dest_y);
 		return movable_positions.contains(dest) && getGame().getMap().canMove(dest_x, dest_y);
-	}
-
-	public void reverseMove() {
-		Unit unit = getSelectedUnit();
-		if (getUnitToolkit().isUnitAccessible(unit) && canReverseMove() && state == STATE_ACTION) {
-			int last_x = last_position.x;
-			int last_y = last_position.y;
-			getGame().getMap().moveUnit(unit, last_x, last_y);
-			unit.setCurrentMovementPoint(unit.getMovementPoint());
-			beginMovePhase();
-		}
-	}
-
-	public boolean canReverseMove() {
-//		Unit unit = getSelectedUnit();
-//		return !unit.isAt(last_position.x, last_position.y);
-		return last_state == STATE_MOVE;
 	}
 
 	public boolean isActionState() {
