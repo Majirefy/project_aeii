@@ -67,6 +67,7 @@ public class GameScreen extends Screen implements ManagerStateListener {
 		this.action_panel.update();
 		this.tile_panel.update();
 		this.game.setGameListener(manager);
+		this.game.setDisplayable(map_canvas);
 		this.game.startTurn();
 	}
 

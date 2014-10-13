@@ -1,6 +1,7 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Configuration;
+import com.toyknight.aeii.core.Displayable;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.LocalGameManager;
@@ -36,7 +37,7 @@ import java.util.Set;
  *
  * @author toyknight
  */
-public class MapCanvas extends Screen {
+public class MapCanvas extends Screen implements Displayable{
 
 	private LocalGameManager manager;
 	private final GameScreen game_screen;
@@ -359,6 +360,7 @@ public class MapCanvas extends Screen {
 		this.selected_y = -1;
 	}
 
+	@Override
 	public void locateViewport(int map_x, int map_y) {
 		int center_sx = map_x * ts;
 		int center_sy = map_y * ts;

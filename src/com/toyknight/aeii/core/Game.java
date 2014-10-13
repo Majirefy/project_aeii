@@ -23,6 +23,7 @@ public class Game implements OperationListener {
 	private int current_team;
 	private final Player[] player_list;
 	private GameListener game_listener;
+	private Displayable displayable;
 
 	private int turn;
 
@@ -94,6 +95,10 @@ public class Game implements OperationListener {
 
 	public void setGameListener(GameListener listener) {
 		this.game_listener = listener;
+	}
+	
+	public void setDisplayable(Displayable displayable) {
+		this.displayable = displayable;
 	}
 
 	@Override
@@ -483,6 +488,8 @@ public class Game implements OperationListener {
 				}
 			}
 		}
+		Point team_start_position = getTurnStartPosition(getCurrentTeam());
+		displayable.locateViewport(team_start_position.x, team_start_position.y);
 	}
 
 	private void restoreUnit(Unit unit) {
