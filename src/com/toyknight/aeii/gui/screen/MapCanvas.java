@@ -244,7 +244,7 @@ public class MapCanvas extends Screen implements Displayable{
 
 	private void doSelect(int x, int y) {
 		Unit unit = manager.getUnit(x, y);
-		if (unit != null && manager.getUnitToolkit().isUnitAccessible(unit)) {
+		if (unit != null) {
 			manager.selectUnit(x, y);
 			if (manager.getUnitToolkit().isUnitAccessible(unit)) {
 				action_bar.display();
