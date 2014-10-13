@@ -24,10 +24,6 @@ public class UnitAttackEvent implements GameEvent {
 	@Override
 	public void execute(GameListener listener) {
 		defender.setCurrentHp(defender.getCurrentHp() - damage);
-		//deal with buff issues
-		if (attacker.hasAbility(Ability.POISONER)) {
-			defender.attachBuff(new Buff(Buff.POISONED, 2));
-		}
 		listener.onUnitAttack(attacker, defender, damage);
 	}
 

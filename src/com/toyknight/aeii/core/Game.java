@@ -1,6 +1,7 @@
 package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.animation.AnimationDispatcher;
+import com.toyknight.aeii.core.event.BuffAttachEvent;
 import com.toyknight.aeii.core.event.GameEvent;
 import com.toyknight.aeii.core.event.OccupyEvent;
 import com.toyknight.aeii.core.event.RepairEvent;
@@ -151,6 +152,7 @@ public class Game implements OperationListener {
 				int counter_damage = UnitToolkit.getDamage(defender_tmp, attacker, getMap());
 				doDamage(defender, attacker, counter_damage);
 				if (attacker.getCurrentHp() > counter_damage) {
+					checkAttackBuff(defender, attacker);
 					submitGameEvent(new UnitActionFinishEvent(attacker));
 				} else {
 					destoryUnit(attacker);
@@ -158,9 +160,16 @@ public class Game implements OperationListener {
 			} else {
 				submitGameEvent(new UnitActionFinishEvent(attacker));
 			}
+			checkAttackBuff(attacker, defender);
 		} else {
 			destoryUnit(defender);
 			submitGameEvent(new UnitActionFinishEvent(attacker));
+		}
+	}
+	
+	protected void checkAttackBuff(Unit attacker, Unit defender) {
+		if (attacker.hasAbility(Ability.POISONER)) {
+			submitGameEvent(new BuffAttachEvent(defender, new Buff(Buff.POISONED, 2)));
 		}
 	}
 
