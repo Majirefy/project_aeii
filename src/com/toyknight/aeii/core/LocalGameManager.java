@@ -24,6 +24,7 @@ public class LocalGameManager extends GameManager implements GameListener, Anima
 		this.animation_provider = provider;
 		this.animation_dispatcher = new LinkedList();
 		current_animation = null;
+		getGame().setAnimationDispatcher(this);
 	}
 
 	@Override
@@ -129,6 +130,11 @@ public class LocalGameManager extends GameManager implements GameListener, Anima
 	public void onTurnStart(int turn, int income, int team) {
 		Animation animation = animation_provider.getTurnStartAnimation(turn, income, team);
 		submitAnimation(animation);
+	}
+	
+	public void update() {
+		updateAnimation();
+		getGame().dispatchGameEvent();
 	}
 
 }

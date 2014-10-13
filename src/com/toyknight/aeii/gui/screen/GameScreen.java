@@ -107,7 +107,7 @@ public class GameScreen extends Screen implements ManagerStateListener {
 	public void update() {
 		map_canvas.update();
 		tile_panel.update();
-		manager.updateAnimation();
+		manager.update();
 	}
 
 }
