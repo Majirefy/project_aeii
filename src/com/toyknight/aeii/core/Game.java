@@ -133,11 +133,11 @@ public class Game implements OperationListener {
 	protected void doDamage(Unit attacker, Unit defender, int damage) {
 		if (defender.getCurrentHp() > damage) {
 			defender.setCurrentHp(defender.getCurrentHp() - damage);
-			game_listener.onUnitAttack(attacker, defender, damage);
 			//deal with buff issues
 			if (attacker.hasAbility(Ability.POISONER)) {
 				defender.attachBuff(new Buff(Buff.POISONED, 2));
 			}
+			game_listener.onUnitAttack(attacker, defender, damage);
 		} else {
 			damage = defender.getCurrentHp();
 			defender.setCurrentHp(0);

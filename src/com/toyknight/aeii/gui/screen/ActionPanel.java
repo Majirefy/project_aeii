@@ -120,10 +120,12 @@ public class ActionPanel extends AEIIPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			manager.getGame().endTurn();
-			updateButtons();
-			game_screen.getCanvas().updateActionBar();
-			game_screen.getCanvas().resetSelection();
+			synchronized (getTreeLock()) {
+				manager.getGame().endTurn();
+				game_screen.getCanvas().updateActionBar();
+				game_screen.getCanvas().resetSelection();
+				updateButtons();
+			}
 		}
 
 	};

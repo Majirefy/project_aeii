@@ -156,12 +156,14 @@ public class UnitStore extends JInternalFrame {
 	}
 
 	private void buyUnit(int index) {
-		if (selected_unit.isCommander()) {
-			manager.restoreCommander(canvas.getSelectedX(), canvas.getSelectedY());
-		} else {
-			manager.buyUnit(index, canvas.getSelectedX(), canvas.getSelectedY());
+		synchronized (getTreeLock()) {
+			if (selected_unit.isCommander()) {
+				manager.restoreCommander(canvas.getSelectedX(), canvas.getSelectedY());
+			} else {
+				manager.buyUnit(index, canvas.getSelectedX(), canvas.getSelectedY());
+			}
+			canvas.updateActionBar();
 		}
-		canvas.updateActionBar();
 	}
 
 	private void updateButton() {

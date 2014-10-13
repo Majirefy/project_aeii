@@ -290,9 +290,9 @@ public class GameManager {
 	}
 
 	public boolean isAccessibleCastle(int x, int y) {
-		Tile tile = getGame().getMap().getTile(x, y);
-		if (tile.isCastle()) {
-			return tile.getTeam() == getGame().getCurrentTeam();
+		if (getGame().getMap().isWithinMap(x, y)) {
+			Tile tile = getGame().getMap().getTile(x, y);
+			return tile.isCastle() && tile.getTeam() == getGame().getCurrentTeam();
 		} else {
 			return false;
 		}

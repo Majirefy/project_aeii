@@ -153,50 +153,52 @@ public class MapCanvas extends Screen {
 	}
 
 	public void onMousePress(MouseEvent e) {
-		if (isOperatable()) {
-			int click_x = getCursorXOnMap();
-			int click_y = getCursorYOnMap();
-			if (e.getButton() == MouseEvent.BUTTON1) {
-				this.selected_x = click_x;
-				this.selected_y = click_y;
-				switch (manager.getState()) {
-					case GameManager.STATE_SELECT:
-						doSelect(click_x, click_y);
-						break;
-					case GameManager.STATE_MOVE:
-					case GameManager.STATE_RMOVE:
-						manager.moveSelectedUnit(click_x, click_y);
-						break;
-					case GameManager.STATE_ATTACK:
-						manager.doAttack(click_x, click_y);
-						break;
-					case GameManager.STATE_SUMMON:
-						manager.doSummon(click_x, click_y);
-						break;
-					default:
-					//do nothing
+		synchronized (getContext().getUpdateLock()) {
+			if (isOperatable()) {
+				int click_x = getCursorXOnMap();
+				int click_y = getCursorYOnMap();
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					this.selected_x = click_x;
+					this.selected_y = click_y;
+					switch (manager.getState()) {
+						case GameManager.STATE_SELECT:
+							doSelect(click_x, click_y);
+							break;
+						case GameManager.STATE_MOVE:
+						case GameManager.STATE_RMOVE:
+							manager.moveSelectedUnit(click_x, click_y);
+							break;
+						case GameManager.STATE_ATTACK:
+							manager.doAttack(click_x, click_y);
+							break;
+						case GameManager.STATE_SUMMON:
+							manager.doSummon(click_x, click_y);
+							break;
+						default:
+						//do nothing
+					}
 				}
-			}
-			if (e.getButton() == MouseEvent.BUTTON3) {
-				switch (manager.getState()) {
-					case GameManager.STATE_SELECT:
-						action_bar.setVisible(false);
-						break;
-					case GameManager.STATE_MOVE:
-						manager.cancelMovePhase();
-						break;
-					case GameManager.STATE_ACTION:
-						manager.reverseMove();
-						break;
-					case GameManager.STATE_ATTACK:
-					case GameManager.STATE_SUMMON:
-						manager.cancelActionPhase();
-						break;
-					default:
-					//do nothing
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					switch (manager.getState()) {
+						case GameManager.STATE_SELECT:
+							action_bar.setVisible(false);
+							break;
+						case GameManager.STATE_MOVE:
+							manager.cancelMovePhase();
+							break;
+						case GameManager.STATE_ACTION:
+							manager.reverseMove();
+							break;
+						case GameManager.STATE_ATTACK:
+						case GameManager.STATE_SUMMON:
+							manager.cancelActionPhase();
+							break;
+						default:
+						//do nothing
+					}
 				}
+				game_screen.getActionPanel().update();
 			}
-			game_screen.getActionPanel().update();
 		}
 	}
 
@@ -351,7 +353,7 @@ public class MapCanvas extends Screen {
 			action_bar.setVisible(false);
 		}
 	}
-	
+
 	public void resetSelection() {
 		this.selected_x = -1;
 		this.selected_y = -1;

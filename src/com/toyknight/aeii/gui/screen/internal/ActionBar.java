@@ -160,58 +160,72 @@ public class ActionBar extends JPanel {
 	private final ActionListener btn_move_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			manager.beginMovePhase();
-			canvas.updateActionBar();
+			synchronized (getTreeLock()) {
+				manager.beginMovePhase();
+				canvas.updateActionBar();
+			}
 		}
 	};
 
 	private final ActionListener btn_attack_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			manager.beginAttackPhase();
-			canvas.updateActionBar();
+			synchronized (getTreeLock()) {
+				manager.beginAttackPhase();
+				canvas.updateActionBar();
+			}
 		}
 	};
 
 	private final ActionListener btn_summon_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			manager.beginSummonPhase();
-			canvas.updateActionBar();
+			synchronized (getTreeLock()) {
+				manager.beginSummonPhase();
+				canvas.updateActionBar();
+			}
 		}
 	};
 
 	private final ActionListener btn_occupy_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Unit unit = manager.getSelectedUnit();
-			manager.doOccupy(unit.getX(), unit.getY());
-			setVisible(false);
+			synchronized (getTreeLock()) {
+				Unit unit = manager.getSelectedUnit();
+				manager.doOccupy(unit.getX(), unit.getY());
+				setVisible(false);
+			}
 		}
 	};
 
 	private final ActionListener btn_repair_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Unit unit = manager.getSelectedUnit();
-			manager.doRepair(unit.getX(), unit.getY());
-			setVisible(false);
+			synchronized (getTreeLock()) {
+				Unit unit = manager.getSelectedUnit();
+				manager.doRepair(unit.getX(), unit.getY());
+				setVisible(false);
+			}
 		}
 	};
 
 	private final ActionListener btn_standby_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			manager.standbySelectedUnit();
-			setVisible(false);
+			synchronized (getTreeLock()) {
+				manager.standbySelectedUnit();
+				setVisible(false);
+			}
 		}
 	};
 
 	private final ActionListener btn_buy_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			canvas.showUnitStore();
-			setVisible(false);
+			synchronized (getTreeLock()) {
+				canvas.showUnitStore();
+				setVisible(false);
+			}
 		}
 	};
 

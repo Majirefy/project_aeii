@@ -35,9 +35,9 @@ public class LogoScreen extends Screen {
 	}
 
 	@Override
-	public void paint(Graphics g) {
+	public void paintContent(Graphics g) {
 		animation.paint(g, this);
-		super.paint(g);
+		//super.paint(g);
 	}
 
 	@Override

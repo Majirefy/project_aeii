@@ -19,8 +19,6 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  *
@@ -35,6 +33,7 @@ public class AEIIApplet {
 	private CommandLine command_line;
 
 	private final Object FPS_LOCK = new Object();
+	private final Object UPDATE_LOCK = new Object();
 
 	private boolean isRunning;
 	private final boolean isDebugMode = true;
@@ -42,9 +41,6 @@ public class AEIIApplet {
 	private final long inMenuFpsDelay;
 	private final long inGameFpsDelay;
 	private long currentFpsDelay;
-
-	private final Thread animation_thread;
-	private final ExecutorService executor;
 
 	private Container content_pane;
 
@@ -63,8 +59,6 @@ public class AEIIApplet {
 		SCREEN_SIZE = new Dimension(width, height);
 		inMenuFpsDelay = 1000 / 15;
 		inGameFpsDelay = 1000 / Configuration.getGameSpeed();
-		animation_thread = new Thread(new Animator());
-		executor = Executors.newSingleThreadExecutor();
 	}
 
 	public void init() {
@@ -103,14 +97,14 @@ public class AEIIApplet {
 	public void start() {
 		isRunning = true;
 		setCurrentFpsDelayToMenu();
-		executor.submit(animation_thread);
-		current_screen.repaint();
+		new Thread(new Animator(), "animation thread").start();
+		new Thread(new Updater(), "update thread").start();
+		//current_screen.repaint();
 		loadResources();
 	}
 
 	public void stop() {
 		isRunning = false;
-		executor.shutdown();
 	}
 
 	private void loadResources() {
@@ -193,14 +187,43 @@ public class AEIIApplet {
 		}
 	}
 
-	private final class Animator implements Runnable {
+	public Object getUpdateLock() {
+		return content_pane.getTreeLock();
+	}
+
+	private void updateCurrentScreen() {
+		synchronized (getUpdateLock()) {
+			getCurrentScreen().update();
+		}
+	}
+
+	private class Animator implements Runnable {
+
+		@Override
+		public void run() {
+			while (isRunning) {
+				getCurrentScreen().repaint();
+				waitDelay(getCurrentFpsDelay());
+			}
+		}
+
+		private void waitDelay(long time) {
+			try {
+				Thread.sleep(time);
+			} catch (InterruptedException ex) {
+			}
+		}
+
+	}
+
+	private class Updater implements Runnable {
 
 		@Override
 		public void run() {
 			while (isRunning) {
 				long start_time = System.currentTimeMillis();
-				getCurrentScreen().repaint();
-				getCurrentScreen().update();
+				//System.out.println("update");
+				updateCurrentScreen();
 				long end_time = System.currentTimeMillis();
 				long current_fps_delay = getCurrentFpsDelay();
 				if (end_time - start_time < current_fps_delay) {

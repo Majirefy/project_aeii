@@ -8,7 +8,6 @@ import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SwingAnimatingProvider;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
 /**
@@ -28,6 +27,7 @@ public class GameScreen extends Screen implements ManagerStateListener {
 
 	public GameScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
+		this.setIgnoreRepaint(true);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class GameScreen extends Screen implements ManagerStateListener {
 	public Game getGame() {
 		return game;
 	}
-	
+
 	@Override
 	public void managerStateChanged(GameManager manager) {
 		action_panel.update();
@@ -100,11 +100,6 @@ public class GameScreen extends Screen implements ManagerStateListener {
 	@Override
 	public void onKeyRelease(KeyEvent e) {
 		map_canvas.onKeyRelease(e);
-	}
-
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
 	}
 
 	@Override
