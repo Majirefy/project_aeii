@@ -36,18 +36,6 @@ public class Screen extends JDesktopPane {
 	public void onKeyRelease(KeyEvent e) {
 
 	}
-	
-	protected void paintContent(Graphics g) {
-		
-	}
-
-	@Override
-	public void paint(Graphics g) {
-		synchronized (getContext().getUpdateLock()) {
-			paintContent(g);
-			super.paint(g);
-		}
-	}
 
 	public void update() {
 
