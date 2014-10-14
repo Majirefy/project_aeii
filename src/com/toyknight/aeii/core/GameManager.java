@@ -190,6 +190,7 @@ public class GameManager implements GameListener {
 			if (UnitToolkit.canMoveAgain(unit)) {
 				beginRMovePhase();
 			} else {
+				getGame().standbyUnit(unit.getX(), unit.getY());
 				setState(STATE_SELECT);
 			}
 		}

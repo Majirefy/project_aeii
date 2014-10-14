@@ -33,7 +33,6 @@ public class UnitMoveEvent implements GameEvent {
 		int start_y = unit.getY();
 		getGame().getMap().moveUnit(unit, dest_x, dest_y);
 		dispatcher.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
-		listener.onUnitMoveFinished(unit, start_x, start_y);
 	}
 
 }

@@ -111,7 +111,7 @@ public class SwingAnimatingProvider implements AnimationProvider {
 			public void animationCompleted(Animation animation) {
 				if (manager.getGame().isLocalPlayer()) {
 					game_screen.getActionPanel().update();
-					game_screen.getCanvas().updateActionBar();
+					//game_screen.getCanvas().updateActionBar();
 				}
 			}
 		});

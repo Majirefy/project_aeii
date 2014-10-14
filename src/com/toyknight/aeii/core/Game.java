@@ -11,6 +11,7 @@ import com.toyknight.aeii.core.event.UnitAttackEvent;
 import com.toyknight.aeii.core.event.UnitDestroyEvent;
 import com.toyknight.aeii.core.event.UnitHpChangeEvent;
 import com.toyknight.aeii.core.event.UnitMoveEvent;
+import com.toyknight.aeii.core.event.UnitMoveFinishEvent;
 import com.toyknight.aeii.core.event.UnitSummonEvent;
 import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.map.Tile;
@@ -266,6 +267,7 @@ public class Game implements OperationListener {
 		Unit unit = getMap().getUnit(unit_x, unit_y);
 		if (unit != null && getMap().canMove(dest_x, dest_y)) {
 			submitGameEvent(new UnitMoveEvent(this, unit, dest_x, dest_y));
+			submitGameEvent(new UnitMoveFinishEvent(unit, unit_x, unit_y));
 		}
 	}
 
