@@ -1,6 +1,7 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
+import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.AEIIPanel;
@@ -82,7 +83,7 @@ public class ActionPanel extends AEIIPanel {
 	}
 
 	private void updateButtons() {
-		if (isOperatable()) {
+		if (isOperatable() && manager.getState() == GameManager.STATE_SELECT) {
 			btn_end_turn.setEnabled(true);
 		} else {
 			btn_end_turn.setEnabled(false);
@@ -122,9 +123,7 @@ public class ActionPanel extends AEIIPanel {
 		public void actionPerformed(ActionEvent e) {
 			synchronized (getTreeLock()) {
 				manager.getGame().endTurn();
-				game_screen.getCanvas().updateActionBar();
-				game_screen.getCanvas().resetSelection();
-				updateButtons();
+				//updateButtons();
 			}
 		}
 

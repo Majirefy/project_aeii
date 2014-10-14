@@ -49,6 +49,8 @@ public class UnitStore extends JInternalFrame {
 	private int current_team;
 	private boolean commander_alive;
 	private Unit selected_unit;
+	private int store_x;
+	private int store_y;
 
 	public UnitStore(MapCanvas canvas, int ts) {
 		super("Buy Unit", false, true, false, false);
@@ -134,7 +136,9 @@ public class UnitStore extends JInternalFrame {
 		this.unit_list.setCellRenderer(new UnitListCellRenderer(manager, ts));
 	}
 
-	public void display() {
+	public void display(int x, int y) {
+		this.store_x = x;
+		this.store_y = y;
 		current_team = manager.getGame().getCurrentTeam();
 		commander_alive = manager.getGame().isCommanderAlive(current_team);
 		ArrayList<Integer> unit_index_list = new ArrayList();
@@ -158,9 +162,9 @@ public class UnitStore extends JInternalFrame {
 	private void buyUnit(int index) {
 		synchronized (getTreeLock()) {
 			if (selected_unit.isCommander()) {
-				manager.restoreCommander(canvas.getSelectedX(), canvas.getSelectedY());
+				manager.restoreCommander(store_x, store_y);
 			} else {
-				manager.buyUnit(index, canvas.getSelectedX(), canvas.getSelectedY());
+				manager.buyUnit(index, store_x, store_y);
 			}
 			canvas.updateActionBar();
 		}

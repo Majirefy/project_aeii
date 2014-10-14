@@ -57,8 +57,6 @@ public class MapCanvas extends Screen implements Displayable {
 	private CursorSprite cursor;
 	private AttackCursorSprite attack_cursor;
 
-	private int selected_x;
-	private int selected_y;
 	private boolean internal_frame_shown;
 
 	private boolean up_pressed = false;
@@ -107,7 +105,6 @@ public class MapCanvas extends Screen implements Displayable {
 		mouse_y = 0;
 		current_delay = 0;
 		internal_frame_shown = false;
-		resetSelection();
 	}
 
 	public boolean isOperatable() {
@@ -148,11 +145,11 @@ public class MapCanvas extends Screen implements Displayable {
 		}
 	}
 
-	public void showUnitStore() {
+	public void showUnitStore(int map_x, int map_y) {
 		unit_store.setLocation(
 				(getWidth() - unit_store.getWidth()) / 2,
 				(getHeight() - unit_store.getHeight()) / 2);
-		unit_store.display();
+		unit_store.display(map_x, map_y);
 	}
 
 	public void onMousePress(MouseEvent e) {
@@ -161,8 +158,6 @@ public class MapCanvas extends Screen implements Displayable {
 				int click_x = getCursorXOnMap();
 				int click_y = getCursorYOnMap();
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					this.selected_x = click_x;
-					this.selected_y = click_y;
 					switch (manager.getState()) {
 						case GameManager.STATE_SELECT:
 							doSelect(click_x, click_y);
@@ -249,13 +244,13 @@ public class MapCanvas extends Screen implements Displayable {
 		if (unit != null) {
 			manager.selectUnit(x, y);
 			if (manager.getUnitToolkit().isUnitAccessible(unit)) {
-				action_bar.display();
+				action_bar.display(x, y);
 			} else {
 				action_bar.setVisible(false);
 			}
 		} else {
-			if (manager.isAccessibleCastle(selected_x, selected_y)) {
-				action_bar.display();
+			if (manager.isAccessibleCastle(x, y)) {
+				action_bar.display(x, y);
 			} else {
 				action_bar.setVisible(false);
 			}
@@ -308,14 +303,6 @@ public class MapCanvas extends Screen implements Displayable {
 		return (map_y - sy) * ts + y_offset;
 	}
 
-	public int getSelectedX() {
-		return selected_x;
-	}
-
-	public int getSelectedY() {
-		return selected_y;
-	}
-
 	private Game getGame() {
 		return manager.getGame();
 	}
@@ -335,16 +322,17 @@ public class MapCanvas extends Screen implements Displayable {
 	}
 
 	public void updateActionBar() {
-		if (!isAnimating()) {
+		if (!isAnimating() && getGame().isLocalPlayer()) {
+			Unit unit = manager.getSelectedUnit();
 			switch (manager.getState()) {
 				case GameManager.STATE_RMOVE:
 				case GameManager.STATE_ACTION:
-					action_bar.display();
+					action_bar.display(unit.getX(), unit.getY());
 					break;
 				case GameManager.STATE_SELECT:
 					Unit selected_unit = manager.getSelectedUnit();
 					if (manager.getUnitToolkit().isUnitAccessible(selected_unit)) {
-						action_bar.display();
+						action_bar.display(unit.getX(), unit.getY());
 					} else {
 						action_bar.setVisible(false);
 					}
@@ -355,11 +343,6 @@ public class MapCanvas extends Screen implements Displayable {
 		} else {
 			action_bar.setVisible(false);
 		}
-	}
-
-	public void resetSelection() {
-		this.selected_x = -1;
-		this.selected_y = -1;
 	}
 
 	@Override
@@ -656,9 +639,9 @@ public class MapCanvas extends Screen implements Displayable {
 		int defender_tile = getGame().getMap().getTileIndex(defender.getX(), defender.getY());
 		//paint attack
 		if (attacker.getAttackType() == Unit.ATTACK_PHYSICAL) {
-			g.setColor(Color.PINK);
+			g.setColor(Color.RED);
 		} else {
-			g.setColor(Color.CYAN);
+			g.setColor(Color.BLUE);
 		}
 		int attacker_atk = attacker.getAttack();
 		int attacker_atk_bonus = UnitToolkit.getAttackBonus(attacker, defender, attacker_tile);
@@ -673,9 +656,9 @@ public class MapCanvas extends Screen implements Displayable {
 					infoy + ts / 24 + (tfh - ah) / 2);
 		}
 		if (defender.getAttackType() == Unit.ATTACK_PHYSICAL) {
-			g.setColor(Color.PINK);
+			g.setColor(Color.RED);
 		} else {
-			g.setColor(Color.CYAN);
+			g.setColor(Color.BLUE);
 		}
 		int defender_atk = defender.getAttack();
 		int defender_atk_bonus = UnitToolkit.getAttackBonus(defender, attacker, defender_tile);

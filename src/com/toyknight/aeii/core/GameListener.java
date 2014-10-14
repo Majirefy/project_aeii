@@ -11,6 +11,6 @@ public interface GameListener {
 	
 	public void onUnitActionFinished(Unit unit);
 	
-	public void onUnitMoveFinished(Unit unit);
+	public void onUnitMoveFinished(Unit unit, int start_x, int start_y);
 	
 }

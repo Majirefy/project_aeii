@@ -122,7 +122,9 @@ public class AEIIApplet {
 						command_line.start();
 					}
 				} catch (IOException | AEIIException ex) {
-					DialogUtil.showError(Launcher.getWindow(), ex.getMessage());
+					DialogUtil.showError(
+							Launcher.getWindow(), 
+							ex.getClass().toString()+": "+ex.getMessage());
 					Launcher.exit();
 				}
 			}

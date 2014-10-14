@@ -38,6 +38,9 @@ public class ActionBar extends JPanel {
 	private final ActionButton btn_repair;
 	private final ActionButton btn_summon;
 
+	private int map_x;
+	private int map_y;
+
 	public ActionBar(MapCanvas canvas, int ts) {
 		this.bw = ts / 24 * 20;
 		this.bh = ts / 24 * 21;
@@ -99,17 +102,17 @@ public class ActionBar extends JPanel {
 		this.manager = manager;
 	}
 
-	public void display() {
+	public void display(int x, int y) {
+		this.map_x = x;
+		this.map_y = y;
 		this.removeAll();
-		int click_x = canvas.getSelectedX();
-		int click_y = canvas.getSelectedY();
-		if (manager.isAccessibleCastle(click_x, click_y)
+		if (manager.isAccessibleCastle(x, y)
 				&& manager.getState() == GameManager.STATE_SELECT) {
 			addButton(btn_buy);
 		}
 		Unit unit = manager.getSelectedUnit();
 		if (manager.getUnitToolkit().isUnitAccessible(unit)
-				&& unit.getX() == click_x && unit.getY() == click_y) {
+				&& unit.getX() == x && unit.getY() == y) {
 			switch (manager.getState()) {
 				case GameManager.STATE_SELECT:
 					addButton(btn_move);
@@ -162,7 +165,6 @@ public class ActionBar extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			synchronized (getTreeLock()) {
 				manager.beginMovePhase();
-				canvas.updateActionBar();
 			}
 		}
 	};
@@ -172,7 +174,6 @@ public class ActionBar extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			synchronized (getTreeLock()) {
 				manager.beginAttackPhase();
-				canvas.updateActionBar();
 			}
 		}
 	};
@@ -182,7 +183,6 @@ public class ActionBar extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			synchronized (getTreeLock()) {
 				manager.beginSummonPhase();
-				canvas.updateActionBar();
 			}
 		}
 	};
@@ -223,7 +223,7 @@ public class ActionBar extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			synchronized (getTreeLock()) {
-				canvas.showUnitStore();
+				canvas.showUnitStore(map_x, map_y);
 				setVisible(false);
 			}
 		}

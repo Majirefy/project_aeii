@@ -196,10 +196,11 @@ public class GameManager implements GameListener {
 	}
 
 	@Override
-	public void onUnitMoveFinished(Unit unit) {
+	public void onUnitMoveFinished(Unit unit, int start_x, int start_y) {
 		switch (state) {
 			case STATE_MOVE:
-				if (unit.hasAbility(Ability.SIEGE_MACHINE)) {
+				if (unit.hasAbility(Ability.SIEGE_MACHINE)
+						&& (start_x != unit.getX() || start_y != unit.getY())) {
 					getGame().standbyUnit(unit.getX(), unit.getY());
 					setState(STATE_SELECT);
 				} else {
