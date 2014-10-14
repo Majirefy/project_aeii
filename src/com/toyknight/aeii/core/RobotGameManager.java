@@ -18,32 +18,32 @@ public class RobotGameManager extends GameManager {
 	
 	@Override
 	public void moveSelectedUnit(int dest_x, int dest_y) {
-		super.moveSelectedUnit(dest_x, dest_y);
 		syncAnimation();
+		super.moveSelectedUnit(dest_x, dest_y);
 	}
 	
 	@Override
 	public void doAttack(int target_x, int target_y) {
-		super.doAttack(target_x, target_y);
 		syncAnimation();
+		super.doAttack(target_x, target_y);
 	}
 	
 	@Override
 	public void doSummon(int target_x, int target_y) {
-		super.doSummon(target_x, target_y);
 		syncAnimation();
+		super.doSummon(target_x, target_y);
 	}
 	
 	@Override
 	public void doOccupy(int x, int y) {
-		super.doOccupy(x, y);
 		syncAnimation();
+		super.doOccupy(x, y);
 	}
 	
 	@Override
 	public void doRepair(int x, int y) {
-		super.doRepair(x, y);
 		syncAnimation();
+		super.doRepair(x, y);
 	}
 	
 	private void syncAnimation() {

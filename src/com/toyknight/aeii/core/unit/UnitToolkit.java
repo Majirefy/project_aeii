@@ -314,7 +314,7 @@ public class UnitToolkit {
 		return damage;
 	}
 
-	public static boolean canRemove(Unit unit) {
+	public static boolean canMoveAgain(Unit unit) {
 		return unit.getCurrentHp() > 0
 				&& unit.getCurrentMovementPoint() > 0
 				&& unit.hasAbility(Ability.CHARGER);

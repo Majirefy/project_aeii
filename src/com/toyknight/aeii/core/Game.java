@@ -1,5 +1,17 @@
 package com.toyknight.aeii.core;
 
+import com.toyknight.aeii.core.animation.AnimationDispatcher;
+import com.toyknight.aeii.core.event.BuffAttachEvent;
+import com.toyknight.aeii.core.event.GameEvent;
+import com.toyknight.aeii.core.event.OccupyEvent;
+import com.toyknight.aeii.core.event.RepairEvent;
+import com.toyknight.aeii.core.event.TileDestroyEvent;
+import com.toyknight.aeii.core.event.UnitActionFinishEvent;
+import com.toyknight.aeii.core.event.UnitAttackEvent;
+import com.toyknight.aeii.core.event.UnitDestroyEvent;
+import com.toyknight.aeii.core.event.UnitHpChangeEvent;
+import com.toyknight.aeii.core.event.UnitMoveEvent;
+import com.toyknight.aeii.core.event.UnitSummonEvent;
 import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.player.LocalPlayer;
@@ -11,6 +23,8 @@ import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -24,6 +38,8 @@ public class Game implements OperationListener {
 	private final Player[] player_list;
 	private GameListener game_listener;
 	private Displayable displayable;
+	private AnimationDispatcher animation_dispatcher;
+	private final Queue<GameEvent> event_queue;
 
 	private int turn;
 
@@ -57,6 +73,7 @@ public class Game implements OperationListener {
 				commanders[team] = UnitFactory.createUnit(9, team);
 			}
 		}
+		this.event_queue = new LinkedList();
 	}
 
 	public void init() {
@@ -71,6 +88,10 @@ public class Game implements OperationListener {
 				//remove all elements on the map that is related to this team
 			}
 		}
+	}
+
+	protected void submitGameEvent(GameEvent e) {
+		event_queue.add(e);
 	}
 
 	public boolean isLocalPlayer() {
@@ -96,9 +117,13 @@ public class Game implements OperationListener {
 	public void setGameListener(GameListener listener) {
 		this.game_listener = listener;
 	}
-	
+
 	public void setDisplayable(Displayable displayable) {
 		this.displayable = displayable;
+	}
+
+	public void setAnimationDispatcher(AnimationDispatcher dispatcher) {
+		this.animation_dispatcher = dispatcher;
 	}
 
 	@Override
@@ -120,44 +145,50 @@ public class Game implements OperationListener {
 	protected void doAttack(Unit attacker, Unit defender) {
 		int attack_damage = UnitToolkit.getDamage(attacker, defender, getMap());
 		doDamage(attacker, defender, attack_damage);
-		if (defender.getCurrentHp() > 0
-				&& UnitToolkit.isWithinRange(defender, attacker.getX(), attacker.getY())) {
-			int counter_damage = UnitToolkit.getDamage(defender, attacker, getMap());
-			doDamage(defender, attacker, counter_damage);
+		if (defender.getCurrentHp() > attack_damage) {
+			if (UnitToolkit.isWithinRange(defender, attacker.getX(), attacker.getY())) {
+				Unit defender_tmp = UnitFactory.cloneUnit(defender);
+				defender_tmp.setCurrentHp(defender.getCurrentHp() - attack_damage);
+				int counter_damage = UnitToolkit.getDamage(defender_tmp, attacker, getMap());
+				doDamage(defender, attacker, counter_damage);
+				if (attacker.getCurrentHp() > counter_damage) {
+					checkAttackBuff(defender, attacker);
+					submitGameEvent(new UnitActionFinishEvent(attacker));
+				} else {
+					destoryUnit(attacker);
+				}
+			} else {
+				submitGameEvent(new UnitActionFinishEvent(attacker));
+			}
+			checkAttackBuff(attacker, defender);
+		} else {
+			destoryUnit(defender);
+			submitGameEvent(new UnitActionFinishEvent(attacker));
 		}
-		onUnitActionFinished(attacker);
+	}
+	
+	protected void checkAttackBuff(Unit attacker, Unit defender) {
+		if (attacker.hasAbility(Ability.POISONER)) {
+			submitGameEvent(new BuffAttachEvent(defender, new Buff(Buff.POISONED, 2)));
+		}
 	}
 
 	protected void doDestroy(Unit destroyer, int x, int y) {
-		int tile_index = getMap().getTileIndex(x, y);
-		game_listener.onTileDestroyed(tile_index, x, y);
-		getMap().setTile(getMap().getTile(x, y).getDestroyedTileIndex(), x, y);
-		onUnitActionFinished(destroyer);
+		submitGameEvent(new TileDestroyEvent(this, x, y));
+		submitGameEvent(new UnitActionFinishEvent(destroyer));
 	}
 
 	protected void doDamage(Unit attacker, Unit defender, int damage) {
 		if (defender.getCurrentHp() > damage) {
-			defender.setCurrentHp(defender.getCurrentHp() - damage);
-			//deal with buff issues
-			if (attacker.hasAbility(Ability.POISONER)) {
-				defender.attachBuff(new Buff(Buff.POISONED, 2));
-			}
-			game_listener.onUnitAttack(attacker, defender, damage);
+			submitGameEvent(new UnitAttackEvent(attacker, defender, damage));
 		} else {
-			damage = defender.getCurrentHp();
-			defender.setCurrentHp(0);
-			game_listener.onUnitAttack(attacker, defender, damage);
-			destoryUnit(defender);
+			submitGameEvent(new UnitAttackEvent(attacker, defender, defender.getCurrentHp()));
 		}
 	}
 
 	protected void destoryUnit(Unit unit) {
-		getMap().removeUnit(unit.getX(), unit.getY());
-		updatePopulation(getCurrentTeam());
-		game_listener.onUnitDestroyed(unit);
-		getMap().addTomb(unit.getX(), unit.getY());
+		submitGameEvent(new UnitDestroyEvent(this, unit));
 		if (unit.isCommander()) {
-			int team = getCurrentTeam();
 			commander_price_delta[unit.getTeam()] += 500;
 		}
 	}
@@ -168,33 +199,17 @@ public class Game implements OperationListener {
 		if (summoner != null
 				&& UnitToolkit.isWithinRange(summoner, target_x, target_y)
 				&& getMap().isTomb(target_x, target_y)) {
-			doSummon(summoner, target_x, target_y);
+			submitGameEvent(new UnitSummonEvent(this, summoner, target_x, target_y));
+			submitGameEvent(new UnitActionFinishEvent(summoner));
 		}
-	}
-
-	protected void doSummon(Unit summoner, int target_x, int target_y) {
-		getMap().removeTomb(target_x, target_y);
-		addUnit(10, getCurrentTeam(), target_x, target_y);
-		getMap().getUnit(target_x, target_y).setStandby(true);
-		game_listener.onSummon(summoner, target_x, target_y);
-		onUnitActionFinished(summoner);
 	}
 
 	@Override
 	public void doOccupy(int conqueror_x, int conqueror_y, int x, int y) {
 		Unit conqueror = getMap().getUnit(conqueror_x, conqueror_y);
 		if (canOccupy(conqueror, x, y)) {
-			doOccupy(x, y);
+			submitGameEvent(new OccupyEvent(this, conqueror, x, y));
 			conqueror.setStandby(true);
-		}
-	}
-
-	@Override
-	public void doOccupy(int x, int y) {
-		Tile tile = getMap().getTile(x, y);
-		if (tile.isCapturable()) {
-			changeTile(tile.getCapturedTileIndex(getCurrentTeam()), x, y);
-			game_listener.onOccupy();
 		}
 	}
 
@@ -202,21 +217,11 @@ public class Game implements OperationListener {
 	public void doRepair(int repairer_x, int repairer_y, int x, int y) {
 		Unit repairer = getMap().getUnit(x, y);
 		if (canRepair(repairer, x, y)) {
-			doRepair(x, y);
-			repairer.setStandby(true);
+			submitGameEvent(new RepairEvent(this, repairer, x, y));
 		}
 	}
 
-	@Override
-	public void doRepair(int x, int y) {
-		Tile tile = getMap().getTile(x, y);
-		if (tile.isRepairable()) {
-			changeTile(tile.getRepairedTileIndex(), x, y);
-			game_listener.onRepair();
-		}
-	}
-
-	protected void changeTile(short index, int x, int y) {
+	public void changeTile(short index, int x, int y) {
 		getMap().setTile(index, x, y);
 	}
 
@@ -264,23 +269,15 @@ public class Game implements OperationListener {
 	public void moveUnit(int unit_x, int unit_y, int dest_x, int dest_y) {
 		Unit unit = getMap().getUnit(unit_x, unit_y);
 		if (unit != null && getMap().canMove(dest_x, dest_y)) {
-			int start_x = unit.getX();
-			int start_y = unit.getY();
-			doMoveUnit(unit, dest_x, dest_y);
-			game_listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
+			submitGameEvent(new UnitMoveEvent(this, unit, dest_x, dest_y));
 		}
-	}
-
-	protected void doMoveUnit(Unit unit, int dest_x, int dest_y) {
-		getMap().moveUnit(unit, dest_x, dest_y);
 	}
 
 	protected void poisonUnit(Unit unit) {
 		int current_hp = unit.getCurrentHp();
 		int poison_damage = current_hp > 10 ? 10 : current_hp;
-		unit.setCurrentHp(current_hp - poison_damage);
-		game_listener.onUnitHpChanged(unit, -poison_damage);
-		if (unit.getCurrentHp() <= 0) {
+		changeUnitHp(unit, -poison_damage);
+		if (unit.getCurrentHp() <= poison_damage) {
 			destoryUnit(unit);
 		}
 	}
@@ -330,20 +327,12 @@ public class Game implements OperationListener {
 			heal = unit.getMaxHp() - unit.getCurrentHp();
 		}
 		if (heal > 0) {
-			doHealUnit(unit, heal);
+			changeUnitHp(unit, heal);
 		}
 	}
 
-	protected void doHealUnit(Unit unit, int heal) {
-		int new_hp = unit.getCurrentHp() + heal;
-		unit.setCurrentHp(new_hp);
-		game_listener.onUnitHpChanged(unit, heal);
-	}
-
-	protected void onUnitActionFinished(Unit unit) {
-		if (!UnitToolkit.canRemove(unit)) {
-			unit.setStandby(true);
-		}
+	protected void changeUnitHp(Unit unit, int change) {
+		submitGameEvent(new UnitHpChangeEvent(unit, change));
 	}
 
 	public boolean canOccupy(Unit conqueror, int x, int y) {
@@ -396,7 +385,7 @@ public class Game implements OperationListener {
 		return false;
 	}
 
-	protected void updatePopulation(int team) {
+	public void updatePopulation(int team) {
 		getPlayer(team).setPopulation(getMap().getUnitCount(team));
 	}
 
@@ -514,6 +503,15 @@ public class Game implements OperationListener {
 		} while (getCurrentPlayer() == null);
 		//deal with various issues
 		startTurn();
+	}
+
+	public void dispatchGameEvent() {
+		if (!animation_dispatcher.isAnimating()) {
+			GameEvent event = event_queue.poll();
+			if (event != null) {
+				event.execute(game_listener);
+			}
+		}
 	}
 
 }

@@ -186,7 +186,7 @@ public class GameManager {
 
 	protected void onUnitActionFinished(Unit unit) {
 		if (getGame().isLocalPlayer()) {
-			if (UnitToolkit.canRemove(unit)) {
+			if (UnitToolkit.canMoveAgain(unit)) {
 				beginRMovePhase();
 			} else {
 				setState(STATE_SELECT);
