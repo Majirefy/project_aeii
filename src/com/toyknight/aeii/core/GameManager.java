@@ -259,7 +259,7 @@ public class GameManager {
 				switch (state) {
 					case STATE_MOVE:
 						if (unit.hasAbility(Ability.SIEGE_MACHINE)) {
-							getGame().standbyUnit(unit.getX(), unit.getY());
+							//getGame().standbyUnit(unit.getX(), unit.getY());
 							setState(STATE_SELECT);
 						} else {
 							setState(STATE_ACTION);

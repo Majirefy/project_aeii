@@ -2,6 +2,7 @@ package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
+import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -32,6 +33,9 @@ public class UnitMoveEvent implements GameEvent {
 		int start_y = unit.getY();
 		getGame().getMap().moveUnit(unit, dest_x, dest_y);
 		listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
+		if(unit.hasAbility(Ability.SIEGE_MACHINE)) {
+			getGame().standbyUnit(unit.getX(), unit.getY());
+		}
 	}
 
 }
