@@ -12,7 +12,7 @@ import java.util.Queue;
  *
  * @author toyknight
  */
-public class LocalGameManager extends GameManager implements GameListener, AnimationDispatcher {
+public class LocalGameManager extends GameManager implements AnimationDispatcher {
 	
 	private final AnimationProvider animation_provider;
 

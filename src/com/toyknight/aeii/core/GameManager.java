@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author toyknight
  */
-public class GameManager {
+public class GameManager implements GameListener {
 
 	public static final int STATE_SELECT = 0x1;
 	public static final int STATE_MOVE = 0x2;
@@ -184,7 +184,8 @@ public class GameManager {
 		}
 	}
 
-	protected void onUnitActionFinished(Unit unit) {
+	@Override
+	public void onUnitActionFinished(Unit unit) {
 		if (getGame().isLocalPlayer()) {
 			if (UnitToolkit.canMoveAgain(unit)) {
 				beginRMovePhase();
@@ -194,11 +195,30 @@ public class GameManager {
 		}
 	}
 
+	@Override
+	public void onUnitMoveFinished(Unit unit) {
+		switch (state) {
+			case STATE_MOVE:
+				if (unit.hasAbility(Ability.SIEGE_MACHINE)) {
+					getGame().standbyUnit(unit.getX(), unit.getY());
+					setState(STATE_SELECT);
+				} else {
+					setState(STATE_ACTION);
+				}
+				break;
+			case STATE_RMOVE:
+				getGame().standbyUnit(unit.getX(), unit.getY());
+				setState(STATE_SELECT);
+				break;
+			default:
+			//do nothing
+		}
+	}
+
 	public void doAttack(int target_x, int target_y) {
 		if (canAttack(target_x, target_y) && state == STATE_ATTACK) {
 			Unit unit = getSelectedUnit();
 			getGame().doAttack(unit.getX(), unit.getY(), target_x, target_y);
-			onUnitActionFinished(unit);
 		}
 	}
 
@@ -206,7 +226,6 @@ public class GameManager {
 		if (canSummon(target_x, target_y) && state == STATE_SUMMON) {
 			Unit summoner = getSelectedUnit();
 			getGame().doSummon(summoner.getX(), summoner.getY(), target_x, target_y);
-			onUnitActionFinished(summoner);
 		}
 	}
 
@@ -214,7 +233,6 @@ public class GameManager {
 		Unit conqueror = getSelectedUnit();
 		if (getGame().canOccupy(conqueror, x, y) && isActionState()) {
 			getGame().doOccupy(conqueror.getX(), conqueror.getY(), x, y);
-			onUnitActionFinished(conqueror);
 		}
 	}
 
@@ -222,7 +240,6 @@ public class GameManager {
 		Unit repairer = getSelectedUnit();
 		if (getGame().canRepair(repairer, x, y) && isActionState()) {
 			getGame().doRepair(repairer.getX(), repairer.getY(), x, y);
-			onUnitActionFinished(repairer);
 		}
 	}
 
@@ -256,22 +273,6 @@ public class GameManager {
 				getGame().moveUnit(unit_x, unit_y, dest_x, dest_y);
 				unit.setCurrentMovementPoint(mp_remains);
 				is_selected_unit_moved = true;
-				switch (state) {
-					case STATE_MOVE:
-						if (unit.hasAbility(Ability.SIEGE_MACHINE)) {
-							//getGame().standbyUnit(unit.getX(), unit.getY());
-							setState(STATE_SELECT);
-						} else {
-							setState(STATE_ACTION);
-						}
-						break;
-					case STATE_RMOVE:
-						getGame().standbyUnit(unit.getX(), unit.getY());
-						setState(STATE_SELECT);
-						break;
-					default:
-					//do nothing
-				}
 			}
 		}
 	}

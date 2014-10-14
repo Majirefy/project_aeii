@@ -1,6 +1,7 @@
 package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.GameListener;
+import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Buff;
 import com.toyknight.aeii.core.unit.Unit;
@@ -22,9 +23,9 @@ public class UnitAttackEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener) {
+	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
 		defender.setCurrentHp(defender.getCurrentHp() - damage);
-		listener.onUnitAttack(attacker, defender, damage);
+		dispatcher.onUnitAttack(attacker, defender, damage);
 	}
 
 }

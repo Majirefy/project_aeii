@@ -1,6 +1,7 @@
 package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.GameListener;
+import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitToolkit;
 
@@ -17,10 +18,11 @@ public class UnitActionFinishEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener) {
+	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
 		if (!UnitToolkit.canMoveAgain(unit)) {
 			unit.setStandby(true);
 		}
+		listener.onUnitActionFinished(unit);
 	}
 
 }

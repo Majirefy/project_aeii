@@ -136,7 +136,8 @@ public class Game implements OperationListener {
 			} else {
 				if (attacker.hasAbility(Ability.DESTROYER)
 						&& getMap().getTile(target_x, target_y).isDestroyable()) {
-					doDestroy(attacker, target_x, target_y);
+					submitGameEvent(new TileDestroyEvent(this, target_x, target_y));
+					submitGameEvent(new UnitActionFinishEvent(attacker));
 				}
 			}
 		}
@@ -166,16 +167,11 @@ public class Game implements OperationListener {
 			submitGameEvent(new UnitActionFinishEvent(attacker));
 		}
 	}
-	
+
 	protected void checkAttackBuff(Unit attacker, Unit defender) {
 		if (attacker.hasAbility(Ability.POISONER)) {
 			submitGameEvent(new BuffAttachEvent(defender, new Buff(Buff.POISONED, 2)));
 		}
-	}
-
-	protected void doDestroy(Unit destroyer, int x, int y) {
-		submitGameEvent(new TileDestroyEvent(this, x, y));
-		submitGameEvent(new UnitActionFinishEvent(destroyer));
 	}
 
 	protected void doDamage(Unit attacker, Unit defender, int damage) {
@@ -454,9 +450,9 @@ public class Game implements OperationListener {
 		int income = getIncome(getCurrentTeam());
 		getCurrentPlayer().addGold(income);
 		if (isLocalPlayer()) {
-			game_listener.onTurnStart(turn, income, getCurrentTeam());
+			animation_dispatcher.onTurnStart(turn, income, getCurrentTeam());
 		} else {
-			game_listener.onTurnStart(turn, -1, getCurrentTeam());
+			animation_dispatcher.onTurnStart(turn, -1, getCurrentTeam());
 		}
 
 		Set<Point> position_set = new HashSet(getMap().getUnitPositionSet());
@@ -509,7 +505,7 @@ public class Game implements OperationListener {
 		if (!animation_dispatcher.isAnimating()) {
 			GameEvent event = event_queue.poll();
 			if (event != null) {
-				event.execute(game_listener);
+				event.execute(game_listener, animation_dispatcher);
 			}
 		}
 	}

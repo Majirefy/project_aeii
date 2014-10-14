@@ -3,6 +3,7 @@ package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
+import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.unit.Unit;
 
@@ -29,11 +30,11 @@ public class OccupyEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener) {
+	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
 		Tile tile = getGame().getMap().getTile(x, y);
 		getGame().changeTile(tile.getCapturedTileIndex(conqueror.getTeam()), x, y);
 		conqueror.setStandby(true);
-		listener.onOccupy();
+		dispatcher.onOccupy();
 	}
 	
 }
