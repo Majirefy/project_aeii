@@ -146,7 +146,7 @@ public class Game implements OperationListener {
 		int attack_damage = UnitToolkit.getDamage(attacker, defender, getMap());
 		doDamage(attacker, defender, attack_damage);
 		if (defender.getCurrentHp() > attack_damage) {
-			if (UnitToolkit.isWithinRange(defender, attacker.getX(), attacker.getY())) {
+			if (UnitToolkit.canCounter(defender, attacker)) {
 				Unit defender_tmp = UnitFactory.cloneUnit(defender);
 				defender_tmp.setCurrentHp(defender.getCurrentHp() - attack_damage);
 				int counter_damage = UnitToolkit.getDamage(defender_tmp, attacker, getMap());

@@ -11,6 +11,7 @@ import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.map.Tomb;
 import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.unit.UnitToolkit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
@@ -25,6 +26,7 @@ import com.toyknight.aeii.gui.sprite.TilePainter;
 import com.toyknight.aeii.gui.sprite.UnitPainter;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -37,7 +39,7 @@ import java.util.Set;
  *
  * @author toyknight
  */
-public class MapCanvas extends Screen implements Displayable{
+public class MapCanvas extends Screen implements Displayable {
 
 	private LocalGameManager manager;
 	private final GameScreen game_screen;
@@ -450,6 +452,9 @@ public class MapCanvas extends Screen implements Displayable{
 		if (getGame().isLocalPlayer() && !isAnimating()) {
 			paintCursor(g);
 		}
+		if (manager.getState() == GameManager.STATE_ATTACK) {
+			paintAttackInfomation(g);
+		}
 		super.paint(g);
 	}
 
@@ -592,6 +597,167 @@ public class MapCanvas extends Screen implements Displayable{
 				}
 			}
 		}
+	}
+
+	private void paintAttackInfomation(Graphics g) {
+		int cursor_x = getCursorXOnMap();
+		int cursor_y = getCursorYOnMap();
+		Unit attacker = manager.getSelectedUnit();
+		Unit defender = manager.getUnit(cursor_x, cursor_y);
+		if (!UnitToolkit.isEnemy(attacker, defender)) {
+			return;
+		}
+		g.setFont(ResourceManager.getTextFont());
+		FontMetrics fm = g.getFontMetrics();
+		int ah = ts / 24 * 7; // arrow height
+		int hw = ts / 24 * 13; //hud icon width
+		int hh = ts / 24 * 16; //hud icon height
+		int tfw = ts * 2; //text field width
+		int tfh = fm.getHeight() + ts / 12; //text field height
+		int lmargin = (getWidth() - hw * 4 - tfw * 4 - ts / 24 * 7) / 2; //margin left
+		int infoh = tfh * 2 + ts / 24 * 3; //infomation panel height
+		int infoy = (getHeight() - ts) / 2 > mouse_y ? getHeight() - infoh - ts / 12 : 0; //imfomation panel y
+		//paint background
+		g.setColor(Color.BLACK);
+		g.fillRect(0, infoy + ts / 24, getWidth(), infoh);
+		g.setColor(Color.LIGHT_GRAY);
+		g.fillRect(0, infoy, getWidth(), infoh);
+		//paint icons
+		g.drawImage(ResourceManager.getAttackIcon(),
+				lmargin, infoy + (infoh - hh) / 2, this);
+		g.drawImage(ResourceManager.getRedDefenceIcon(),
+				lmargin + hw + tfw + ts / 24 * 2, infoy + (infoh - hh) / 2, this);
+		g.drawImage(ResourceManager.getBlueDefenceIcon(),
+				lmargin + hw * 2 + tfw * 2 + ts / 24 * 4, infoy + (infoh - hh) / 2, this);
+		g.drawImage(ResourceManager.getLevelIcon(),
+				lmargin + hw * 3 + tfw * 3 + ts / 24 * 6, infoy + (infoh - hh) / 2, this);
+		//paint text field
+		g.setColor(ResourceManager.getAEIIPanelBg());
+		g.fillRect(lmargin + hw + ts / 24, infoy + ts / 24, tfw, tfh);
+		g.fillRect(lmargin + hw + ts / 24, infoy + tfh + ts / 24 * 2, tfw, tfh);
+		g.fillRect(lmargin + hw * 2 + tfw + ts / 24 * 3, infoy + ts / 24, tfw, tfh);
+		g.fillRect(lmargin + hw * 2 + tfw + ts / 24 * 3, infoy + tfh + ts / 24 * 2, tfw, tfh);
+		g.fillRect(lmargin + hw * 3 + tfw * 2 + ts / 24 * 5, infoy + ts / 24, tfw, tfh);
+		g.fillRect(lmargin + hw * 3 + tfw * 2 + ts / 24 * 5, infoy + tfh + ts / 24 * 2, tfw, tfh);
+		g.fillRect(lmargin + hw * 4 + tfw * 3 + ts / 24 * 7, infoy + ts / 24, tfw, tfh);
+		g.fillRect(lmargin + hw * 4 + tfw * 3 + ts / 24 * 7, infoy + tfh + ts / 24 * 2, tfw, tfh);
+		g.setColor(ResourceManager.getTeamColor(attacker.getTeam()));
+		g.fillRect(lmargin + hw + ts / 24 * 2, infoy + ts / 24 * 2, ts / 4, fm.getHeight());
+		g.fillRect(lmargin + hw * 2 + tfw + ts / 24 * 4, infoy + ts / 24 * 2, ts / 4, fm.getHeight());
+		g.fillRect(lmargin + hw * 3 + tfw * 2 + ts / 24 * 6, infoy + ts / 24 * 2, ts / 4, fm.getHeight());
+		g.fillRect(lmargin + hw * 4 + tfw * 3 + ts / 24 * 8, infoy + ts / 24 * 2, ts / 4, fm.getHeight());
+		g.setColor(ResourceManager.getTeamColor(defender.getTeam()));
+		g.fillRect(lmargin + hw + ts / 24 * 2, infoy + tfh + ts / 24 * 3, ts / 4, fm.getHeight());
+		g.fillRect(lmargin + hw * 2 + tfw + ts / 24 * 4, infoy + tfh + ts / 24 * 3, ts / 4, fm.getHeight());
+		g.fillRect(lmargin + hw * 3 + tfw * 2 + ts / 24 * 6, infoy + tfh + ts / 24 * 3, ts / 4, fm.getHeight());
+		g.fillRect(lmargin + hw * 4 + tfw * 3 + ts / 24 * 8, infoy + tfh + ts / 24 * 3, ts / 4, fm.getHeight());
+		//get tiles
+		int attacker_tile = getGame().getMap().getTileIndex(attacker.getX(), attacker.getY());
+		int defender_tile = getGame().getMap().getTileIndex(defender.getX(), defender.getY());
+		//paint attack
+		if (attacker.getAttackType() == Unit.ATTACK_PHYSICAL) {
+			g.setColor(Color.PINK);
+		} else {
+			g.setColor(Color.CYAN);
+		}
+		int attacker_atk = attacker.getAttack();
+		int attacker_atk_bonus = UnitToolkit.getAttackBonus(attacker, defender, attacker_tile);
+		String attacker_attack_str = Integer.toString(attacker_atk + attacker_atk_bonus);
+		g.drawString(attacker_attack_str,
+				lmargin + hw + ts / 24 * 3 + ts / 4,
+				infoy + ts / 24 + (tfh - fm.getHeight()) / 2 + fm.getAscent());
+		if (attacker_atk_bonus > 0) {
+			int attack_width = fm.stringWidth(attacker_attack_str);
+			paintRiseArrow(g,
+					lmargin + hw + ts / 24 * 4 + ts / 4 + attack_width,
+					infoy + ts / 24 + (tfh - ah) / 2);
+		}
+		if (defender.getAttackType() == Unit.ATTACK_PHYSICAL) {
+			g.setColor(Color.PINK);
+		} else {
+			g.setColor(Color.CYAN);
+		}
+		int defender_atk = defender.getAttack();
+		int defender_atk_bonus = UnitToolkit.getAttackBonus(defender, attacker, defender_tile);
+		int modified_defender_atk = UnitToolkit.canCounter(defender, attacker)
+				? defender_atk + defender_atk_bonus : 0;
+		String defender_attack_str = Integer.toString(modified_defender_atk);
+		g.drawString(defender_attack_str,
+				lmargin + hw + ts / 24 * 3 + ts / 4,
+				infoy + tfh + ts / 24 * 2 + (tfh - fm.getHeight()) / 2 + fm.getAscent());
+		if (modified_defender_atk > 0 && defender_atk_bonus > 0) {
+			int attack_width = fm.stringWidth(defender_attack_str);
+			paintRiseArrow(g,
+					lmargin + hw + ts / 24 * 4 + ts / 4 + attack_width,
+					infoy + tfh + ts / 24 * 2 + (tfh - ah) / 2);
+		}
+		//paint defence
+		g.setColor(Color.WHITE);
+		int attacker_defence_bonus = UnitToolkit.getDefenceBonus(attacker, attacker_tile);
+		//attacker physical defence
+		int attacker_p_defence = attacker.getPhysicalDefence();
+		String attacker_p_defence_str = Integer.toString(attacker_p_defence + attacker_defence_bonus);
+		g.drawString(attacker_p_defence_str,
+				lmargin + hw * 2 + tfw + ts / 24 * 5 + ts / 4,
+				infoy + ts / 24 + (tfh - fm.getHeight()) / 2 + fm.getAscent());
+		//attacker magical defence
+		int attacker_m_defence = attacker.getMagicalDefence();
+		String attacker_m_defence_str = Integer.toString(attacker_m_defence + attacker_defence_bonus);
+		g.drawString(attacker_m_defence_str,
+				lmargin + hw * 3 + tfw * 2 + ts / 24 * 7 + ts / 4,
+				infoy + ts / 24 + (tfh - fm.getHeight()) / 2 + fm.getAscent());
+		//attacker defence arrow
+		if (attacker_defence_bonus > 0) {
+			int p_defence_width = fm.stringWidth(attacker_p_defence_str);
+			paintRiseArrow(g,
+					lmargin + hw * 2 + tfw + ts / 24 * 6 + ts / 4 + p_defence_width,
+					infoy + ts / 24 + (tfh - ah) / 2);
+			int m_defence_width = fm.stringWidth(attacker_m_defence_str);
+			paintRiseArrow(g,
+					lmargin + hw * 3 + tfw * 2 + ts / 24 * 8 + ts / 4 + m_defence_width,
+					infoy + ts / 24 + (tfh - ah) / 2);
+		}
+		int defender_defence_bonus = UnitToolkit.getDefenceBonus(defender, defender_tile);
+		//defender physical defence
+		int defender_p_defence = defender.getPhysicalDefence();
+		String defender_p_defence_str = Integer.toString(defender_p_defence + defender_defence_bonus);
+		g.drawString(defender_p_defence_str,
+				lmargin + hw * 2 + tfw + ts / 24 * 5 + ts / 4,
+				infoy + tfh + ts / 24 * 2 + (tfh - fm.getHeight()) / 2 + fm.getAscent());
+		//defender magical defence
+		int defender_m_defence = defender.getMagicalDefence();
+		String defender_m_defence_str = Integer.toString(defender_m_defence + defender_defence_bonus);
+		g.drawString(defender_m_defence_str,
+				lmargin + hw * 3 + tfw * 2 + ts / 24 * 7 + ts / 4,
+				infoy + tfh + ts / 24 * 2 + (tfh - fm.getHeight()) / 2 + fm.getAscent());
+		//defender defence arrow
+		if (defender_defence_bonus > 0) {
+			int p_defence_width = fm.stringWidth(attacker_p_defence_str);
+			paintRiseArrow(g,
+					lmargin + hw * 2 + tfw + ts / 24 * 6 + ts / 4 + p_defence_width,
+					infoy + tfh + ts / 24 * 2 + (tfh - ah) / 2);
+			int m_defence_width = fm.stringWidth(attacker_m_defence_str);
+			paintRiseArrow(g,
+					lmargin + hw * 3 + tfw * 2 + ts / 24 * 8 + ts / 4 + m_defence_width,
+					infoy + tfh + ts / 24 * 2 + (tfh - ah) / 2);
+		}
+		//paint level
+		int attacker_level = attacker.getLevel();
+		g.drawString(Integer.toString(attacker_level),
+				lmargin + hw * 4 + tfw * 3 + ts / 24 * 9 + ts / 4,
+				infoy + ts / 24 + (tfh - fm.getHeight()) / 2 + fm.getAscent());
+		int defender_level = defender.getLevel();
+		g.drawString(Integer.toString(defender_level),
+				lmargin + hw * 4 + tfw * 3 + ts / 24 * 9 + ts / 4,
+				infoy + tfh + ts / 24 * 2 + (tfh - fm.getHeight()) / 2 + fm.getAscent());
+	}
+
+	private void paintRiseArrow(Graphics g, int x, int y) {
+		g.drawImage(ResourceManager.getRiseArrow(), x, y, this);
+	}
+
+	private void paintReduceArrow(Graphics g, int x, int y) {
+		g.drawImage(ResourceManager.getReduceArrow(), x, y, this);
 	}
 
 }

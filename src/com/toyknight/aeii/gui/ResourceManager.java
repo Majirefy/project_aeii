@@ -22,6 +22,7 @@ public class ResourceManager {
 	private static BufferedImage attack_icon;
 	private static BufferedImage red_defence_icon;
 	private static BufferedImage blue_defence_icon;
+	private static BufferedImage level_icon;
 	private static BufferedImage population_icon;
 	private static BufferedImage poisoned_status;
 	private static BufferedImage[] action_icons;
@@ -48,6 +49,8 @@ public class ResourceManager {
 	private static BufferedImage lplus;
 	private static BufferedImage lminus;
 	private static BufferedImage ldivision;
+	private static BufferedImage rise_arrow;
+	private static BufferedImage reduce_arrow;
 	private static Color aeii_panel_bg;
 	private static Color text_background;
 	private static Color move_path_color;
@@ -74,6 +77,7 @@ public class ResourceManager {
 		loadActionButtons(ts);
 		loadHudIcons(ts);
 		loadStatus(ts);
+		loadArrows(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
 		text_background = new Color(206, 206, 206);
 		move_path_color = new Color(225, 0, 82);
@@ -81,7 +85,7 @@ public class ResourceManager {
 		team_color[0] = new Color(0, 100, 198);
 		team_color[1] = new Color(161, 0, 112);
 		team_color[2] = new Color(0, 153, 55);
-		team_color[3] = new Color(0, 43, 75);
+		team_color[3] = new Color(0, 65, 114);
 		title_font = new Font(Font.DIALOG, Font.BOLD, ts / 2);
 		label_font = new Font(Font.DIALOG, Font.BOLD, ts / 3);
 		text_font = new Font(Font.DIALOG, Font.PLAIN, ts / 4);
@@ -284,6 +288,7 @@ public class ResourceManager {
 		attack_icon = ResourceUtil.getImageClip(img_hud_icon, 0, 0, hw, hh);
 		red_defence_icon = ResourceUtil.getImageClip(img_hud_icon, hw, 0, hw, hh);
 		blue_defence_icon = ResourceUtil.getImageClip(img_hud_icon, hw * 2, 0, hw, hh);
+		level_icon = ResourceUtil.getImageClip(img_hud_icon, hw * 3, 0, hw, hh);
 		int i2w = ts / 24 * 11;
 		int i2h = ts / 24 * 11;
 		File hud_icon2_file = new File("res\\img\\hud_icons_2.png");
@@ -300,6 +305,16 @@ public class ResourceManager {
 		BufferedImage status_list = new BufferedImage(sw * 2, sh, BufferedImage.TYPE_INT_ARGB);
 		status_list.getGraphics().drawImage(ImageIO.read(status_file), 0, 0, sw * 2, sh, null);
 		poisoned_status = ResourceUtil.getImageClip(status_list, 0, 0, sw, sh);
+	}
+
+	private static void loadArrows(int ts) throws IOException {
+		int aw = ts / 24 * 9;
+		int ah = ts / 24 * 7;
+		File arrow_file = new File("res\\img\\arrow_icons.png");
+		BufferedImage img_arrows = new BufferedImage(aw * 3, ah, BufferedImage.TYPE_INT_ARGB);
+		img_arrows.getGraphics().drawImage(ImageIO.read(arrow_file), 0, 0, aw * 3, ah, null);
+		rise_arrow = ResourceUtil.getImageClip(img_arrows, aw, 0, aw, ah);
+		reduce_arrow = ResourceUtil.getImageClip(img_arrows, aw * 2, 0, aw, ah);
 	}
 
 	public static BufferedImage getLogoImage() {
@@ -320,6 +335,10 @@ public class ResourceManager {
 
 	public static BufferedImage getBlueDefenceIcon() {
 		return blue_defence_icon;
+	}
+
+	public static BufferedImage getLevelIcon() {
+		return level_icon;
 	}
 
 	public static BufferedImage getPopulationIcon() {
@@ -424,6 +443,14 @@ public class ResourceManager {
 
 	public static BufferedImage getBigCircleImage(int index) {
 		return big_circles[index];
+	}
+	
+	public static BufferedImage getRiseArrow() {
+		return rise_arrow;
+	}
+	
+	public static BufferedImage getReduceArrow() {
+		return reduce_arrow;
 	}
 
 	public static Color getTeamColor(int team) {

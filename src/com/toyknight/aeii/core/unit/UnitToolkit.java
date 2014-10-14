@@ -251,30 +251,35 @@ public class UnitToolkit {
 		return unit.getMinAttackRange() <= range && range <= unit.getMaxAttackRange();
 	}
 
+	public static boolean canCounter(Unit attacker, Unit counter) {
+		return Math.abs(attacker.getX() - counter.getX())
+				+ Math.abs(attacker.getY() - counter.getY()) == 1
+				&& isWithinRange(counter, attacker.getX(), attacker.getY());
+	}
+
 	public static int getDefenceBonus(Unit unit, int tile_index) {
+		int defence_bonus = 0;
 		Tile tile = TileRepository.getTile(tile_index);
-		if (unit.hasAbility(Ability.AIR_FORCE)) {
-			return 0;
-		} else {
-			int defence_bonus = tile.getDefenceBonus();
-			switch (tile.getType()) {
-				case Tile.TYPE_FOREST:
-					if (unit.hasAbility(Ability.FIGHTER_OF_THE_FOREST)) {
-						defence_bonus += 10;
-					}
-				case Tile.TYPE_MOUNTAIN:
-					if (unit.hasAbility(Ability.FIGHTER_OF_THE_MOUNTAIN)) {
-						defence_bonus += 10;
-					}
-				case Tile.TYPE_WATER:
-					if (unit.hasAbility(Ability.FIGHTER_OF_THE_SEA)) {
-						defence_bonus += 10;
-					}
-				default:
-				//do nothing
-			}
-			return defence_bonus;
+		if (!unit.hasAbility(Ability.AIR_FORCE)) {
+			defence_bonus += tile.getDefenceBonus();
 		}
+		switch (tile.getType()) {
+			case Tile.TYPE_FOREST:
+				if (unit.hasAbility(Ability.FIGHTER_OF_THE_FOREST)) {
+					defence_bonus += 10;
+				}
+			case Tile.TYPE_MOUNTAIN:
+				if (unit.hasAbility(Ability.FIGHTER_OF_THE_MOUNTAIN)) {
+					defence_bonus += 10;
+				}
+			case Tile.TYPE_WATER:
+				if (unit.hasAbility(Ability.FIGHTER_OF_THE_SEA)) {
+					defence_bonus += 10;
+				}
+			default:
+			//do nothing
+		}
+		return defence_bonus;
 	}
 
 	public static int getAttackBonus(Unit attacker, Unit defender, int tile_index) {
