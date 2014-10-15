@@ -3,7 +3,6 @@ package com.toyknight.aeii.core.event;
 import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
-import com.toyknight.aeii.core.unit.UnitToolkit;
 
 /**
  *

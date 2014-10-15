@@ -114,9 +114,9 @@ public class MapCanvas extends Screen implements Displayable {
 	public boolean isAnimating() {
 		return manager.isAnimating();
 	}
-	
+
 	public void closeAllInternalFrames() {
-		if(unit_store.isVisible()) {
+		if (unit_store.isVisible()) {
 			unit_store.setVisible(false);
 		}
 		game_screen.getActionPanel().update();
@@ -147,7 +147,7 @@ public class MapCanvas extends Screen implements Displayable {
 			}
 		}
 	}
-	
+
 	public void closeUnitStore() {
 		unit_store.setVisible(false);
 		game_screen.getActionPanel().update();
@@ -329,9 +329,9 @@ public class MapCanvas extends Screen implements Displayable {
 		attack_cursor.update();
 		updateViewport();
 	}
-	
+
 	public void hideActionBar() {
-		if(action_bar.isVisible()) {
+		if (action_bar.isVisible()) {
 			action_bar.setVisible(false);
 		}
 	}
@@ -450,7 +450,7 @@ public class MapCanvas extends Screen implements Displayable {
 		if (getGame().isLocalPlayer() && !isAnimating()) {
 			paintCursor(g);
 		}
-		if (manager.getState() == GameManager.STATE_ATTACK) {
+		if (manager.getState() == GameManager.STATE_ATTACK && !isAnimating()) {
 			paintAttackInfomation(g);
 		}
 		super.paint(g);

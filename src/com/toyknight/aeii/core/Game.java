@@ -1,14 +1,12 @@
 package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.animation.AnimationDispatcher;
-import com.toyknight.aeii.core.event.BuffAttachEvent;
 import com.toyknight.aeii.core.event.GameEvent;
 import com.toyknight.aeii.core.event.OccupyEvent;
 import com.toyknight.aeii.core.event.RepairEvent;
 import com.toyknight.aeii.core.event.TileDestroyEvent;
 import com.toyknight.aeii.core.event.UnitActionFinishEvent;
 import com.toyknight.aeii.core.event.UnitAttackEvent;
-import com.toyknight.aeii.core.event.UnitDestroyEvent;
 import com.toyknight.aeii.core.event.UnitHpChangeEvent;
 import com.toyknight.aeii.core.event.UnitMoveEvent;
 import com.toyknight.aeii.core.event.UnitMoveFinishEvent;
@@ -33,6 +31,8 @@ import java.util.Set;
  * @author toyknight
  */
 public class Game implements OperationListener {
+
+	private final int poison_damage = 10;
 
 	private final Map map;
 	private int current_team;
@@ -133,7 +133,8 @@ public class Game implements OperationListener {
 		if (attacker != null && UnitToolkit.isWithinRange(attacker, target_x, target_y)) {
 			Unit defender = getMap().getUnit(target_x, target_y);
 			if (defender != null) {
-				doAttack(attacker, defender);
+				submitGameEvent(new UnitAttackEvent(this, attacker, defender));
+				submitGameEvent(new UnitActionFinishEvent(attacker));
 			} else {
 				if (attacker.hasAbility(Ability.DESTROYER)
 						&& getMap().getTile(target_x, target_y).isDestroyable()) {
@@ -144,47 +145,11 @@ public class Game implements OperationListener {
 		}
 	}
 
-	protected void doAttack(Unit attacker, Unit defender) {
-		int attack_damage = UnitToolkit.getDamage(attacker, defender, getMap());
-		doDamage(attacker, defender, attack_damage);
-		if (defender.getCurrentHp() > attack_damage) {
-			if (UnitToolkit.canCounter(defender, attacker)) {
-				Unit defender_tmp = UnitFactory.cloneUnit(defender);
-				defender_tmp.setCurrentHp(defender.getCurrentHp() - attack_damage);
-				int counter_damage = UnitToolkit.getDamage(defender_tmp, attacker, getMap());
-				doDamage(defender, attacker, counter_damage);
-				if (attacker.getCurrentHp() > counter_damage) {
-					checkAttackBuff(defender, attacker);
-					submitGameEvent(new UnitActionFinishEvent(attacker));
-				} else {
-					destoryUnit(attacker);
-				}
-			} else {
-				submitGameEvent(new UnitActionFinishEvent(attacker));
-			}
-			checkAttackBuff(attacker, defender);
-		} else {
-			destoryUnit(defender);
-			submitGameEvent(new UnitActionFinishEvent(attacker));
-		}
-	}
-
-	protected void checkAttackBuff(Unit attacker, Unit defender) {
-		if (attacker.hasAbility(Ability.POISONER)) {
-			submitGameEvent(new BuffAttachEvent(defender, new Buff(Buff.POISONED, 2)));
-		}
-	}
-
-	protected void doDamage(Unit attacker, Unit defender, int damage) {
-		if (defender.getCurrentHp() > damage) {
-			submitGameEvent(new UnitAttackEvent(attacker, defender, damage));
-		} else {
-			submitGameEvent(new UnitAttackEvent(attacker, defender, defender.getCurrentHp()));
-		}
-	}
-
-	protected void destoryUnit(Unit unit) {
-		submitGameEvent(new UnitDestroyEvent(this, unit));
+	public void destoryUnit(Unit unit) {
+		getMap().removeUnit(unit.getX(), unit.getY());
+		updatePopulation(unit.getTeam());
+		animation_dispatcher.onUnitDestroyed(unit);
+		getMap().addTomb(unit.getX(), unit.getY());
 		if (unit.isCommander()) {
 			commander_price_delta[unit.getTeam()] += 500;
 		}
@@ -274,14 +239,11 @@ public class Game implements OperationListener {
 
 	protected void poisonUnit(Unit unit) {
 		int current_hp = unit.getCurrentHp();
-		int poison_damage = current_hp > 10 ? 10 : current_hp;
-		changeUnitHp(unit, -poison_damage);
-		if (unit.getCurrentHp() <= poison_damage) {
-			destoryUnit(unit);
-		}
+		int damage = current_hp > poison_damage ? poison_damage : current_hp;
+		changeUnitHp(unit, -damage);
 	}
 
-	protected void checkTerrainHeal(Unit unit) {
+	protected int getTerrainHeal(Unit unit) {
 		int heal = 0;
 		Tile tile = getMap().getTile(unit.getX(), unit.getY());
 		if (tile.getTeam() == -1) {
@@ -300,7 +262,7 @@ public class Game implements OperationListener {
 		if (unit.hasAbility(Ability.SON_OF_THE_SEA) && tile.getType() == Tile.TYPE_WATER) {
 			heal += 10;
 		}
-		healUnit(unit, heal);
+		return heal;
 	}
 
 	protected void healAllys(Unit healer) {
@@ -331,7 +293,7 @@ public class Game implements OperationListener {
 	}
 
 	protected void changeUnitHp(Unit unit, int change) {
-		submitGameEvent(new UnitHpChangeEvent(unit, change));
+		submitGameEvent(new UnitHpChangeEvent(this, unit, change));
 	}
 
 	public boolean canOccupy(Unit conqueror, int x, int y) {
@@ -457,21 +419,21 @@ public class Game implements OperationListener {
 		} else {
 			animation_dispatcher.onTurnStart(turn, -1, getCurrentTeam());
 		}
-
 		Set<Point> position_set = new HashSet(getMap().getUnitPositionSet());
 		for (Point position : position_set) {
 			Unit unit = getMap().getUnit(position.x, position.y);
 			if (unit.getTeam() == getCurrentTeam()) {
-				checkTerrainHeal(unit);
+				int terrain_heal = getTerrainHeal(unit);
+				healUnit(unit, terrain_heal);
 				//deal with buff issues
 				if (unit.hasBuff(Buff.POISONED)) {
 					poisonUnit(unit);
 				}
-				//deal with ability issues
-				if (unit.hasAbility(Ability.HEALING_AURA)) {
-					healAllys(unit);
-				}
 				if (unit.getCurrentHp() > 0) {
+					//deal with ability issues
+					if (unit.hasAbility(Ability.HEALING_AURA)) {
+						healAllys(unit);
+					}
 					unit.updateBuff();
 				}
 			}

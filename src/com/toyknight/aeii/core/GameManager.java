@@ -187,7 +187,8 @@ public class GameManager implements GameListener {
 	@Override
 	public void onUnitActionFinished(Unit unit) {
 		if (getGame().isLocalPlayer()) {
-			if (UnitToolkit.canMoveAgain(unit)) {
+			if (UnitToolkit.canMoveAgain(unit)
+					&& getUnitToolkit().isUnitAccessible(unit)) {
 				beginRMovePhase();
 			} else {
 				getGame().standbyUnit(unit.getX(), unit.getY());

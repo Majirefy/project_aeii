@@ -33,6 +33,7 @@ public class OccupyEvent implements GameEvent {
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
 		Tile tile = getGame().getMap().getTile(x, y);
 		getGame().changeTile(tile.getCapturedTileIndex(conqueror.getTeam()), x, y);
+		getGame().standbyUnit(conqueror.getX(), conqueror.getY());
 		dispatcher.onOccupy();
 	}
 	

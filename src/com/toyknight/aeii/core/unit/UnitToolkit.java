@@ -223,7 +223,10 @@ public class UnitToolkit {
 	}
 
 	public boolean isUnitAccessible(Unit unit) {
-		return unit != null && unit.getTeam() == game.getCurrentTeam() && !unit.isStandby();
+		return unit != null
+				&& unit.getTeam() == game.getCurrentTeam()
+				&& unit.getCurrentHp() > 0
+				&& !unit.isStandby();
 	}
 
 	public static boolean isEnemy(Unit unit, Unit target_unit) {
