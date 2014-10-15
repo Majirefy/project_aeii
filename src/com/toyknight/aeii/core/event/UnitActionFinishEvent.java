@@ -15,6 +15,11 @@ public class UnitActionFinishEvent implements GameEvent {
 	public UnitActionFinishEvent(Unit unit) {
 		this.unit = unit;
 	}
+	
+	@Override
+	public boolean canExecute() {
+		return true;
+	}
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {

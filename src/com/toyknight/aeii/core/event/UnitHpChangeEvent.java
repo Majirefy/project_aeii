@@ -26,6 +26,11 @@ public class UnitHpChangeEvent implements GameEvent {
 	}
 
 	@Override
+	public boolean canExecute() {
+		return unit.getCurrentHp() > 0 && validateHpChange(unit, change) != 0;
+	}
+
+	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
 		int actual_change = validateHpChange(unit, change);
 		int changed_hp = unit.getCurrentHp() + actual_change;
@@ -35,12 +40,12 @@ public class UnitHpChangeEvent implements GameEvent {
 			new UnitDestroyEvent(getGame(), unit).execute(null, dispatcher);
 		}
 	}
-	
+
 	private int validateHpChange(Unit unit, int change) {
-		if(unit.getCurrentHp() + change <= 0) {
+		if (unit.getCurrentHp() + change <= 0) {
 			return -unit.getCurrentHp();
 		}
-		if(unit.getCurrentHp() + change >= unit.getMaxHp()) {
+		if (unit.getCurrentHp() + change >= unit.getMaxHp()) {
 			return unit.getMaxHp() - unit.getCurrentHp();
 		}
 		return change;

@@ -121,7 +121,9 @@ public class ActionPanel extends AEIIPanel {
 	}
 
 	private boolean isOperatable() {
-		return manager.getGame().isLocalPlayer() && !game_screen.getCanvas().isAnimating();
+		return manager.getGame().isLocalPlayer()
+				&& !manager.getGame().isDispatchingEvents()
+				&& !game_screen.getCanvas().isAnimating();
 	}
 
 	private final ActionListener btn_end_turn_listener = new ActionListener() {

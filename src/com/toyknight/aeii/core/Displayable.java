@@ -7,6 +7,8 @@ package com.toyknight.aeii.core;
  */
 public interface Displayable {
 	
+	public void updateControllers();
+	
 	public void locateViewport(int map_x, int map_y);
 	
 }

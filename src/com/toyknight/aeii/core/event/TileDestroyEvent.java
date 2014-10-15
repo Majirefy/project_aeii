@@ -4,7 +4,6 @@ package com.toyknight.aeii.core.event;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.animation.AnimationDispatcher;
-import com.toyknight.aeii.core.unit.Unit;
 
 /**
  *
@@ -24,6 +23,11 @@ public class TileDestroyEvent implements GameEvent {
 	
 	protected Game getGame() {
 		return game;
+	}
+	
+	@Override
+	public boolean canExecute() {
+		return getGame().getMap().getTile(x, y).isDestroyable();
 	}
 
 	@Override

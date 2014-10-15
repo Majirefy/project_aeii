@@ -10,6 +10,8 @@ import com.toyknight.aeii.core.animation.AnimationDispatcher;
  */
 public interface GameEvent {
 	
+	public boolean canExecute();
+	
 	public void execute(GameListener listener, AnimationDispatcher dispatcher);
 	
 }

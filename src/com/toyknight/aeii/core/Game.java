@@ -413,9 +413,7 @@ public class Game implements OperationListener {
 			Unit unit = getMap().getUnit(position.x, position.y);
 			if (unit.getTeam() == team) {
 				int heal = getTerrainHeal(unit);
-				if (heal > 0) {
-					submitGameEvent(new UnitHpChangeEvent(this, unit, heal));
-				}
+				submitGameEvent(new UnitHpChangeEvent(this, unit, heal));
 			}
 		}
 		for (Point position : position_set) {
@@ -463,11 +461,26 @@ public class Game implements OperationListener {
 		startTurn();
 	}
 
+	public boolean isDispatchingEvents() {
+		return !event_queue.isEmpty();
+	}
+
 	public void dispatchGameEvent() {
-		if (!animation_dispatcher.isAnimating()) {
+		if (!animation_dispatcher.isAnimating() && !event_queue.isEmpty()) {
 			GameEvent event = event_queue.poll();
 			if (event != null) {
+				//skip unexcutable events
+				while (!event.canExecute()) {
+					event = event_queue.poll();
+					if (event == null) {
+						displayable.updateControllers();
+						return;
+					}
+				}
 				event.execute(game_listener, animation_dispatcher);
+				if (event_queue.isEmpty()) {
+					displayable.updateControllers();
+				}
 			}
 		}
 	}

@@ -26,6 +26,11 @@ public class UnitMoveEvent implements GameEvent {
 	protected Game getGame() {
 		return game;
 	}
+	
+	@Override
+	public boolean canExecute() {
+		return getGame().getMap().canMove(dest_x, dest_y);
+	}
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {

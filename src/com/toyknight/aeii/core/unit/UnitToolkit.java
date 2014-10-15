@@ -267,7 +267,7 @@ public class UnitToolkit {
 		return unit.getMinAttackRange() <= range && range <= unit.getMaxAttackRange();
 	}
 
-	public static boolean canCounter(Unit attacker, Unit counter) {
+	public static boolean canCounter(Unit counter, Unit attacker) {
 		return Math.abs(attacker.getX() - counter.getX())
 				+ Math.abs(attacker.getY() - counter.getY()) == 1
 				&& isWithinRange(counter, attacker.getX(), attacker.getY());

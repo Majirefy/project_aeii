@@ -28,6 +28,11 @@ public class OccupyEvent implements GameEvent {
 	protected Game getGame() {
 		return game;
 	}
+	
+	@Override
+	public boolean canExecute() {
+		return getGame().getMap().getTile(x, y).isCapturable();
+	}
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {

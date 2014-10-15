@@ -28,6 +28,11 @@ public class UnitSummonEvent implements GameEvent {
 	protected Game getGame() {
 		return game;
 	}
+	
+	@Override
+	public boolean canExecute() {
+		return getGame().getMap().isTomb(target_x, target_y);
+	}
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {

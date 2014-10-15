@@ -39,7 +39,7 @@ import java.util.Set;
  *
  * @author toyknight
  */
-public class MapCanvas extends Screen implements Displayable {
+public class MapCanvas extends Screen {
 
 	private LocalGameManager manager;
 	private final GameScreen game_screen;
@@ -108,7 +108,10 @@ public class MapCanvas extends Screen implements Displayable {
 	}
 
 	public boolean isOperatable() {
-		return getGame().isLocalPlayer() && !isAnimating() && !isInternalFrameShown();
+		return !isAnimating()
+				&& getGame().isLocalPlayer()
+				&& !getGame().isDispatchingEvents()
+				&& !isInternalFrameShown();
 	}
 
 	public boolean isAnimating() {
@@ -359,7 +362,6 @@ public class MapCanvas extends Screen implements Displayable {
 		}
 	}
 
-	@Override
 	public void locateViewport(int map_x, int map_y) {
 		int center_sx = map_x * ts;
 		int center_sy = map_y * ts;
@@ -601,7 +603,9 @@ public class MapCanvas extends Screen implements Displayable {
 		int cursor_y = getCursorYOnMap();
 		Unit attacker = manager.getSelectedUnit();
 		Unit defender = manager.getUnit(cursor_x, cursor_y);
-		if (!UnitToolkit.isEnemy(attacker, defender)) {
+		if (defender == null
+				|| !UnitToolkit.isWithinRange(attacker, defender.getX(), defender.getY())
+				|| !UnitToolkit.isEnemy(attacker, defender)) {
 			return;
 		}
 		g.setFont(ResourceManager.getTextFont());

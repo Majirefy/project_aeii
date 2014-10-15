@@ -20,6 +20,11 @@ public class UnitMoveFinishEvent implements GameEvent {
 		this.start_x = start_x;
 		this.start_y = start_y;
 	}
+	
+	@Override
+	public boolean canExecute() {
+		return true;
+	}
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {

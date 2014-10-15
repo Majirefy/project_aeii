@@ -27,6 +27,11 @@ public class RepairEvent implements GameEvent {
 	protected Game getGame() {
 		return game;
 	}
+	
+	@Override
+	public boolean canExecute() {
+		return getGame().getMap().getTile(x, y).isRepairable();
+	}
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {

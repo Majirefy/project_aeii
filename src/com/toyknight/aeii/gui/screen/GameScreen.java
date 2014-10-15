@@ -1,5 +1,6 @@
 package com.toyknight.aeii.gui.screen;
 
+import com.toyknight.aeii.core.Displayable;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.LocalGameManager;
@@ -14,7 +15,7 @@ import java.awt.event.KeyEvent;
  *
  * @author toyknight
  */
-public class GameScreen extends Screen implements ManagerStateListener {
+public class GameScreen extends Screen  implements Displayable, ManagerStateListener {
 
 	private Game game;
 	private LocalGameManager manager;
@@ -64,15 +65,25 @@ public class GameScreen extends Screen implements ManagerStateListener {
 		this.action_panel.setGameManager(manager);
 		this.status_panel.setGameManager(manager);
 		this.tile_panel.setGameManager(manager);
+		this.game.setGameListener(manager);
+		this.game.setDisplayable(this);
+		this.game.startTurn();
 		this.action_panel.update();
 		this.tile_panel.update();
-		this.game.setGameListener(manager);
-		this.game.setDisplayable(map_canvas);
-		this.game.startTurn();
 	}
 
 	public Game getGame() {
 		return game;
+	}
+	
+	@Override
+	public void updateControllers() {
+		getActionPanel().update();
+	}
+	
+	@Override
+	public void locateViewport(int map_x, int map_y) {
+		getCanvas().locateViewport(map_x, map_y);
 	}
 
 	@Override

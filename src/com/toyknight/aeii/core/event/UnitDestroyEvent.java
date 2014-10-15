@@ -23,6 +23,11 @@ public class UnitDestroyEvent implements GameEvent {
 	protected Game getGame() {
 		return game;
 	}
+	
+	@Override
+	public boolean canExecute() {
+		return true;
+	}
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
