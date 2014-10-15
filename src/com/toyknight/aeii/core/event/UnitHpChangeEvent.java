@@ -27,12 +27,23 @@ public class UnitHpChangeEvent implements GameEvent {
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
-		int new_hp = unit.getCurrentHp() + change;
-		unit.setCurrentHp(new_hp);
-		dispatcher.onUnitHpChanged(unit, change);
+		int actual_change = validateHpChange(unit, change);
+		int changed_hp = unit.getCurrentHp() + actual_change;
+		unit.setCurrentHp(changed_hp);
+		dispatcher.onUnitHpChanged(unit, actual_change);
 		if (unit.getCurrentHp() <= 0) {
-			getGame().destoryUnit(unit);
+			new UnitDestroyEvent(getGame(), unit).execute(null, dispatcher);
 		}
+	}
+	
+	private int validateHpChange(Unit unit, int change) {
+		if(unit.getCurrentHp() + change <= 0) {
+			return -unit.getCurrentHp();
+		}
+		if(unit.getCurrentHp() + change >= unit.getMaxHp()) {
+			return unit.getMaxHp() - unit.getCurrentHp();
+		}
+		return change;
 	}
 
 }

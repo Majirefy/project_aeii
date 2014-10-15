@@ -127,8 +127,6 @@ public class ActionBar extends JPanel {
 					if (manager.getGame().canRepair(unit, unit.getX(), unit.getY())) {
 						addButton(btn_repair);
 					}
-				case GameManager.STATE_MOVE:
-				case GameManager.STATE_RMOVE:
 					addButton(btn_standby);
 					break;
 				default:

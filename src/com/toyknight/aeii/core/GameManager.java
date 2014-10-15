@@ -258,7 +258,7 @@ public class GameManager implements GameListener {
 
 	public void standbySelectedUnit() {
 		Unit unit = getSelectedUnit();
-		if (unit != null && (isActionState() || (isNewUnitPhase() && state == STATE_MOVE))) {
+		if (unit != null && isActionState()) {
 			if (getGame().getMap().canStandby(unit)) {
 				getGame().standbyUnit(unit.getX(), unit.getY());
 				setState(STATE_SELECT);
@@ -282,7 +282,8 @@ public class GameManager implements GameListener {
 
 	public boolean canSelectedUnitMove(int dest_x, int dest_y) {
 		Point dest = getGame().getMap().getPosition(dest_x, dest_y);
-		return movable_positions.contains(dest) && getGame().getMap().canMove(dest_x, dest_y);
+		return movable_positions.contains(dest)
+				&& getUnitToolkit().canUnitMove(getSelectedUnit(), dest_x, dest_y);
 	}
 
 	public boolean isActionState() {

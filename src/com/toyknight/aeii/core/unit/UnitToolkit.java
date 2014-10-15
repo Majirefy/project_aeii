@@ -74,7 +74,7 @@ public class UnitToolkit {
 			Step current_step = current_steps.poll();
 			int step_x = current_step.getPosition().x;
 			int step_y = current_step.getPosition().y;
-			if (game.getMap().canMove(step_x, step_y)) {
+			if (canUnitMove(current_unit, step_x, step_y)) {
 				movable_positions.add(current_step.getPosition());
 			}
 			for (int i = 0; i < 4; i++) {
@@ -219,6 +219,19 @@ public class UnitToolkit {
 			} else {
 				return true;
 			}
+		}
+	}
+
+	public boolean canUnitMove(Unit unit, int dest_x, int dest_y) {
+		if (game.getMap().canMove(dest_x, dest_y)) {
+			Unit dest_unit = game.getMap().getUnit(dest_x, dest_y);
+			if (dest_unit == null) {
+				return true;
+			} else {
+				return isTheSameUnit(unit, dest_unit);
+			}
+		} else {
+			return false;
 		}
 	}
 

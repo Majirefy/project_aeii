@@ -340,7 +340,6 @@ public class MapCanvas extends Screen implements Displayable {
 		if (!isAnimating() && getGame().isLocalPlayer()) {
 			Unit unit = manager.getSelectedUnit();
 			switch (manager.getState()) {
-				case GameManager.STATE_RMOVE:
 				case GameManager.STATE_ACTION:
 					action_bar.display(unit.getX(), unit.getY());
 					break;

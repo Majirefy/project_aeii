@@ -13,7 +13,7 @@ import java.util.Queue;
  * @author toyknight
  */
 public class LocalGameManager extends GameManager implements AnimationDispatcher {
-	
+
 	private final AnimationProvider animation_provider;
 
 	private final Queue<Animation> animation_dispatcher;
@@ -53,12 +53,12 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
 	public Animation getCurrentAnimation() {
 		return current_animation;
 	}
-	
+
 	@Override
 	public boolean isAnimating() {
 		return current_animation != null;
 	}
-	
+
 	public void reverseMove() {
 		Unit unit = getSelectedUnit();
 		if (getUnitToolkit().isUnitAccessible(unit) && canReverseMove() && getState() == STATE_ACTION) {
@@ -125,13 +125,14 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
 		Animation animation = animation_provider.getUnitMoveAnimation(unit, start_x, start_y, dest_x, dest_y);
 		submitAnimation(animation);
 	}
-	
+
 	@Override
 	public void onTurnStart(int turn, int income, int team) {
+		income = getGame().isLocalPlayer() ? income : -1;
 		Animation animation = animation_provider.getTurnStartAnimation(turn, income, team);
 		submitAnimation(animation);
 	}
-	
+
 	public void update() {
 		updateAnimation();
 		getGame().dispatchGameEvent();

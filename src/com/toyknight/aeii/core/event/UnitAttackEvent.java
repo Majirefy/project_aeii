@@ -49,7 +49,7 @@ public class UnitAttackEvent implements GameEvent {
 		defender.setCurrentHp(defender.getCurrentHp() - damage);
 		dispatcher.onUnitAttack(attacker, defender, damage);
 		if(defender.getCurrentHp() <= 0) {
-			getGame().destoryUnit(defender);
+			new UnitDestroyEvent(getGame(), defender).execute(null, dispatcher);
 		}
 	}
 	
