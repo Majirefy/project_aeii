@@ -108,19 +108,22 @@ public class MapCanvas extends Screen implements Displayable {
 	}
 
 	public boolean isOperatable() {
-		return getGame().isLocalPlayer() && !isAnimating() && !internalFrameShown();
+		return getGame().isLocalPlayer() && !isAnimating() && !isInternalFrameShown();
 	}
 
 	public boolean isAnimating() {
 		return manager.isAnimating();
 	}
-
-	public boolean internalFrameShown() {
-		return internal_frame_shown;
+	
+	public void closeAllInternalFrames() {
+		if(unit_store.isVisible()) {
+			unit_store.setVisible(false);
+		}
+		game_screen.getActionPanel().update();
 	}
 
-	public void setInternalFrameShown(boolean shown) {
-		this.internal_frame_shown = shown;
+	public boolean isInternalFrameShown() {
+		return unit_store.isVisible();
 	}
 
 	private boolean isOnUnitAnimation(int x, int y) {
@@ -144,12 +147,18 @@ public class MapCanvas extends Screen implements Displayable {
 			}
 		}
 	}
+	
+	public void closeUnitStore() {
+		unit_store.setVisible(false);
+		game_screen.getActionPanel().update();
+	}
 
 	public void showUnitStore(int map_x, int map_y) {
 		unit_store.setLocation(
 				(getWidth() - unit_store.getWidth()) / 2,
 				(getHeight() - unit_store.getHeight()) / 2);
 		unit_store.display(map_x, map_y);
+		game_screen.getActionPanel().update();
 	}
 
 	public void onMousePress(MouseEvent e) {
@@ -319,6 +328,12 @@ public class MapCanvas extends Screen implements Displayable {
 		cursor.update();
 		attack_cursor.update();
 		updateViewport();
+	}
+	
+	public void hideActionBar() {
+		if(action_bar.isVisible()) {
+			action_bar.setVisible(false);
+		}
 	}
 
 	public void updateActionBar() {

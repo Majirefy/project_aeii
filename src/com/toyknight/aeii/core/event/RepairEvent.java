@@ -32,7 +32,6 @@ public class RepairEvent implements GameEvent {
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
 		Tile tile = getGame().getMap().getTile(x, y);
 		getGame().changeTile(tile.getRepairedTileIndex(), x, y);
-		repairer.setStandby(true);
 		dispatcher.onRepair();
 	}
 

@@ -206,7 +206,7 @@ public class Game implements OperationListener {
 		Unit conqueror = getMap().getUnit(conqueror_x, conqueror_y);
 		if (canOccupy(conqueror, x, y)) {
 			submitGameEvent(new OccupyEvent(this, conqueror, x, y));
-			conqueror.setStandby(true);
+			submitGameEvent(new UnitActionFinishEvent(conqueror));
 		}
 	}
 
@@ -215,6 +215,7 @@ public class Game implements OperationListener {
 		Unit repairer = getMap().getUnit(x, y);
 		if (canRepair(repairer, x, y)) {
 			submitGameEvent(new RepairEvent(this, repairer, x, y));
+			submitGameEvent(new UnitActionFinishEvent(repairer));
 		}
 	}
 

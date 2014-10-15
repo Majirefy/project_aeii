@@ -83,9 +83,16 @@ public class ActionPanel extends AEIIPanel {
 	}
 
 	private void updateButtons() {
-		if (isOperatable() && manager.getState() == GameManager.STATE_SELECT) {
-			btn_end_turn.setEnabled(true);
+		if (isOperatable()) {
+			btn_mini_map.setEnabled(true);
+			if (!game_screen.getCanvas().isInternalFrameShown()
+					&& manager.getState() == GameManager.STATE_SELECT) {
+				btn_end_turn.setEnabled(true);
+			} else {
+				btn_end_turn.setEnabled(false);
+			}
 		} else {
+			btn_mini_map.setEnabled(false);
 			btn_end_turn.setEnabled(false);
 		}
 	}
@@ -123,7 +130,8 @@ public class ActionPanel extends AEIIPanel {
 		public void actionPerformed(ActionEvent e) {
 			synchronized (getTreeLock()) {
 				manager.getGame().endTurn();
-				//updateButtons();
+				game_screen.getCanvas().hideActionBar();
+				game_screen.getCanvas().closeAllInternalFrames();
 			}
 		}
 

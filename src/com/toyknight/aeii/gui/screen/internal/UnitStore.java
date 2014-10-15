@@ -148,16 +148,15 @@ public class UnitStore extends JInternalFrame {
 			}
 		}
 		unit_list.setListData(unit_index_list.toArray());
-		canvas.setInternalFrameShown(true);
 		this.show();
 		canvas.getDesktopManager().activateFrame(this);
 		unit_list.setSelectedIndex(last_selection);
 	}
-
+	
 	public void close() {
-		canvas.setInternalFrameShown(false);
-		this.setVisible(false);
+		canvas.closeUnitStore();
 	}
+	
 
 	private void buyUnit(int index) {
 		synchronized (getTreeLock()) {
