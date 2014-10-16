@@ -1,7 +1,6 @@
 package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.map.Map;
-import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
 
 /**
@@ -16,10 +15,7 @@ public class GameFactory {
 		this.map = map;
 	}
 
-	public Game createBasicGame(Player[] players, int start_gold, int max_population) {
-		for (Player player : players) {
-			player.setGold(start_gold);
-		}
+	public Game createBasicGame(Player[] players, int max_population) {
 		Game game = new Game(map, players, max_population);
 		game.init();
 		return game;

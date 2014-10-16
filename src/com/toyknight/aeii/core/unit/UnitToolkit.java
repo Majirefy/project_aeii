@@ -242,9 +242,10 @@ public class UnitToolkit {
 				&& !unit.isStandby();
 	}
 
-	public static boolean isEnemy(Unit unit, Unit target_unit) {
+	public boolean isEnemy(Unit unit, Unit target_unit) {
 		if (unit != null && target_unit != null) {
-			return unit.getTeam() != target_unit.getTeam();
+			return unit.getTeam() != target_unit.getTeam() 
+					&& game.getPlayer(unit.getTeam()).getAlliance() != game.getPlayer(target_unit.getTeam()).getAlliance();
 		} else {
 			return false;
 		}

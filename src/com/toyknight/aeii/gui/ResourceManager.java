@@ -51,6 +51,7 @@ public class ResourceManager {
 	private static BufferedImage ldivision;
 	private static BufferedImage rise_arrow;
 	private static BufferedImage reduce_arrow;
+	private static BufferedImage level_up_icon;
 	private static Color aeii_panel_bg;
 	private static Color text_background;
 	private static Color move_path_color;
@@ -75,7 +76,7 @@ public class ResourceManager {
 		loadChars(ts);
 		loadCircles(ts);
 		loadActionButtons(ts);
-		loadHudIcons(ts);
+		loadIcons(ts);
 		loadStatus(ts);
 		loadArrows(ts);
 		aeii_panel_bg = new Color(36, 42, 69);
@@ -279,7 +280,7 @@ public class ResourceManager {
 		}
 	}
 
-	private static void loadHudIcons(int ts) throws IOException {
+	private static void loadIcons(int ts) throws IOException {
 		int hw = ts / 24 * 13;
 		int hh = ts / 24 * 16;
 		File hud_icon_file = new File("res\\img\\hud_icons.png");
@@ -296,6 +297,11 @@ public class ResourceManager {
 		img_hud_icon2.getGraphics().drawImage(ImageIO.read(hud_icon2_file), 0, 0, i2w * 2, i2h, null);
 		gold_icon = ResourceUtil.getImageClip(img_hud_icon2, i2w, 0, i2w, i2h);
 		population_icon = ResourceUtil.getImageClip(img_hud_icon2, 0, 0, i2w, i2h);
+		int luiw = ts / 24 * 62;
+		int luih = ts / 24 * 11;
+		File level_up_icon_file = new File("res\\img\\levelup.png");
+		level_up_icon = new BufferedImage(luiw, luih, BufferedImage.TYPE_INT_ARGB);
+		level_up_icon.getGraphics().drawImage(ImageIO.read(level_up_icon_file), 0, 0, luiw, luih, null);
 	}
 
 	private static void loadStatus(int ts) throws IOException {
@@ -339,6 +345,10 @@ public class ResourceManager {
 
 	public static BufferedImage getLevelIcon() {
 		return level_icon;
+	}
+	
+	public static BufferedImage getLevelUpIcon() {
+		return level_up_icon;
 	}
 
 	public static BufferedImage getPopulationIcon() {
@@ -444,11 +454,11 @@ public class ResourceManager {
 	public static BufferedImage getBigCircleImage(int index) {
 		return big_circles[index];
 	}
-	
+
 	public static BufferedImage getRiseArrow() {
 		return rise_arrow;
 	}
-	
+
 	public static BufferedImage getReduceArrow() {
 		return reduce_arrow;
 	}

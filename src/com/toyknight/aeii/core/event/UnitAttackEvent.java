@@ -23,11 +23,11 @@ public class UnitAttackEvent implements GameEvent {
 		this.attacker = attacker;
 		this.defender = defender;
 	}
-	
+
 	protected Game getGame() {
 		return game;
 	}
-	
+
 	@Override
 	public boolean canExecute() {
 		return true;
@@ -37,27 +37,39 @@ public class UnitAttackEvent implements GameEvent {
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
 		int attack_damage = UnitToolkit.getDamage(attacker, defender, getGame().getMap());
 		doDamage(attacker, defender, attack_damage, dispatcher);
+		int attack_exp = 30;
 		if (defender.getCurrentHp() > 0) {
 			if (UnitToolkit.canCounter(defender, attacker)) {
 				int counter_damage = UnitToolkit.getDamage(defender, attacker, getGame().getMap());
 				doDamage(defender, attacker, counter_damage, dispatcher);
+				int counter_exp = 20;
 				if (attacker.getCurrentHp() > 0) {
 					attachBuffAfterAttack(defender, attacker);
+				} else {
+					counter_exp += 30;
+				}
+				if (defender.gainExperience(counter_exp)) {
+					dispatcher.onUnitLevelUp(defender);
 				}
 			}
 			attachBuffAfterAttack(attacker, defender);
+		} else {
+			attack_exp += 30;
+		}
+		if (attacker.getCurrentHp() > 0 && attacker.gainExperience(attack_exp)) {
+			dispatcher.onUnitLevelUp(attacker);
 		}
 	}
-	
+
 	private void doDamage(Unit attacker, Unit defender, int damage, AnimationDispatcher dispatcher) {
 		damage = defender.getCurrentHp() > damage ? damage : defender.getCurrentHp();
 		defender.setCurrentHp(defender.getCurrentHp() - damage);
 		dispatcher.onUnitAttack(attacker, defender, damage);
-		if(defender.getCurrentHp() <= 0) {
+		if (defender.getCurrentHp() <= 0) {
 			new UnitDestroyEvent(getGame(), defender).execute(null, dispatcher);
 		}
 	}
-	
+
 	private void attachBuffAfterAttack(Unit attacker, Unit defender) {
 		if (attacker.hasAbility(Ability.POISONER)) {
 			defender.attachBuff(new Buff(Buff.POISONED, 2));

@@ -18,7 +18,7 @@ public class Unit {
 
 	private int level;     //等级（初始等级为0，最高可以升级到3级）
 	private int experience = 0;
-	private final int[] level_up_experience = {100, 150, 250};
+	private final int[] level_up_experience = {100, 150, 300};
 
 	private final String unit_code;
 	private int team;
@@ -93,7 +93,7 @@ public class Unit {
 	public int getIndex() {
 		return index;
 	}
-	
+
 	public boolean isCommander() {
 		return is_commander;
 	}
@@ -298,7 +298,7 @@ public class Unit {
 		return is_standby;
 	}
 
-	public void levelUp() {
+	protected void levelUp() {
 		if (level < 3) {
 			level++;
 			this.attack += this.getAttackGrowth();
@@ -309,11 +309,22 @@ public class Unit {
 		}
 	}
 
-	public void gainExperience(int exp) {
+	/**
+	 * 
+	 * @param exp
+	 * @return returns if unit level is up after gaining exp
+	 */
+	public boolean gainExperience(int exp) {
 		if (level < 3) {
-			
+			boolean level_up_flag = false;
+			if (getLevelUpExperience() - getCurrentExperience() <= exp) {
+				level_up_flag = true;
+				levelUp();
+			}
+			experience += exp;
+			return level_up_flag;
 		} else {
-			
+			return false;
 		}
 	}
 
@@ -323,7 +334,7 @@ public class Unit {
 
 	public int getCurrentExperience() {
 		int exp = experience;
-		for (int i = 1; i <= level; i++) {
+		for (int i = 0; i < level; i++) {
 			exp -= level_up_experience[i];
 		}
 		return exp;

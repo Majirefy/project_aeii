@@ -24,7 +24,6 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
 		this.animation_provider = provider;
 		this.animation_dispatcher = new LinkedList();
 		current_animation = null;
-		getGame().setAnimationDispatcher(this);
 	}
 
 	@Override
@@ -110,6 +109,12 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
 		submitAnimation(animation);
 		Animation smoke_animation = animation_provider.getSmokeAnimation(unit.getX(), unit.getY());
 		submitAnimation(smoke_animation);
+	}
+	
+	@Override
+	public void onUnitLevelUp(Unit unit) {
+		Animation animation = animation_provider.getUnitLevelUpAnimation(unit);
+		submitAnimation(animation);
 	}
 
 	@Override

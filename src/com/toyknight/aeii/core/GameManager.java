@@ -163,7 +163,7 @@ public class GameManager implements GameListener {
 		if (attacker != null && UnitToolkit.isWithinRange(attacker, x, y)) {
 			Unit defender = getGame().getMap().getUnit(x, y);
 			if (defender != null) {
-				return UnitToolkit.isEnemy(attacker, defender);
+				return getUnitToolkit().isEnemy(attacker, defender);
 			} else {
 				if (attacker.hasAbility(Ability.DESTROYER)) {
 					return getGame().getMap().getTile(x, y).isDestroyable();

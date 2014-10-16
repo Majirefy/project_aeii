@@ -1,7 +1,6 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Configuration;
-import com.toyknight.aeii.core.Displayable;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.LocalGameManager;
@@ -605,7 +604,7 @@ public class MapCanvas extends Screen {
 		Unit defender = manager.getUnit(cursor_x, cursor_y);
 		if (defender == null
 				|| !UnitToolkit.isWithinRange(attacker, defender.getX(), defender.getY())
-				|| !UnitToolkit.isEnemy(attacker, defender)) {
+				|| !manager.getUnitToolkit().isEnemy(attacker, defender)) {
 			return;
 		}
 		g.setFont(ResourceManager.getTextFont());
@@ -617,7 +616,7 @@ public class MapCanvas extends Screen {
 		int tfh = fm.getHeight() + ts / 12; //text field height
 		int lmargin = (getWidth() - hw * 4 - tfw * 4 - ts / 24 * 7) / 2; //margin left
 		int infoh = tfh * 2 + ts / 24 * 3; //infomation panel height
-		int infoy = (getHeight() - ts) / 2 > mouse_y ? getHeight() - infoh - ts / 12 : 0; //imfomation panel y
+		int infoy = (getHeight() - ts) / 3 * 2 > mouse_y ? getHeight() - infoh - ts / 12 : 0; //infomation panel y
 		//paint background
 		g.setColor(Color.BLACK);
 		g.fillRect(0, infoy + ts / 24, getWidth(), infoh);

@@ -89,6 +89,14 @@ public class SwingAnimatingProvider implements AnimationProvider {
 		animation.setInterval(1);
 		return animation;
 	}
+	
+	@Override
+	public Animation getUnitLevelUpAnimation(Unit unit) {
+		UnitLevelUpAnimation animation = new UnitLevelUpAnimation(unit, ts);
+		processAnimation(animation);
+		animation.setInterval(1);
+		return animation;
+	}
 
 	@Override
 	public Animation getUnitMoveAnimation(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {

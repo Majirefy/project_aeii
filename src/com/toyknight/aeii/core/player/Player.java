@@ -6,7 +6,7 @@ package com.toyknight.aeii.core.player;
  */
 public abstract class Player {
 	
-	private int alliance;
+	private int alliance = 0;
 	private int gold = 0;
 	private int population = 0;
 	

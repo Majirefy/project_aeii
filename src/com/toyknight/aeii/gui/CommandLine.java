@@ -121,10 +121,12 @@ public class CommandLine extends Thread {
 				Map map = MapFactory.createMap(map_file);
 				GameFactory game_factory = new GameFactory(map);
 				Player[] players = new Player[4];
-				for (int i = 0; i < 4; i++) {
-					players[i] = new LocalPlayer();
+				for (int team = 0; team < 4; team++) {
+					players[team] = new LocalPlayer();
+					players[team].setAlliance(team);
+					players[team].setGold(1000);
 				}
-				Game game = game_factory.createBasicGame(players, 1000, 20);
+				Game game = game_factory.createBasicGame(players, 10);
 				context.getGameScreen().setGame(game);
 				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
 				context.setCurrentFpsDelayToGame();
