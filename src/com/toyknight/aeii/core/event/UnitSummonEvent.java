@@ -6,6 +6,7 @@ import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.unit.UnitFactory;
 
 /**
  *
@@ -36,8 +37,9 @@ public class UnitSummonEvent implements GameEvent {
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+		int skeleton = UnitFactory.getSkeletonIntex();
 		getGame().getMap().removeTomb(target_x, target_y);
-		getGame().addUnit(10, getGame().getCurrentTeam(), target_x, target_y);
+		getGame().addUnit(skeleton, getGame().getCurrentTeam(), target_x, target_y);
 		getGame().getMap().getUnit(target_x, target_y).setStandby(true);
 		dispatcher.onSummon(summoner, target_x, target_y);
 	}

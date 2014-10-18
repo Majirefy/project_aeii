@@ -70,7 +70,10 @@ public class Map {
 
 	public void addTomb(int x, int y) {
 		Tomb tomb = new Tomb(x, y);
-		if (!tomb_list.contains(tomb)) {
+		if (tomb_list.contains(tomb)) {
+			int index = tomb_list.indexOf(tomb);
+			tomb_list.set(index, tomb);
+		} else {
 			tomb_list.add(tomb);
 		}
 	}

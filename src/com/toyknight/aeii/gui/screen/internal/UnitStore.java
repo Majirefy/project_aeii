@@ -141,9 +141,12 @@ public class UnitStore extends JInternalFrame {
 		this.store_y = y;
 		current_team = manager.getGame().getCurrentTeam();
 		commander_alive = manager.getGame().isCommanderAlive(current_team);
+		int sketeton = UnitFactory.getSkeletonIntex();
+		int crystal = UnitFactory.getCrystalIndex();
 		ArrayList<Integer> unit_index_list = new ArrayList();
 		for (int i = 0; i < UnitFactory.getUnitCount(); i++) {
-			if (UnitFactory.getSample(i).getPrice() > 0 && i != 10 && i != 11) {
+			if (UnitFactory.getSample(i).getPrice() > 0
+					&& i != sketeton && i != crystal) {
 				unit_index_list.add(i);
 			}
 		}

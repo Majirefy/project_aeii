@@ -457,9 +457,9 @@ public class Game implements OperationListener {
 				current_team++;
 			} else {
 				current_team = 0;
+				getMap().updateTombs();
 			}
 		} while (getCurrentPlayer() == null);
-		getMap().updateTombs();
 		startTurn();
 	}
 

@@ -4,6 +4,7 @@ import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.unit.UnitFactory;
 
 /**
  *
@@ -33,7 +34,7 @@ public class UnitDestroyEvent implements GameEvent {
 		getGame().getMap().removeUnit(unit.getX(), unit.getY());
 		getGame().updatePopulation(unit.getTeam());
 		dispatcher.onUnitDestroyed(unit);
-		if (unit.getIndex() != 11) {
+		if (unit.getIndex() != UnitFactory.getSkeletonIntex()) {
 			getGame().getMap().addTomb(unit.getX(), unit.getY());
 		}
 		if (unit.isCommander()) {

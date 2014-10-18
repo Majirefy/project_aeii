@@ -13,19 +13,27 @@ import java.util.Scanner;
  */
 public class UnitFactory {
 
+	private static int unit_count;
 	private static Unit[] units;
 	private static long current_code;
-	
+
 	private static int skeleton_index;
 	private static int crystal_index;
 
 	private UnitFactory() {
 	}
 
-	public static void init(File unit_data_dir)
-			throws IOException, AEIIException {
-		int unit_count
-				= unit_data_dir.listFiles(new SuffixFileFilter("dat")).length;
+	public static void init(File unit_data_dir) throws IOException, AEIIException {
+		try {
+			File unit_config = new File(
+					unit_data_dir.getAbsolutePath() + "\\unit_config.dat");
+			Scanner din = new Scanner(unit_config);
+			unit_count = din.nextInt();
+			skeleton_index = din.nextInt();
+			crystal_index = din.nextInt();
+		} catch (java.util.NoSuchElementException ex) {
+			throw new AEIIException("Unit configuration file broken");
+		}
 		units = new Unit[unit_count];
 		for (int i = 0; i < unit_count; i++) {
 			File unit_data = new File(
@@ -71,10 +79,18 @@ public class UnitFactory {
 				unit.setAbilities(ability_list);
 				units[i] = unit;
 			} catch (java.util.NoSuchElementException ex) {
-				throw new AEIIException("bad unit data");
+				throw new AEIIException("Bad unit data file: unit_" + i + ".dat");
 			}
 		}
 		current_code = 0;
+	}
+
+	public static int getSkeletonIntex() {
+		return skeleton_index;
+	}
+
+	public static int getCrystalIndex() {
+		return crystal_index;
 	}
 
 	public static int getUnitCount() {
