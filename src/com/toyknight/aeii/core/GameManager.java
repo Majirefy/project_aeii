@@ -250,6 +250,8 @@ public class GameManager implements GameListener {
 		int team = getGame().getCurrentTeam();
 		if (!getGame().isCommanderAlive(team)) {
 			getGame().restoreCommander(team, x, y);
+			int price = getGame().getCommanderPrice(team);
+			getGame().getCurrentPlayer().reduceGold(price);
 			selectUnit(x, y);
 			beginMovePhase();
 			is_new_unit_phase = true;

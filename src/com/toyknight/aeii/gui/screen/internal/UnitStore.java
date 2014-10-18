@@ -152,11 +152,10 @@ public class UnitStore extends JInternalFrame {
 		canvas.getDesktopManager().activateFrame(this);
 		unit_list.setSelectedIndex(last_selection);
 	}
-	
+
 	public void close() {
 		canvas.closeUnitStore();
 	}
-	
 
 	private void buyUnit(int index) {
 		synchronized (getTreeLock()) {
@@ -170,7 +169,8 @@ public class UnitStore extends JInternalFrame {
 	}
 
 	private void updateButton() {
-		if (selected_unit != null) {
+		if (selected_unit != null
+				&& manager.getGame().getCurrentPlayer().getPopulation() < manager.getGame().getMaxPopulation()) {
 			if (selected_unit.isCommander()) {
 				btn_buy.setEnabled(!commander_alive
 						&& manager.getGame().getCurrentPlayer().getGold() > manager.getGame().getCommanderPrice(current_team));

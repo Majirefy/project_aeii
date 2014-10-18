@@ -201,6 +201,8 @@ public class Game implements OperationListener {
 
 	public void restoreCommander(int team, int x, int y) {
 		if (!isCommanderAlive(team)) {
+			commanders[team].setX(x);
+			commanders[team].setY(y);
 			getMap().addUnit(commanders[team]);
 			commanders[team].setCurrentHp(commanders[team].getMaxHp());
 			restoreUnit(commanders[team]);
@@ -457,7 +459,7 @@ public class Game implements OperationListener {
 				current_team = 0;
 			}
 		} while (getCurrentPlayer() == null);
-		//deal with various issues
+		getMap().updateTombs();
 		startTurn();
 	}
 

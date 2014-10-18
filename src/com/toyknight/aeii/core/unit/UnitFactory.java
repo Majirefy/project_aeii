@@ -15,6 +15,9 @@ public class UnitFactory {
 
 	private static Unit[] units;
 	private static long current_code;
+	
+	private static int skeleton_index;
+	private static int crystal_index;
 
 	private UnitFactory() {
 	}

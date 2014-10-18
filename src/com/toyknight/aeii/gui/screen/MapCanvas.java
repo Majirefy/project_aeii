@@ -252,16 +252,24 @@ public class MapCanvas extends Screen {
 
 	private void doSelect(int x, int y) {
 		Unit unit = manager.getUnit(x, y);
-		if (unit != null) {
+		if (manager.getUnitToolkit().isUnitAccessible(unit)) {
 			manager.selectUnit(x, y);
-			if (manager.getUnitToolkit().isUnitAccessible(unit)) {
-				action_bar.display(x, y);
-			} else {
-				action_bar.setVisible(false);
-			}
+			action_bar.display(x, y);
 		} else {
 			if (manager.isAccessibleCastle(x, y)) {
-				action_bar.display(x, y);
+				if (unit == null) {
+					action_bar.display(x, y);
+				} else {
+					int current_allience
+							= manager.getGame().getCurrentPlayer().getAlliance();
+					int target_allience
+							= manager.getGame().getPlayer(unit.getTeam()).getAlliance();
+					if(current_allience == target_allience) {
+						action_bar.display(x, y);
+					} else {
+						action_bar.setVisible(false);
+					}
+				}
 			} else {
 				action_bar.setVisible(false);
 			}

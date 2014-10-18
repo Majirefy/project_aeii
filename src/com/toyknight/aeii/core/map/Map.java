@@ -94,6 +94,16 @@ public class Map {
 		return false;
 	}
 
+	public void updateTombs() {
+		ArrayList<Tomb> list = new ArrayList(tomb_list);
+		for (Tomb tomb : list) {
+			tomb.update();
+			if (tomb.getRemains() < 0) {
+				tomb_list.remove(tomb);
+			}
+		}
+	}
+
 	public ArrayList<Tomb> getTombList() {
 		return tomb_list;
 	}
