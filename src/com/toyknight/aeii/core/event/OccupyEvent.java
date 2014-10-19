@@ -3,6 +3,7 @@ package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
+import com.toyknight.aeii.core.SkirmishGame;
 import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.unit.Unit;
@@ -40,6 +41,9 @@ public class OccupyEvent implements GameEvent {
 		getGame().changeTile(tile.getCapturedTileIndex(conqueror.getTeam()), x, y);
 		getGame().standbyUnit(conqueror.getX(), conqueror.getY());
 		dispatcher.onOccupy();
+		if(getGame() instanceof SkirmishGame) {
+			((SkirmishGame)getGame()).onOccupy(x, y);
+		}
 	}
 	
 }

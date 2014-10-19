@@ -2,6 +2,7 @@ package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
+import com.toyknight.aeii.core.SkirmishGame;
 import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
@@ -39,6 +40,9 @@ public class UnitDestroyEvent implements GameEvent {
 		}
 		if (unit.isCommander()) {
 			getGame().changeCommanderPriceDelta(unit.getTeam(), 500);
+		}
+		if(getGame() instanceof SkirmishGame) {
+			((SkirmishGame)getGame()).onUnitDestroyed(unit);
 		}
 	}
 

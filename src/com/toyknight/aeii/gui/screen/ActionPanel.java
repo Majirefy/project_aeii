@@ -13,6 +13,8 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -65,6 +67,13 @@ public class ActionPanel extends AEIIPanel {
 		lb_unit_icon.setBounds(ts / 2, ts / 2, ts / 3 * 4, ts / 3 * 4);
 		lb_unit_icon.setHorizontalAlignment(JLabel.CENTER);
 		lb_unit_icon.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+		lb_unit_icon.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				Unit unit = manager.getSelectedUnit();
+				game_screen.getCanvas().locateViewport(unit.getX(), unit.getY());
+			}
+		});
 		this.add(lb_unit_icon);
 	}
 
@@ -85,8 +94,7 @@ public class ActionPanel extends AEIIPanel {
 	private void updateButtons() {
 		if (isOperatable()) {
 			btn_mini_map.setEnabled(true);
-			if (!game_screen.getCanvas().isInternalFrameShown()
-					&& manager.getState() == GameManager.STATE_SELECT) {
+			if (manager.getState() == GameManager.STATE_SELECT) {
 				btn_end_turn.setEnabled(true);
 			} else {
 				btn_end_turn.setEnabled(false);
@@ -122,8 +130,8 @@ public class ActionPanel extends AEIIPanel {
 
 	private boolean isOperatable() {
 		return manager.getGame().isLocalPlayer()
-				&& !manager.getGame().isDispatchingEvents()
-				&& !game_screen.getCanvas().isAnimating();
+				&& !manager.isProcessing()
+				&& !manager.isGameOver();
 	}
 
 	private final ActionListener btn_end_turn_listener = new ActionListener() {

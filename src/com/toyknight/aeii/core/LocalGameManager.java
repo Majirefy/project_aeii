@@ -142,5 +142,10 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
 		updateAnimation();
 		getGame().dispatchGameEvent();
 	}
+	
+	@Override
+	public boolean isProcessing() {
+		return super.isProcessing() || isAnimating();
+	}
 
 }

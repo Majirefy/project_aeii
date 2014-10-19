@@ -56,8 +56,6 @@ public class MapCanvas extends Screen {
 	private CursorSprite cursor;
 	private AttackCursorSprite attack_cursor;
 
-	private boolean internal_frame_shown;
-
 	private boolean up_pressed = false;
 	private boolean down_pressed = false;
 	private boolean left_pressed = false;
@@ -103,13 +101,11 @@ public class MapCanvas extends Screen {
 		mouse_x = 0;
 		mouse_y = 0;
 		current_delay = 0;
-		internal_frame_shown = false;
 	}
 
 	public boolean isOperatable() {
-		return !isAnimating()
-				&& getGame().isLocalPlayer()
-				&& !getGame().isDispatchingEvents()
+		return getGame().isLocalPlayer()
+				&& !manager.isProcessing()
 				&& !isInternalFrameShown();
 	}
 
@@ -218,7 +214,7 @@ public class MapCanvas extends Screen {
 
 	@Override
 	public void onKeyPress(KeyEvent e) {
-		if (!isAnimating()) {
+		if (isOperatable()) {
 			if (e.getKeyCode() == Configuration.getKeyUp()) {
 				this.up_pressed = true;
 			}
@@ -337,7 +333,7 @@ public class MapCanvas extends Screen {
 	}
 
 	public void updateActionBar() {
-		if (!isAnimating() && getGame().isLocalPlayer()) {
+		if (isOperatable()) {
 			Unit unit = manager.getSelectedUnit();
 			switch (manager.getState()) {
 				case GameManager.STATE_ACTION:

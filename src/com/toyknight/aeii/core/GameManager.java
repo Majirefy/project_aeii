@@ -304,5 +304,17 @@ public class GameManager implements GameListener {
 			return false;
 		}
 	}
+	
+	public boolean isProcessing() {
+		return getGame().isDispatchingEvents();
+	}
+	
+	public boolean isGameOver() {
+		if(getGame() instanceof SkirmishGame) {
+			return ((SkirmishGame)getGame()).isGameOver();
+		} else {
+			return false;
+		}
+	}
 
 }

@@ -152,6 +152,16 @@ public class Map {
 		}
 	}
 
+	public Unit getUnit(String unit_code) {
+		Collection<Unit> units = unit_map.values();
+		for (Unit unit : units) {
+			if (unit.getUnitCode().equals(unit_code)) {
+				return unit;
+			}
+		}
+		return null;
+	}
+
 	public void removeUnit(int x, int y) {
 		unit_map.remove(getPosition(x, y));
 	}
