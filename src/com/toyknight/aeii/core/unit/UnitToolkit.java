@@ -244,8 +244,7 @@ public class UnitToolkit {
 
 	public boolean isEnemy(Unit unit, Unit target_unit) {
 		if (unit != null && target_unit != null) {
-			return unit.getTeam() != target_unit.getTeam() 
-					&& game.getPlayer(unit.getTeam()).getAlliance() != game.getPlayer(target_unit.getTeam()).getAlliance();
+			return game.isEnemy(unit.getTeam(), target_unit.getTeam());
 		} else {
 			return false;
 		}

@@ -334,6 +334,16 @@ public class Game implements OperationListener {
 		return false;
 	}
 
+	public boolean isEnemy(int team_a, int team_b) {
+		if (team_a >= 0 && team_b >= 0) {
+			Player player_a = getPlayer(team_a);
+			Player player_b = getPlayer(team_b);
+			return player_a.getAlliance() != player_b.getAlliance();
+		} else {
+			return false;
+		}
+	}
+
 	public void updatePopulation(int team) {
 		getPlayer(team).setPopulation(getMap().getUnitCount(team));
 	}
