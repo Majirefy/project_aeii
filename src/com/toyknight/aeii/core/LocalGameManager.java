@@ -137,6 +137,11 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
 		Animation animation = animation_provider.getTurnStartAnimation(turn, income, team);
 		submitAnimation(animation);
 	}
+	
+	@Override
+	public void onGameWin(int alliance) {
+		
+	}
 
 	public void update() {
 		updateAnimation();

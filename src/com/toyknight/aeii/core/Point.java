@@ -1,11 +1,13 @@
 
 package com.toyknight.aeii.core;
 
+import java.io.Serializable;
+
 /**
  *
  * @author toyknight
  */
-public class Point {
+public class Point implements Serializable {
 	
     public int x;
     public int y;

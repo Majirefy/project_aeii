@@ -22,6 +22,7 @@ import com.toyknight.aeii.core.unit.Buff;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -92,6 +93,18 @@ public class Game implements OperationListener {
 			}
 		}
 	}
+	
+	protected AnimationDispatcher getAnimationDispatcher() {
+		return animation_dispatcher;
+	}
+	
+	protected GameListener getGameListener() {
+		return game_listener;
+	}
+	
+	protected Displayable getDisplayable() {
+		return displayable;
+	}
 
 	protected void submitGameEvent(GameEvent e) {
 		event_queue.add(e);
@@ -103,6 +116,18 @@ public class Game implements OperationListener {
 
 	public Player getCurrentPlayer() {
 		return player_list[current_team];
+	}
+
+	public ArrayList<Integer> getBuyableUnits(int team) {
+		int sketeton = UnitFactory.getSkeletonIntex();
+		int crystal = UnitFactory.getCrystalIndex();
+		ArrayList<Integer> unit_index_list = new ArrayList();
+		for (int i = 0; i < UnitFactory.getUnitCount(); i++) {
+			if (i != sketeton && i != crystal) {
+				unit_index_list.add(i);
+			}
+		}
+		return unit_index_list;
 	}
 
 	public int getCurrentTeam() {
@@ -303,6 +328,10 @@ public class Game implements OperationListener {
 		Tile tile = getMap().getTile(x, y);
 		return repairer.hasAbility(Ability.REPAIRER) && tile.isRepairable();
 	}
+	
+	public int getAlliance(int team) {
+		return getPlayer(team).getAlliance();
+	}
 
 	public int getCommanderPrice(int team) {
 		if (commander_price_delta[team] > 0) {
@@ -336,9 +365,7 @@ public class Game implements OperationListener {
 
 	public boolean isEnemy(int team_a, int team_b) {
 		if (team_a >= 0 && team_b >= 0) {
-			Player player_a = getPlayer(team_a);
-			Player player_b = getPlayer(team_b);
-			return player_a.getAlliance() != player_b.getAlliance();
+			return getAlliance(team_a) != getAlliance(team_b);
 		} else {
 			return false;
 		}
@@ -475,6 +502,10 @@ public class Game implements OperationListener {
 
 	public boolean isDispatchingEvents() {
 		return !event_queue.isEmpty();
+	}
+	
+	protected void clearGameEvents() {
+		event_queue.clear();
 	}
 
 	public void dispatchGameEvent() {

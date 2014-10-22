@@ -141,16 +141,8 @@ public class UnitStore extends JInternalFrame {
 		this.store_y = y;
 		current_team = manager.getGame().getCurrentTeam();
 		commander_alive = manager.getGame().isCommanderAlive(current_team);
-		int sketeton = UnitFactory.getSkeletonIntex();
-		int crystal = UnitFactory.getCrystalIndex();
-		ArrayList<Integer> unit_index_list = new ArrayList();
-		for (int i = 0; i < UnitFactory.getUnitCount(); i++) {
-			if (UnitFactory.getSample(i).getPrice() > 0
-					&& i != sketeton && i != crystal) {
-				unit_index_list.add(i);
-			}
-		}
-		unit_list.setListData(unit_index_list.toArray());
+		ArrayList<Integer> buyable_units =manager.getGame().getBuyableUnits(current_team);
+		unit_list.setListData(buyable_units.toArray());
 		this.show();
 		canvas.getDesktopManager().activateFrame(this);
 		unit_list.setSelectedIndex(last_selection);

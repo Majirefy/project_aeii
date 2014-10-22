@@ -37,4 +37,6 @@ public interface AnimationDispatcher {
 	
 	public void onTurnStart(int turn, int income, int team);
 	
+	public void onGameWin(int alliance);
+	
 }
