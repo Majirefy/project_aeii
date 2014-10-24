@@ -14,7 +14,7 @@ import com.toyknight.aeii.core.unit.UnitToolkit;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
-import com.toyknight.aeii.gui.animation.SwingAnimation;
+import com.toyknight.aeii.gui.animation.MapAnimation;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
 import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
 import com.toyknight.aeii.gui.screen.internal.ActionBar;
@@ -105,6 +105,7 @@ public class MapCanvas extends Screen {
 
 	public boolean isOperatable() {
 		return getGame().isLocalPlayer()
+				&& !manager.isGameOver()
 				&& !manager.isProcessing()
 				&& !isInternalFrameShown();
 	}
@@ -127,7 +128,11 @@ public class MapCanvas extends Screen {
 	private boolean isOnUnitAnimation(int x, int y) {
 		if (isAnimating()) {
 			Animation current_animation = manager.getCurrentAnimation();
-			return current_animation.hasLocation(x, y) && current_animation instanceof UnitAnimation;
+			if (current_animation instanceof UnitAnimation) {
+				return ((UnitAnimation) current_animation).hasLocation(x, y);
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -135,14 +140,15 @@ public class MapCanvas extends Screen {
 
 	private boolean needTombDisplay(int x, int y) {
 		Animation current_animation = manager.getCurrentAnimation();
-		if (current_animation == null) {
+		if (current_animation == null || !(current_animation instanceof MapAnimation)) {
 			return true;
 		} else {
-			if (current_animation.hasLocation(x, y)) {
+			if (((MapAnimation) current_animation).hasLocation(x, y)) {
 				return !(current_animation instanceof UnitDestroyedAnimation);
 			} else {
 				return true;
 			}
+
 		}
 	}
 
@@ -557,7 +563,7 @@ public class MapCanvas extends Screen {
 
 	private void paintAnimation(Graphics g) {
 		if (isAnimating()) {
-			SwingAnimation animation = (SwingAnimation) manager.getCurrentAnimation();
+			MapAnimation animation = (MapAnimation) manager.getCurrentAnimation();
 			animation.paint(g, this);
 		}
 	}
@@ -610,7 +616,8 @@ public class MapCanvas extends Screen {
 		int tfh = fm.getHeight() + ts / 12; //text field height
 		int lmargin = (getWidth() - hw * 4 - tfw * 4 - ts / 24 * 7) / 2; //margin left
 		int infoh = tfh * 2 + ts / 24 * 3; //infomation panel height
-		int infoy = (getHeight() - ts) / 3 * 2 > mouse_y ? getHeight() - infoh - ts / 12 : 0; //infomation panel y
+		int cursor_sy = getYOnCanvas(getCursorYOnMap());
+		int infoy = (getHeight() - ts) / 3 * 2 > cursor_sy ? getHeight() - infoh - ts / 12 : 0; //infomation panel y
 		//paint background
 		g.setColor(Color.BLACK);
 		g.fillRect(0, infoy + ts / 24, getWidth(), infoh);
@@ -650,9 +657,9 @@ public class MapCanvas extends Screen {
 		int defender_tile = getGame().getMap().getTileIndex(defender.getX(), defender.getY());
 		//paint attack
 		if (attacker.getAttackType() == Unit.ATTACK_PHYSICAL) {
-			g.setColor(Color.RED);
+			g.setColor(ResourceManager.getPhysicalAttackColor());
 		} else {
-			g.setColor(Color.BLUE);
+			g.setColor(ResourceManager.getMagicalAttackColor());
 		}
 		int attacker_atk = attacker.getAttack();
 		int attacker_atk_bonus = UnitToolkit.getAttackBonus(attacker, defender, attacker_tile);
@@ -667,9 +674,9 @@ public class MapCanvas extends Screen {
 					infoy + ts / 24 + (tfh - ah) / 2);
 		}
 		if (defender.getAttackType() == Unit.ATTACK_PHYSICAL) {
-			g.setColor(Color.RED);
+			g.setColor(ResourceManager.getPhysicalAttackColor());
 		} else {
-			g.setColor(Color.BLUE);
+			g.setColor(ResourceManager.getMagicalAttackColor());
 		}
 		int defender_atk = defender.getAttack();
 		int defender_atk_bonus = UnitToolkit.getAttackBonus(defender, attacker, defender_tile);

@@ -17,7 +17,9 @@ import javax.imageio.ImageIO;
  */
 public class ResourceManager {
 
-	private static BufferedImage img_logo;
+	private static BufferedImage img_title;
+	private static BufferedImage img_title_mask;
+	private static BufferedImage img_title_glow;
 	private static BufferedImage gold_icon;
 	private static BufferedImage attack_icon;
 	private static BufferedImage red_defence_icon;
@@ -55,6 +57,8 @@ public class ResourceManager {
 	private static Color aeii_panel_bg;
 	private static Color text_background;
 	private static Color move_path_color;
+	private static Color p_attack_color;
+	private static Color m_attack_color;
 	private static Color[] team_color;
 	private static Font title_font;
 	private static Font label_font;
@@ -64,7 +68,17 @@ public class ResourceManager {
 	}
 
 	public static void init(int ts) throws IOException {
-		img_logo = ImageIO.read(new File("res\\logo.png"));
+		img_title = ImageIO.read(new File("res\\img\\logo.png"));
+		img_title_mask = new BufferedImage(img_title.getWidth(), img_title.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for (int x = 0; x < img_title.getWidth(); x++) {
+			for (int y = 0; y < img_title.getHeight(); y++) {
+				int rgb = img_title.getRGB(x, y);
+				if ((rgb >> 24) == 0) {
+					img_title_mask.setRGB(x, y, Color.BLACK.getRGB());
+				}
+			}
+		}
+		img_title_glow = ImageIO.read(new File("res\\img\\glow.png"));
 		loadBorder();
 		loadTiles(ts);
 		loadTopTiles(ts);
@@ -82,6 +96,8 @@ public class ResourceManager {
 		aeii_panel_bg = new Color(36, 42, 69);
 		text_background = new Color(206, 206, 206);
 		move_path_color = new Color(225, 0, 82);
+		p_attack_color = new Color(227, 0, 117);
+		m_attack_color = new Color(0, 0, 255);
 		team_color = new Color[4];
 		team_color[0] = new Color(0, 100, 198);
 		team_color[1] = new Color(161, 0, 112);
@@ -323,8 +339,16 @@ public class ResourceManager {
 		reduce_arrow = ResourceUtil.getImageClip(img_arrows, aw * 2, 0, aw, ah);
 	}
 
-	public static BufferedImage getLogoImage() {
-		return img_logo;
+	public static BufferedImage getTitleImage() {
+		return img_title;
+	}
+	
+	public static BufferedImage getTitleMask() {
+		return img_title_mask;
+	}
+	
+	public static BufferedImage getTitleGlow() {
+		return img_title_glow;
 	}
 
 	public static BufferedImage getBorderImage(int index) {
@@ -346,7 +370,7 @@ public class ResourceManager {
 	public static BufferedImage getLevelIcon() {
 		return level_icon;
 	}
-	
+
 	public static BufferedImage getLevelUpIcon() {
 		return level_up_icon;
 	}
@@ -461,6 +485,14 @@ public class ResourceManager {
 
 	public static BufferedImage getReduceArrow() {
 		return reduce_arrow;
+	}
+
+	public static Color getPhysicalAttackColor() {
+		return p_attack_color;
+	}
+
+	public static Color getMagicalAttackColor() {
+		return m_attack_color;
 	}
 
 	public static Color getTeamColor(int team) {

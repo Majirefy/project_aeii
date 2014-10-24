@@ -22,6 +22,7 @@ public class LogoScreen extends Screen {
 	public LogoScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
 		animation = new LogoAnimation();
+		animation.setInterval(1);
 		animation.addAnimationListener(new AnimationListener() {
 			@Override
 			public void animationCompleted(Animation animation) {

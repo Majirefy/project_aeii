@@ -8,7 +8,7 @@ import java.awt.Graphics;
  *
  * @author toyknight
  */
-public class SmokeAnimation extends SwingAnimation {
+public class SmokeAnimation extends MapAnimation {
 
 	private final int ts;
 

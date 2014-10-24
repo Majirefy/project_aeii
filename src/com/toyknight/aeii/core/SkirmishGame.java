@@ -65,7 +65,6 @@ public class SkirmishGame extends Game {
 
 	public void onUnitDestroyed(Unit unit) {
 		checkWinner();
-
 	}
 
 	public void onOccupy(int x, int y) {

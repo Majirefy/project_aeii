@@ -40,7 +40,7 @@ public class LogoAnimation extends Animation {
 	}
 
 	@Override
-	public void update() {
+	public void doUpdate() {
 		if (logoDrapValue > 0) {
 			logoDrapValue--;
 		} else {

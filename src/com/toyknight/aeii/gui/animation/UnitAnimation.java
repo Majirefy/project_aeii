@@ -7,7 +7,7 @@ import com.toyknight.aeii.core.unit.UnitFactory;
  *
  * @author toyknight
  */
-public class UnitAnimation extends SwingAnimation {
+public class UnitAnimation extends MapAnimation {
 
 	private final Unit unit;
 

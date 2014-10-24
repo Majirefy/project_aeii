@@ -1,9 +1,7 @@
 
 package com.toyknight.aeii.core.animation;
 
-import com.toyknight.aeii.core.Point;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  *
@@ -11,17 +9,10 @@ import java.util.HashSet;
  */
 public class Animation {
 	
+	private int interval = 0;
+	private int current_delay = 0;
 	private boolean is_complete = false;
-	private final HashSet<Point> locations = new HashSet();
 	private final ArrayList<AnimationListener> listeners = new ArrayList();
-	
-	public final void addLocation(int x, int y) {
-		this.locations.add(new Point(x, y));
-	}
-	
-	public final boolean hasLocation(int x, int y) {
-		return locations.contains(new Point(x, y));
-	}
 	
 	public final void addAnimationListener(AnimationListener listener) {
 		listeners.add(0, listener);
@@ -38,7 +29,22 @@ public class Animation {
 		this.is_complete = true;
 	}
 	
+	public final void setInterval(int interval) {
+		this.interval = interval;
+		current_delay = 0;
+	}
+
+	protected void doUpdate() {
+
+	}
+
 	public void update() {
+		if (current_delay < interval) {
+			current_delay++;
+		} else {
+			current_delay = 0;
+			doUpdate();
+		}
 	}
 	
 }

@@ -33,14 +33,11 @@ public class AEIIApplet {
 	private CommandLine command_line;
 
 	private final Object FPS_LOCK = new Object();
-	private final Object UPDATE_LOCK = new Object();
 
 	private boolean isRunning;
 	private final boolean isDebugMode = true;
 
-	private final long inMenuFpsDelay;
-	private final long inGameFpsDelay;
-	private long currentFpsDelay;
+	private long fpsDelay;
 
 	private Container content_pane;
 
@@ -57,8 +54,7 @@ public class AEIIApplet {
 	public AEIIApplet(int ts, int width, int height) {
 		this.TILE_SIZE = ts;
 		SCREEN_SIZE = new Dimension(width, height);
-		inMenuFpsDelay = 1000 / 15;
-		inGameFpsDelay = 1000 / Configuration.getGameSpeed();
+		fpsDelay = 1000 / Configuration.getGameSpeed();
 	}
 
 	public void init() {
@@ -96,7 +92,6 @@ public class AEIIApplet {
 
 	public void start() {
 		isRunning = true;
-		setCurrentFpsDelayToMenu();
 		new Thread(new Animator(), "animation thread").start();
 		new Thread(new Updater(), "update thread").start();
 		//current_screen.repaint();
@@ -165,27 +160,15 @@ public class AEIIApplet {
 		return TILE_SIZE;
 	}
 
-	public void setCurrentFpsDelayToGame() {
-		synchronized (FPS_LOCK) {
-			currentFpsDelay = inGameFpsDelay;
-		}
-	}
-
-	public void setCurrentFpsDelayToMenu() {
-		synchronized (FPS_LOCK) {
-			currentFpsDelay = inMenuFpsDelay;
-		}
-	}
-
 	public void setCurrentFpsDelay(long delay) {
 		synchronized (FPS_LOCK) {
-			currentFpsDelay = delay;
+			fpsDelay = delay;
 		}
 	}
 
 	public long getCurrentFpsDelay() {
 		synchronized (FPS_LOCK) {
-			return currentFpsDelay;
+			return fpsDelay;
 		}
 	}
 

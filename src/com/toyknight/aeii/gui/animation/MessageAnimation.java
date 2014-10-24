@@ -4,7 +4,6 @@ import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.screen.MapCanvas;
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,7 +13,7 @@ import java.awt.RenderingHints;
  *
  * @author toyknight
  */
-public class MessageAnimation extends SwingAnimation {
+public class MessageAnimation extends MapAnimation {
 
 	private int delay = 0;
 	private float alpha = 1.0f;

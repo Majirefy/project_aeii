@@ -129,7 +129,6 @@ public class CommandLine extends Thread {
 				Game game = game_factory.createBasicGame(players, 10);
 				context.getGameScreen().setGame(game);
 				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
-				context.setCurrentFpsDelayToGame();
 			} catch (IOException ex) {
 				System.err.println(ex.getClass().toString() + ": " + ex.getMessage());
 			}

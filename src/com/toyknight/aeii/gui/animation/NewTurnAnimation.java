@@ -14,7 +14,7 @@ import java.awt.RenderingHints;
  *
  * @author toyknight
  */
-public class NewTurnAnimation extends SwingAnimation {
+public class NewTurnAnimation extends MapAnimation {
 
 	private final int ts;
 	private final int turn;

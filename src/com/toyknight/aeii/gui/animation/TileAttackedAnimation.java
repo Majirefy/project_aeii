@@ -10,7 +10,7 @@ import java.awt.Graphics;
  *
  * @author toyknight
  */
-public class TileAttackedAnimation extends SwingAnimation {
+public class TileAttackedAnimation extends MapAnimation {
 
 	private final int ts;
 	private final int x;
