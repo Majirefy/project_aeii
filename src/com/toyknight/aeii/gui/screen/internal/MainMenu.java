@@ -2,6 +2,7 @@ package com.toyknight.aeii.gui.screen.internal;
 
 import com.toyknight.aeii.Language;
 import com.toyknight.aeii.Launcher;
+import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.control.AEIIButton;
@@ -13,6 +14,8 @@ import java.awt.event.ActionListener;
  * @author toyknight
  */
 public class MainMenu extends AEIIPanel {
+	
+	private final AEIIApplet context;
 
 	//welcome menu
 	private final AEIIButton btn_single_player
@@ -25,7 +28,13 @@ public class MainMenu extends AEIIPanel {
 			= new AEIIButton(Language.getText("LB_ABOUT"));
 	private final AEIIButton btn_exit
 			= new AEIIButton(Language.getText("LB_EXIT"));
-
+	
+	//single player menu
+	
+	public MainMenu(AEIIApplet context) {
+		this.context = context;
+	}
+	
 	public void initComponents(int ts, Screen screen) {
 		int menu_width = ts * 4;
 		int menu_height = ts / 2 * 5 + ts / 4 * 6;

@@ -33,7 +33,9 @@ public class UnitHealEvent implements GameEvent {
 
 	@Override
 	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
-		int heal = target.getCurrentHp() + 50 < target.getMaxHp() ? 50 : target.getMaxHp() - target.getCurrentHp();
+		int base_heal = healer.getLevel() * 10 + 50;
+		int heal = target.getCurrentHp() + base_heal < target.getMaxHp()
+				? base_heal : target.getMaxHp() - target.getCurrentHp();
 		target.setCurrentHp(target.getCurrentHp() + heal);
 		dispatcher.onUnitHpChanged(target, heal);
 		if (healer.gainExperience(30)) {

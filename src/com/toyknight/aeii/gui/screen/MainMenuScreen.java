@@ -35,7 +35,7 @@ public class MainMenuScreen extends Screen {
 		});
 		title_glow_animation = new TitleGlowAnimation(this);
 		title_glow_animation.setInterval(1);
-		menu = new MainMenu();
+		menu = new MainMenu(context);
 	}
 	
 	@Override
