@@ -107,8 +107,8 @@ public class AEIIApplet {
 			@Override
 			public void run() {
 				try {
-					File tile_data_dir = new File("data\\tiles");
-					File unit_data_dir = new File("data\\units");
+					File tile_data_dir = new File("data/tiles");
+					File unit_data_dir = new File("data/units");
 					TileRepository.init(tile_data_dir);
 					UnitFactory.init(unit_data_dir);
 					ResourceManager.init(getTileSize());

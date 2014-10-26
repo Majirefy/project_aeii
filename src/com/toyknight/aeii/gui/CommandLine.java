@@ -117,7 +117,7 @@ public class CommandLine extends Thread {
 
 		public void maptest(String map_name) {
 			try {
-				File map_file = new File("map\\" + map_name);
+				File map_file = new File("map/" + map_name);
 				Map map = MapFactory.createMap(map_file);
 				GameFactory game_factory = new GameFactory(map);
 				Player[] players = new Player[4];

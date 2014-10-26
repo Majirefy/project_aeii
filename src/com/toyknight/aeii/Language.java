@@ -18,8 +18,7 @@ public class Language {
 	}
 	
 	public static void init() throws IOException {
-		File lang_file = new File("lang\\"+Configuration.getLanguageFile());
-		FileInputStream fis = new FileInputStream(lang_file.getAbsolutePath());
+		FileInputStream fis = new FileInputStream("lang/"+Configuration.getLanguageFile());
 		lang.load(fis);
 		fis.close();
 	}

@@ -25,7 +25,7 @@ public class TileRepository {
 		for (int i = 0; i < tile_count; i++) {
 			File tile_data = new File(
 					tile_data_dir.getAbsolutePath()
-					+ "\\tile_" + i + ".dat");
+					+ "/tile_" + i + ".dat");
 			try {
 			Scanner din = new Scanner(tile_data);
 			int defence_bonus = din.nextInt();

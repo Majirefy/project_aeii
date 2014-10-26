@@ -1,7 +1,6 @@
 package com.toyknight.aeii.core.unit;
 
 import com.toyknight.aeii.core.AEIIException;
-import com.toyknight.aeii.gui.util.SuffixFileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class UnitFactory {
 	public static void init(File unit_data_dir) throws IOException, AEIIException {
 		try {
 			File unit_config = new File(
-					unit_data_dir.getAbsolutePath() + "\\unit_config.dat");
+					unit_data_dir.getAbsolutePath() + "/unit_config.dat");
 			Scanner din = new Scanner(unit_config);
 			unit_count = din.nextInt();
 			skeleton_index = din.nextInt();
@@ -38,7 +37,7 @@ public class UnitFactory {
 		for (int i = 0; i < unit_count; i++) {
 			File unit_data = new File(
 					unit_data_dir.getAbsolutePath()
-					+ "\\unit_" + i + ".dat");
+					+ "/unit_" + i + ".dat");
 			try {
 				Scanner din = new Scanner(unit_data);
 				int price = din.nextInt();
