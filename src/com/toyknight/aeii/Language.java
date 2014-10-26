@@ -1,6 +1,7 @@
 
 package com.toyknight.aeii;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -17,8 +18,8 @@ public class Language {
 	}
 	
 	public static void init() throws IOException {
-		FileInputStream fis = 
-				new FileInputStream("lang\\"+Configuration.getLanguageFile());
+		File lang_file = new File("lang\\"+Configuration.getLanguageFile());
+		FileInputStream fis = new FileInputStream(lang_file.getAbsolutePath());
 		lang.load(fis);
 		fis.close();
 	}
