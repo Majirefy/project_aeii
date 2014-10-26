@@ -3,14 +3,14 @@ package com.toyknight.aeii;
 import com.toyknight.aeii.core.AEIIException;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.util.DialogUtil;
-
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -32,9 +32,15 @@ public class Launcher implements Runnable {
 
 	public Launcher(int ts, int width, int height, boolean fs) {
 		this.TILE_SIZE = ts;
-		this.SCREEN_WIDTH = width;
-		this.SCREEN_HEIGHT = height;
 		this.FULL_SCREEN = fs;
+		if(FULL_SCREEN) {
+			Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+			this.SCREEN_WIDTH = screen_size.width;
+			this.SCREEN_HEIGHT = screen_size.height;
+		} else {
+			this.SCREEN_WIDTH = width;
+			this.SCREEN_HEIGHT = height;
+		}
 	}
 
 	@Override

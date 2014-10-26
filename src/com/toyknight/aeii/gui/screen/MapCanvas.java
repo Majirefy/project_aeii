@@ -29,7 +29,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Set;
@@ -68,19 +67,6 @@ public class MapCanvas extends Screen {
 		this.setOpaque(false);
 		action_bar = new ActionBar(this, ts);
 		unit_store = new UnitStore(this, ts);
-		MouseAdapter mouse_adapter = new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				onMousePress(e);
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				onMouseMove(e);
-			}
-		};
-		this.addMouseMotionListener(mouse_adapter);
-		this.addMouseListener(mouse_adapter);
 	}
 
 	public void init() {
@@ -165,7 +151,7 @@ public class MapCanvas extends Screen {
 		game_screen.getActionPanel().update();
 	}
 
-	public void onMousePress(MouseEvent e) {
+	protected void onMousePress(MouseEvent e) {
 		synchronized (getContext().getUpdateLock()) {
 			if (isOperatable()) {
 				int click_x = getCursorXOnMap();
@@ -217,7 +203,7 @@ public class MapCanvas extends Screen {
 		}
 	}
 
-	public void onMouseMove(MouseEvent e) {
+	protected void onMouseMove(MouseEvent e) {
 		mouse_x = e.getX();
 		mouse_y = e.getY();
 	}
@@ -397,32 +383,40 @@ public class MapCanvas extends Screen {
 	public void dragViewport(int delta_x, int delta_y) {
 		int map_width = getGame().getMap().getWidth() * ts;
 		int map_height = getGame().getMap().getHeight() * ts;
-		if (0 <= viewport.x + delta_x
-				&& viewport.x + delta_x <= map_width - viewport.width) {
-			viewport.x += delta_x;
+		if (viewport.width < map_width) {
+			if (0 <= viewport.x + delta_x
+					&& viewport.x + delta_x <= map_width - viewport.width) {
+				viewport.x += delta_x;
+			} else {
+				viewport.x = viewport.x + delta_x < 0 ? 0 : map_width - viewport.width;
+			}
 		} else {
-			viewport.x = viewport.x + delta_x < 0 ? 0 : map_width - viewport.width;
+			viewport.x = (map_width - viewport.width) / 2;
 		}
-		if (0 <= viewport.y + delta_y
-				&& viewport.y + delta_y <= map_height - viewport.height) {
-			viewport.y += delta_y;
+		if (viewport.height < map_height) {
+			if (0 <= viewport.y + delta_y
+					&& viewport.y + delta_y <= map_height - viewport.height) {
+				viewport.y += delta_y;
+			} else {
+				viewport.y = viewport.y + delta_y < 0 ? 0 : map_height - viewport.height;
+			}
 		} else {
-			viewport.y = viewport.y + delta_y < 0 ? 0 : map_height - viewport.height;
+			viewport.y = (map_height - viewport.height) / 2;
 		}
 	}
 
 	private void updateViewport() {
 		if (isOperatable()) {
-			if (down_pressed) {
+			if (down_pressed || game_screen.isDownApproached()) {
 				dragViewport(0, ts / 3);
 			}
-			if (up_pressed) {
+			if (up_pressed || game_screen.isUpApproached()) {
 				dragViewport(0, -ts / 3);
 			}
-			if (right_pressed) {
+			if (right_pressed || game_screen.isRightApproached()) {
 				dragViewport(ts / 3, 0);
 			}
-			if (left_pressed) {
+			if (left_pressed || game_screen.isLeftApproached()) {
 				dragViewport(-ts / 3, 0);
 			}
 		}

@@ -10,12 +10,15 @@ import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SwingAnimatingProvider;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 /**
  *
  * @author toyknight
  */
-public class GameScreen extends Screen  implements Displayable, ManagerStateListener {
+public class GameScreen extends Screen implements Displayable, ManagerStateListener {
 
 	private Game game;
 	private LocalGameManager manager;
@@ -25,6 +28,11 @@ public class GameScreen extends Screen  implements Displayable, ManagerStateList
 	private TilePanel tile_panel;
 	private StatusPanel status_panel;
 	private ActionPanel action_panel;
+
+	private boolean up_approached = false;
+	private boolean down_approached = false;
+	private boolean left_approached = false;
+	private boolean right_approached = false;
 
 	public GameScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
@@ -54,6 +62,24 @@ public class GameScreen extends Screen  implements Displayable, ManagerStateList
 		this.action_panel.initComponents(ts);
 		this.add(action_panel);
 		this.animation_provider = new SwingAnimatingProvider(this, ts);
+		MouseAdapter mouse_adapter = new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (getCanvas().isWithinCanvas(e.getX(), e.getY())) {
+					getCanvas().onMousePress(e);
+				}
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				checkBorderApporach(e);
+				if (getCanvas().isWithinCanvas(e.getX(), e.getY())) {
+					getCanvas().onMouseMove(e);
+				}
+			}
+		};
+		this.addMouseMotionListener(mouse_adapter);
+		this.addMouseListener(mouse_adapter);
 	}
 
 	public void setGame(Game game) {
@@ -76,12 +102,12 @@ public class GameScreen extends Screen  implements Displayable, ManagerStateList
 	public Game getGame() {
 		return game;
 	}
-	
+
 	@Override
 	public void updateControllers() {
 		getActionPanel().update();
 	}
-	
+
 	@Override
 	public void locateViewport(int map_x, int map_y) {
 		getCanvas().locateViewport(map_x, map_y);
@@ -113,6 +139,41 @@ public class GameScreen extends Screen  implements Displayable, ManagerStateList
 	@Override
 	public void onKeyRelease(KeyEvent e) {
 		map_canvas.onKeyRelease(e);
+	}
+
+	private void checkBorderApporach(MouseEvent e) {
+		up_approached = false;
+		down_approached = false;
+		left_approached = false;
+		right_approached = false;
+		if (e.getX() < ts / 4) {
+			left_approached = true;
+		}
+		if (e.getX() > getWidth() - ts / 4) {
+			right_approached = true;
+		}
+		if (e.getY() < ts / 4) {
+			up_approached = true;
+		}
+		if (e.getY() > getHeight() - ts / 4) {
+			down_approached = true;
+		}
+	}
+
+	public boolean isUpApproached() {
+		return up_approached;
+	}
+
+	public boolean isDownApproached() {
+		return down_approached;
+	}
+
+	public boolean isLeftApproached() {
+		return left_approached;
+	}
+
+	public boolean isRightApproached() {
+		return right_approached;
 	}
 
 	@Override
