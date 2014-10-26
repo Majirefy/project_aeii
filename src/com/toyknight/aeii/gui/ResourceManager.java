@@ -68,7 +68,7 @@ public class ResourceManager {
 	}
 
 	public static void init(int ts) throws IOException {
-		img_title = ImageIO.read(new File("res\\img\\logo.png"));
+		img_title = ImageIO.read(new File("res/img/logo.png"));
 		img_title_mask = new BufferedImage(img_title.getWidth(), img_title.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		for (int x = 0; x < img_title.getWidth(); x++) {
 			for (int y = 0; y < img_title.getHeight(); y++) {
@@ -78,7 +78,7 @@ public class ResourceManager {
 				}
 			}
 		}
-		img_title_glow = ImageIO.read(new File("res\\img\\glow.png"));
+		img_title_glow = ImageIO.read(new File("res/img/glow.png"));
 		loadBorder();
 		loadTiles(ts);
 		loadTopTiles(ts);
@@ -109,7 +109,7 @@ public class ResourceManager {
 	}
 
 	private static void loadBorder() throws IOException {
-		BufferedImage img_borders = ImageIO.read(new File("res\\img\\border.png"));
+		BufferedImage img_borders = ImageIO.read(new File("res/img/border.png"));
 		borders = new BufferedImage[8];
 		for (int i = 0; i < borders.length; i++) {
 			BufferedImage border
@@ -122,22 +122,22 @@ public class ResourceManager {
 		int tile_count = TileRepository.getTileCount();
 		tiles = new BufferedImage[tile_count];
 		for (int i = 0; i < tile_count; i++) {
-			File tile = new File("res\\img\\tiles\\tile_" + i + ".png");
+			File tile = new File("res/img/tiles/tile_" + i + ".png");
 
 			tiles[i] = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 			tiles[i].getGraphics().drawImage(ImageIO.read(tile), 0, 0, ts, ts, null);
 		}
-		File tomb_file = new File("res\\img\\tombstone.png");
+		File tomb_file = new File("res/img/tombstone.png");
 		tomb = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 		tomb.getGraphics().drawImage(ImageIO.read(tomb_file), 0, 0, ts, ts, null);
 	}
 
 	private static void loadTopTiles(int ts) throws IOException {
-		File img_top_tile_dir = new File("res\\img\\tiles\\top_tiles");
+		File img_top_tile_dir = new File("res/img/tiles/top_tiles");
 		int top_tile_count = img_top_tile_dir.listFiles(new SuffixFileFilter("png")).length;
 		top_tiles = new BufferedImage[top_tile_count];
 		for (int i = 0; i < top_tile_count; i++) {
-			File tile = new File("res\\img\\tiles\\top_tiles\\top_tile_" + i + ".png");
+			File tile = new File("res/img/tiles/top_tiles/top_tile_" + i + ".png");
 			top_tiles[i] = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 			top_tiles[i].getGraphics().drawImage(ImageIO.read(tile), 0, 0, ts, ts, null);
 		}
@@ -148,7 +148,7 @@ public class ResourceManager {
 		units = new BufferedImage[4][unit_count][2];
 		standby_units = new BufferedImage[4][unit_count];
 		for (int team = 0; team < 4; team++) {
-			File unit_team = new File("res\\img\\units\\unit_icons_" + team + ".png");
+			File unit_team = new File("res/img/units/unit_icons_" + team + ".png");
 			BufferedImage img_units
 					= new BufferedImage(unit_count * ts, ts * 2, BufferedImage.TYPE_INT_ARGB);
 			img_units.getGraphics().drawImage(
@@ -176,7 +176,7 @@ public class ResourceManager {
 		}
 		int sus = ts / 24 * 10;
 		small_units = new BufferedImage[unit_count];
-		File small_unit_file = new File("res\\img\\unit_icons_small.png");
+		File small_unit_file = new File("res/img/unit_icons_small.png");
 		BufferedImage img_small_unit = new BufferedImage(sus * unit_count, sus, BufferedImage.TYPE_INT_ARGB);
 		img_small_unit.getGraphics().drawImage(ImageIO.read(small_unit_file), 0, 0, sus * unit_count, sus, null);
 		for (int index = 0; index < unit_count; index++) {
@@ -189,18 +189,18 @@ public class ResourceManager {
 		ts = ts / 24 * 26;
 		cursor = new BufferedImage[2];
 		for (int i = 0; i < 2; i++) {
-			File cursor_file = new File("res\\img\\cursor_" + i + ".png");
+			File cursor_file = new File("res/img/cursor_" + i + ".png");
 			cursor[i] = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 			cursor[i].getGraphics().drawImage(ImageIO.read(cursor_file), 0, 0, ts, ts, null);
 		}
-		File move_target_file = new File("res\\img\\move_target_cursor.png");
+		File move_target_file = new File("res/img/move_target_cursor.png");
 		move_target = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 		move_target.getGraphics().drawImage(ImageIO.read(move_target_file), 0, 0, ts, ts, null);
 		int acw = ts / 26 * 40;
 		int ach = ts / 26 * 41;
 		attack_cursor = new BufferedImage[3];
 		for (int i = 0; i < 3; i++) {
-			File cursor_file = new File("res\\img\\attack_cursor_" + i + ".png");
+			File cursor_file = new File("res/img/attack_cursor_" + i + ".png");
 			attack_cursor[i] = new BufferedImage(acw, ach, BufferedImage.TYPE_INT_ARGB);
 			attack_cursor[i].getGraphics().drawImage(ImageIO.read(cursor_file), 0, 0, acw, ach, null);
 		}
@@ -209,14 +209,14 @@ public class ResourceManager {
 	private static void loadSparks(int ts) throws IOException {
 		int asts = ts / 24 * 20;
 		attack_spark = new BufferedImage[6];
-		File attack_spark_file = new File("res\\img\\attack_spark.png");
+		File attack_spark_file = new File("res/img/attack_spark.png");
 		BufferedImage attack_sparks = new BufferedImage(asts * 6, asts, BufferedImage.TYPE_INT_ARGB);
 		attack_sparks.getGraphics().drawImage(ImageIO.read(attack_spark_file), 0, 0, asts * 6, asts, null);
 		for (int i = 0; i < 6; i++) {
 			attack_spark[i] = ResourceUtil.getImageClip(attack_sparks, asts * i, 0, asts, asts);
 		}
 		white_spark = new BufferedImage[6];
-		File spark_file = new File("res\\img\\white_spark.png");
+		File spark_file = new File("res/img/white_spark.png");
 		BufferedImage white_sparks = new BufferedImage(ts * 6, ts, BufferedImage.TYPE_INT_ARGB);
 		white_sparks.getGraphics().drawImage(ImageIO.read(spark_file), 0, 0, ts * 6, ts, null);
 		for (int i = 0; i < 6; i++) {
@@ -225,7 +225,7 @@ public class ResourceManager {
 	}
 
 	private static void loadAlpha(int ts) throws IOException {
-		File alpha_file = new File("res\\img\\alpha.png");
+		File alpha_file = new File("res/img/alpha.png");
 		BufferedImage img_alpha = new BufferedImage(ts * 2, ts, BufferedImage.TYPE_INT_ARGB);
 		img_alpha.getGraphics().drawImage(ImageIO.read(alpha_file), 0, 0, ts * 2, ts, null);
 		move_alpha = ResourceUtil.getImageClip(img_alpha, ts, 0, ts, ts);
@@ -235,7 +235,7 @@ public class ResourceManager {
 	private static void loadSmoke(int ts) throws IOException {
 		int h = ts / 24 * 20;
 		smoke = new BufferedImage[4];
-		File smoke_file = new File("res\\img\\smoke.png");
+		File smoke_file = new File("res/img/smoke.png");
 		BufferedImage smokes = new BufferedImage(ts * 4, h, BufferedImage.TYPE_INT_ARGB);
 		smokes.getGraphics().drawImage(ImageIO.read(smoke_file), 0, 0, ts * 4, h, null);
 		for (int i = 0; i < 4; i++) {
@@ -248,10 +248,10 @@ public class ResourceManager {
 		int h = ts / 24 * 7;
 		int lw = ts / 24 * 8;
 		int lh = ts / 24 * 11;
-		File chars_file = new File("res\\img\\chars.png");
+		File chars_file = new File("res/img/chars.png");
 		BufferedImage img_chars = new BufferedImage(w * 12, h, BufferedImage.TYPE_INT_ARGB);
 		img_chars.getGraphics().drawImage(ImageIO.read(chars_file), 0, 0, w * 12, h, null);
-		File lchars_file = new File("res\\img\\lchars.png");
+		File lchars_file = new File("res/img/lchars.png");
 		BufferedImage img_lchars = new BufferedImage(lw * 13, lh, BufferedImage.TYPE_INT_ARGB);
 		img_lchars.getGraphics().drawImage(ImageIO.read(lchars_file), 0, 0, lw * 13, lh, null);
 		numbers = new BufferedImage[10];
@@ -273,12 +273,12 @@ public class ResourceManager {
 		int bch = ts / 24 * 33;
 		big_circles = new BufferedImage[2];
 		small_circles = new BufferedImage[2];
-		File small_circle_file = new File("res\\img\\small_circle.png");
+		File small_circle_file = new File("res/img/small_circle.png");
 		BufferedImage img_small_circle = new BufferedImage(scw * 2, sch, BufferedImage.TYPE_INT_ARGB);
 		img_small_circle.getGraphics().drawImage(ImageIO.read(small_circle_file), 0, 0, scw * 2, sch, null);
 		for (int i = 0; i < 2; i++) {
 			small_circles[i] = ResourceUtil.getImageClip(img_small_circle, scw * i, 0, scw, sch);
-			File big_circle_file = new File("res\\img\\big_circle_" + i + ".png");
+			File big_circle_file = new File("res/img/big_circle_" + i + ".png");
 			big_circles[i] = new BufferedImage(bcw * 2, bch, BufferedImage.TYPE_INT_ARGB);
 			big_circles[i].getGraphics().drawImage(ImageIO.read(big_circle_file), 0, 0, bcw, bch, null);
 		}
@@ -287,7 +287,7 @@ public class ResourceManager {
 	private static void loadActionIcons(int ts) throws IOException {
 		int iw = ts / 24 * 16;
 		int ih = ts / 24 * 16;
-		File icons_file = new File("res\\img\\action_icons.png");
+		File icons_file = new File("res/img/action_icons.png");
 		BufferedImage action_icon_image = new BufferedImage(iw * 8, ih, BufferedImage.TYPE_INT_ARGB);
 		action_icon_image.getGraphics().drawImage(ImageIO.read(icons_file), 0, 0, iw * 8, ih, null);
 		action_icons = new BufferedImage[8];
@@ -299,7 +299,7 @@ public class ResourceManager {
 	private static void loadIcons(int ts) throws IOException {
 		int hw = ts / 24 * 13;
 		int hh = ts / 24 * 16;
-		File hud_icon_file = new File("res\\img\\hud_icons.png");
+		File hud_icon_file = new File("res/img/hud_icons.png");
 		BufferedImage img_hud_icon = new BufferedImage(hw * 4, hh, BufferedImage.TYPE_INT_ARGB);
 		img_hud_icon.getGraphics().drawImage(ImageIO.read(hud_icon_file), 0, 0, hw * 4, hh, null);
 		attack_icon = ResourceUtil.getImageClip(img_hud_icon, 0, 0, hw, hh);
@@ -308,14 +308,14 @@ public class ResourceManager {
 		level_icon = ResourceUtil.getImageClip(img_hud_icon, hw * 3, 0, hw, hh);
 		int i2w = ts / 24 * 11;
 		int i2h = ts / 24 * 11;
-		File hud_icon2_file = new File("res\\img\\hud_icons_2.png");
+		File hud_icon2_file = new File("res/img/hud_icons_2.png");
 		BufferedImage img_hud_icon2 = new BufferedImage(i2w * 2, i2h, BufferedImage.TYPE_INT_ARGB);
 		img_hud_icon2.getGraphics().drawImage(ImageIO.read(hud_icon2_file), 0, 0, i2w * 2, i2h, null);
 		gold_icon = ResourceUtil.getImageClip(img_hud_icon2, i2w, 0, i2w, i2h);
 		population_icon = ResourceUtil.getImageClip(img_hud_icon2, 0, 0, i2w, i2h);
 		int luiw = ts / 24 * 62;
 		int luih = ts / 24 * 11;
-		File level_up_icon_file = new File("res\\img\\levelup.png");
+		File level_up_icon_file = new File("res/img/levelup.png");
 		level_up_icon = new BufferedImage(luiw, luih, BufferedImage.TYPE_INT_ARGB);
 		level_up_icon.getGraphics().drawImage(ImageIO.read(level_up_icon_file), 0, 0, luiw, luih, null);
 	}
@@ -323,7 +323,7 @@ public class ResourceManager {
 	private static void loadStatus(int ts) throws IOException {
 		int sw = ts / 24 * 7;
 		int sh = ts / 24 * 9;
-		File status_file = new File("res\\img\\status.png");
+		File status_file = new File("res/img/status.png");
 		BufferedImage status_list = new BufferedImage(sw * 2, sh, BufferedImage.TYPE_INT_ARGB);
 		status_list.getGraphics().drawImage(ImageIO.read(status_file), 0, 0, sw * 2, sh, null);
 		poisoned_status = ResourceUtil.getImageClip(status_list, 0, 0, sw, sh);
@@ -332,7 +332,7 @@ public class ResourceManager {
 	private static void loadArrows(int ts) throws IOException {
 		int aw = ts / 24 * 9;
 		int ah = ts / 24 * 7;
-		File arrow_file = new File("res\\img\\arrow_icons.png");
+		File arrow_file = new File("res/img/arrow_icons.png");
 		BufferedImage img_arrows = new BufferedImage(aw * 3, ah, BufferedImage.TYPE_INT_ARGB);
 		img_arrows.getGraphics().drawImage(ImageIO.read(arrow_file), 0, 0, aw * 3, ah, null);
 		rise_arrow = ResourceUtil.getImageClip(img_arrows, aw, 0, aw, ah);
