@@ -185,6 +185,9 @@ public class MapCanvas extends Screen {
 						case GameManager.STATE_SUMMON:
 							manager.doSummon(click_x, click_y);
 							break;
+						case GameManager.STATE_HEAL:
+							manager.doHeal(click_x, click_y);
+							break;
 						default:
 						//do nothing
 					}
@@ -202,6 +205,7 @@ public class MapCanvas extends Screen {
 							break;
 						case GameManager.STATE_ATTACK:
 						case GameManager.STATE_SUMMON:
+						case GameManager.STATE_HEAL:
 							manager.cancelActionPhase();
 							break;
 						default:
@@ -438,6 +442,7 @@ public class MapCanvas extends Screen {
 					break;
 				case GameManager.STATE_ATTACK:
 				case GameManager.STATE_SUMMON:
+				case GameManager.STATE_HEAL:
 					paintAttackAlpha(g);
 					break;
 				default:
@@ -585,6 +590,13 @@ public class MapCanvas extends Screen {
 						break;
 					case GameManager.STATE_SUMMON:
 						if (manager.canSummon(cursor_x, cursor_y)) {
+							attack_cursor.paint(g, sx, sy);
+						} else {
+							cursor.paint(g, sx, sy);
+						}
+						break;
+					case GameManager.STATE_HEAL:
+						if (manager.canHeal(cursor_x, cursor_y)) {
 							attack_cursor.paint(g, sx, sy);
 						} else {
 							cursor.paint(g, sx, sy);

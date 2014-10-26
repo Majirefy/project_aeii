@@ -42,6 +42,9 @@ public class UnitSummonEvent implements GameEvent {
 		getGame().addUnit(skeleton, getGame().getCurrentTeam(), target_x, target_y);
 		getGame().getMap().getUnit(target_x, target_y).setStandby(true);
 		dispatcher.onSummon(summoner, target_x, target_y);
+		if (summoner.gainExperience(30)) {
+			dispatcher.onUnitLevelUp(summoner);
+		}
 	}
 	
 }

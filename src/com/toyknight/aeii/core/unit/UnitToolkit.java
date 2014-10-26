@@ -249,6 +249,14 @@ public class UnitToolkit {
 			return false;
 		}
 	}
+	
+	public boolean isAlly(Unit unit, Unit target_unit) {
+		if (unit != null && target_unit != null) {
+			return !isEnemy(unit, target_unit);
+		} else {
+			return false;
+		}
+	}
 
 	public static boolean isTheSameUnit(Unit unit_a, Unit unit_b) {
 		if (unit_a == null || unit_b == null) {

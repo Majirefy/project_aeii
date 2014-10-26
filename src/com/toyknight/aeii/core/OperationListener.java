@@ -12,6 +12,8 @@ public interface OperationListener {
 
 	public void doSummon(int summoner_x, int summoner_y, int target_x, int target_y);
 	
+	public void doHeal(int healer_x, int healer_y, int target_x, int target_y);
+	
 	public void doOccupy(int conqueror_x, int conqueror_y, int x, int y);
 	
 	public void doRepair(int repairer_x, int repairer_y, int x, int y);

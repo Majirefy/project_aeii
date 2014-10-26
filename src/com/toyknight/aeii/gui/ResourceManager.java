@@ -89,7 +89,7 @@ public class ResourceManager {
 		loadSmoke(ts);
 		loadChars(ts);
 		loadCircles(ts);
-		loadActionButtons(ts);
+		loadActionIcons(ts);
 		loadIcons(ts);
 		loadStatus(ts);
 		loadArrows(ts);
@@ -284,14 +284,14 @@ public class ResourceManager {
 		}
 	}
 
-	private static void loadActionButtons(int ts) throws IOException {
+	private static void loadActionIcons(int ts) throws IOException {
 		int iw = ts / 24 * 16;
 		int ih = ts / 24 * 16;
 		File icons_file = new File("res\\img\\action_icons.png");
-		BufferedImage action_icon_image = new BufferedImage(iw * 7, ih, BufferedImage.TYPE_INT_ARGB);
-		action_icon_image.getGraphics().drawImage(ImageIO.read(icons_file), 0, 0, iw * 7, ih, null);
-		action_icons = new BufferedImage[7];
-		for (int i = 0; i < 7; i++) {
+		BufferedImage action_icon_image = new BufferedImage(iw * 8, ih, BufferedImage.TYPE_INT_ARGB);
+		action_icon_image.getGraphics().drawImage(ImageIO.read(icons_file), 0, 0, iw * 8, ih, null);
+		action_icons = new BufferedImage[8];
+		for (int i = 0; i < 8; i++) {
 			action_icons[i] = ResourceUtil.getImageClip(action_icon_image, iw * i, 0, iw, ih);
 		}
 	}

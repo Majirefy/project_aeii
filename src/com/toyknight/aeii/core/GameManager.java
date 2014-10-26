@@ -3,6 +3,7 @@ package com.toyknight.aeii.core;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
 import java.util.ArrayList;
 
@@ -18,6 +19,7 @@ public class GameManager implements GameListener {
 	public static final int STATE_ACTION = 0x4;
 	public static final int STATE_ATTACK = 0x5;
 	public static final int STATE_SUMMON = 0x6;
+	public static final int STATE_HEAL = 0x7;
 
 	private int state;
 	private int last_state;
@@ -120,9 +122,18 @@ public class GameManager implements GameListener {
 	}
 
 	public void beginSummonPhase() {
-		if (getUnitToolkit().isUnitAccessible(getSelectedUnit()) && isActionState()) {
+		if (getUnitToolkit().isUnitAccessible(getSelectedUnit()) 
+				&& isActionState() && getSelectedUnit().hasAbility(Ability.NECROMANCER)) {
 			this.attackable_positions = getUnitToolkit().createAttackablePositions(selected_unit);
 			setState(STATE_SUMMON);
+		}
+	}
+
+	public void beginHealingPhase() {
+		if (getUnitToolkit().isUnitAccessible(getSelectedUnit()) 
+				&& isActionState() && getSelectedUnit().hasAbility(Ability.HEALER)) {
+			this.attackable_positions = getUnitToolkit().createAttackablePositions(selected_unit);
+			setState(STATE_HEAL);
 		}
 	}
 
@@ -184,6 +195,17 @@ public class GameManager implements GameListener {
 		}
 	}
 
+	public boolean canHeal(int x, int y) {
+		Unit unit = getGame().getMap().getUnit(x, y);
+		if (unit != null) {
+			return unit.getCurrentHp() < unit.getMaxHp()
+					&& unit.getIndex() != UnitFactory.getSkeletonIntex()
+					&& !getGame().isEnemy(getSelectedUnit().getTeam(), unit.getTeam());
+		} else {
+			return false;
+		}
+	}
+
 	@Override
 	public void onUnitActionFinished(Unit unit) {
 		if (getGame().isLocalPlayer()) {
@@ -229,6 +251,13 @@ public class GameManager implements GameListener {
 		if (canSummon(target_x, target_y) && state == STATE_SUMMON) {
 			Unit summoner = getSelectedUnit();
 			getGame().doSummon(summoner.getX(), summoner.getY(), target_x, target_y);
+		}
+	}
+
+	public void doHeal(int target_x, int target_y) {
+		if (canHeal(target_x, target_y) && state == STATE_HEAL) {
+			Unit healer = getSelectedUnit();
+			getGame().doHeal(healer.getX(), healer.getY(), target_x, target_y);
 		}
 	}
 
@@ -304,14 +333,14 @@ public class GameManager implements GameListener {
 			return false;
 		}
 	}
-	
+
 	public boolean isProcessing() {
 		return getGame().isDispatchingEvents();
 	}
-	
+
 	public boolean isGameOver() {
-		if(getGame() instanceof SkirmishGame) {
-			return ((SkirmishGame)getGame()).isGameOver();
+		if (getGame() instanceof SkirmishGame) {
+			return ((SkirmishGame) getGame()).isGameOver();
 		} else {
 			return false;
 		}

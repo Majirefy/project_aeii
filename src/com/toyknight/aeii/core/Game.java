@@ -9,6 +9,7 @@ import com.toyknight.aeii.core.event.TileDestroyEvent;
 import com.toyknight.aeii.core.event.UnitActionFinishEvent;
 import com.toyknight.aeii.core.event.UnitAttackEvent;
 import com.toyknight.aeii.core.event.UnitDestroyEvent;
+import com.toyknight.aeii.core.event.UnitHealEvent;
 import com.toyknight.aeii.core.event.UnitHpChangeEvent;
 import com.toyknight.aeii.core.event.UnitMoveEvent;
 import com.toyknight.aeii.core.event.UnitMoveFinishEvent;
@@ -187,6 +188,18 @@ public class Game implements OperationListener {
 				&& getMap().isTomb(target_x, target_y)) {
 			submitGameEvent(new UnitSummonEvent(this, summoner, target_x, target_y));
 			submitGameEvent(new UnitActionFinishEvent(summoner));
+		}
+	}
+	
+	@Override
+	public void doHeal(int healer_x, int healer_y, int target_x, int target_y) {
+		Unit healer = getMap().getUnit(healer_x, healer_y);
+		Unit target = getMap().getUnit(target_x, target_y);
+		if(healer != null
+				&& UnitToolkit.isWithinRange(healer, target_x, target_y)
+				&& !isEnemy(healer.getTeam(), target.getTeam())) {
+			submitGameEvent(new UnitHealEvent(this, healer, target));
+			submitGameEvent(new UnitActionFinishEvent(healer));
 		}
 	}
 
@@ -447,31 +460,18 @@ public class Game implements OperationListener {
 
 	private void updateUnits(int team) {
 		Set<Point> position_set = new HashSet(getMap().getUnitPositionSet());
-		//deal with terrain heal issues
 		for (Point position : position_set) {
 			Unit unit = getMap().getUnit(position.x, position.y);
 			if (unit.getTeam() == team) {
+				//deal with terrain heal issues
 				int heal = getTerrainHeal(unit);
 				submitGameEvent(new UnitHpChangeEvent(this, unit, heal));
-			}
-		}
-		for (Point position : position_set) {
-			Unit unit = getMap().getUnit(position.x, position.y);
-			if (unit.getTeam() == team) {
-				boolean is_poisoned = false;
 				//deal with buff issues
 				if (unit.hasBuff(Buff.POISONED)) {
-					is_poisoned = true;
 					submitGameEvent(new UnitHpChangeEvent(this, unit, -poison_damage));
 				}
 				submitGameEvent(new BuffUpdateEvent(unit));
-				if (!is_poisoned
-						|| (is_poisoned && unit.getCurrentHp() - poison_damage > 0)) {
-					//deal with ability issues
-					if (unit.hasAbility(Ability.HEALING_AURA)) {
-						healAllys(unit);
-					}
-				}
+				//deal with ability issues
 			}
 		}
 	}

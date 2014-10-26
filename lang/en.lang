@@ -9,6 +9,7 @@ LB_MOVE=Move
 LB_OCCUPY=Occupy
 LB_REPAIR=Repair
 LB_SUMMON=Summon
+LB_HEAL=Heal
 LB_BUY=Buy
 LB_CLOSE=Close
 LB_MSG_OCCUPIED=Occupied

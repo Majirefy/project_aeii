@@ -14,7 +14,7 @@ public class Ability {
 	public static final int DESTROYER = 4;
 	public static final int AIR_FORCE = 5;
 	public static final int NECROMANCER = 6;
-	public static final int HEALING_AURA = 7;
+	public static final int HEALER = 7;
 	public static final int CHARGER = 8;
 	public static final int POISONER = 9;
 	public static final int REPAIRER = 10;

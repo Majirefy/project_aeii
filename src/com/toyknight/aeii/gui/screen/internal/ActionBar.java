@@ -37,6 +37,7 @@ public class ActionBar extends JPanel {
 	private final ActionButton btn_occupy;
 	private final ActionButton btn_repair;
 	private final ActionButton btn_summon;
+	private final ActionButton btn_heal;
 
 	private int map_x;
 	private int map_y;
@@ -82,6 +83,13 @@ public class ActionBar extends JPanel {
 				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_summon.addActionListener(btn_summon_listener);
+		btn_heal = new ActionButton(7, ts);
+		btn_heal.setToolTipText(Language.getText("LB_HEAL"));
+		btn_heal.registerKeyboardAction(
+				btn_heal_listener,
+				KeyStroke.getKeyStroke(KeyEvent.VK_H, 0),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		btn_heal.addActionListener(btn_heal_listener);
 		btn_standby = new ActionButton(5, ts);
 		btn_standby.setToolTipText(Language.getText("LB_STANDBY"));
 		btn_standby.registerKeyboardAction(
@@ -120,6 +128,9 @@ public class ActionBar extends JPanel {
 					addButton(btn_attack);
 					if (unit.hasAbility(Ability.NECROMANCER)) {
 						addButton(btn_summon);
+					}
+					if(unit.hasAbility(Ability.HEALER)) {
+						addButton(btn_heal);
 					}
 					if (manager.getGame().canOccupy(unit, unit.getX(), unit.getY())) {
 						addButton(btn_occupy);
@@ -181,6 +192,15 @@ public class ActionBar extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			synchronized (getTreeLock()) {
 				manager.beginSummonPhase();
+			}
+		}
+	};
+	
+	private final ActionListener btn_heal_listener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			synchronized (getTreeLock()) {
+				manager.beginHealingPhase();
 			}
 		}
 	};
