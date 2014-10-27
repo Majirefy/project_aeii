@@ -1,6 +1,8 @@
 package com.toyknight.aeii.gui.util;
 
+import com.toyknight.aeii.gui.ResourceManager;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +23,15 @@ public class ResourceUtil {
 		return clip;
 	}
 
-	public static BufferedImage getImage(String path) throws IOException {
-		return ImageIO.read(new File(path));
+	public static void paintBorder(Graphics g, int x, int y, int width, int height) {
+		g.drawImage(ResourceManager.getBorderImage(0), x, y, 16, 16, null);
+		g.drawImage(ResourceManager.getBorderImage(1), x + 16, y, width - 32, 16, null);
+		g.drawImage(ResourceManager.getBorderImage(2), x + width - 16, y, 16, 16, null);
+		g.drawImage(ResourceManager.getBorderImage(3), x, y + 16, 16, height - 32, null);
+		g.drawImage(ResourceManager.getBorderImage(4), x + width - 16, y + 16, 16, height - 32, null);
+		g.drawImage(ResourceManager.getBorderImage(5), x, y + height - 16, 16, 16, null);
+		g.drawImage(ResourceManager.getBorderImage(6), x + 16, y + height - 16, width - 32, 16, null);
+		g.drawImage(ResourceManager.getBorderImage(7), x + width - 16, y + height - 16, 16, 16, null);
 	}
 
 	public static BufferedImage getGrayScaledImage(BufferedImage source) {

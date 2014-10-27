@@ -26,7 +26,7 @@ public class LogoScreen extends Screen {
 		animation.addAnimationListener(new AnimationListener() {
 			@Override
 			public void animationCompleted(Animation animation) {
-				getContext().setCurrentScreen(AEIIApplet.ID_MAIN_MENU_SCREEN);
+				getContext().gotoMainMenuScreen();
 			}
 		});
 	}

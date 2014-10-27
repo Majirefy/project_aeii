@@ -1,5 +1,6 @@
 package com.toyknight.aeii.gui;
 
+import com.toyknight.aeii.gui.util.ResourceUtil;
 import java.awt.Graphics;
 import javax.swing.JPanel;
 
@@ -17,14 +18,7 @@ public class AEIIPanel extends JPanel {
 	public void paint(Graphics g) {
 		paintBackground(g);
 		super.paint(g);
-		g.drawImage(ResourceManager.getBorderImage(0), 0, 0, 16, 16, this);
-		g.drawImage(ResourceManager.getBorderImage(1), 16, 0, getWidth() - 32, 16, this);
-		g.drawImage(ResourceManager.getBorderImage(2), getWidth() - 16, 0, 16, 16, this);
-		g.drawImage(ResourceManager.getBorderImage(3), 0, 16, 16, getHeight() - 32, this);
-		g.drawImage(ResourceManager.getBorderImage(4), getWidth() - 16, 16, 16, getHeight() - 32, this);
-		g.drawImage(ResourceManager.getBorderImage(5), 0, getHeight() - 16, 16, 16, this);
-		g.drawImage(ResourceManager.getBorderImage(6), 16, getHeight() - 16, getWidth() - 32, 16, this);
-		g.drawImage(ResourceManager.getBorderImage(7), getWidth() - 16, getHeight() - 16, 16, 16, this);
+		ResourceUtil.paintBorder(g, 0, 0, getWidth(), getHeight());
 	}
 	
 	protected void paintBackground(Graphics g) {

@@ -90,10 +90,14 @@ public class MapCanvas extends Screen {
 	}
 
 	public boolean isOperatable() {
-		return getGame().isLocalPlayer()
-				&& !manager.isGameOver()
-				&& !manager.isProcessing()
-				&& !isInternalFrameShown();
+		if (manager != null) {
+			return getGame().isLocalPlayer()
+					&& !manager.isGameOver()
+					&& !manager.isProcessing()
+					&& !isInternalFrameShown();
+		} else {
+			return false;
+		}
 	}
 
 	public boolean isAnimating() {
@@ -305,7 +309,11 @@ public class MapCanvas extends Screen {
 	}
 
 	private Game getGame() {
-		return manager.getGame();
+		if (manager != null) {
+			return manager.getGame();
+		} else {
+			return null;
+		}
 	}
 
 	@Override

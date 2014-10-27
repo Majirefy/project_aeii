@@ -50,6 +50,10 @@ public class MainMenuScreen extends Screen {
 		title_shown = true;
 		this.menu.setVisible(true);
 	}
+	
+	public MainMenu getMenu() {
+		return menu;
+	}
 
 	@Override
 	public void paint(Graphics g) {

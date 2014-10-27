@@ -178,9 +178,11 @@ public class GameScreen extends Screen implements Displayable, ManagerStateListe
 
 	@Override
 	public void update() {
-		map_canvas.update();
-		tile_panel.update();
-		manager.update();
+		if (manager != null) {
+			map_canvas.update();
+			tile_panel.update();
+			manager.update();
+		}
 	}
 
 }
