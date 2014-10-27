@@ -87,6 +87,7 @@ public class MapCanvas extends Screen {
 		mouse_x = 0;
 		mouse_y = 0;
 		current_delay = 0;
+		this.action_bar.setVisible(false);
 	}
 
 	public boolean isOperatable() {
@@ -162,6 +163,8 @@ public class MapCanvas extends Screen {
 				int click_y = getCursorYOnMap();
 				if (e.getButton() == MouseEvent.BUTTON1) {
 					switch (manager.getState()) {
+						case GameManager.STATE_PREVIEW:
+							manager.cancelPreviewPhase();
 						case GameManager.STATE_SELECT:
 							doSelect(click_x, click_y);
 							break;
@@ -184,8 +187,14 @@ public class MapCanvas extends Screen {
 				}
 				if (e.getButton() == MouseEvent.BUTTON3) {
 					switch (manager.getState()) {
+						case GameManager.STATE_PREVIEW:
 						case GameManager.STATE_SELECT:
-							action_bar.setVisible(false);
+							if (getGame().getMap().getUnit(click_x, click_y) != null) {
+								manager.beginPreviewPhase(click_x, click_y);
+							} else {
+								manager.cancelPreviewPhase();
+								action_bar.setVisible(false);
+							}
 							break;
 						case GameManager.STATE_MOVE:
 							manager.cancelMovePhase();
@@ -441,6 +450,9 @@ public class MapCanvas extends Screen {
 				case GameManager.STATE_MOVE:
 					paintMoveAlpha(g);
 					paintMovePath(g, ts);
+					break;
+				case GameManager.STATE_PREVIEW:
+					paintMoveAlpha(g);
 					break;
 				case GameManager.STATE_ATTACK:
 				case GameManager.STATE_SUMMON:

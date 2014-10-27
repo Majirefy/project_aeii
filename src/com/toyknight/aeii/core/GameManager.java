@@ -20,6 +20,7 @@ public class GameManager implements GameListener {
 	public static final int STATE_ATTACK = 0x5;
 	public static final int STATE_SUMMON = 0x6;
 	public static final int STATE_HEAL = 0x7;
+	public static final int STATE_PREVIEW = 0x8;
 
 	private int state;
 	private int last_state;
@@ -96,6 +97,12 @@ public class GameManager implements GameListener {
 		}
 	}
 
+	public void cancelPreviewPhase() {
+		if (state == STATE_PREVIEW) {
+			setState(STATE_SELECT);
+		}
+	}
+
 	public void cancelMovePhase() {
 		if (canCancelMovePhase()) {
 			setState(STATE_SELECT);
@@ -122,7 +129,7 @@ public class GameManager implements GameListener {
 	}
 
 	public void beginSummonPhase() {
-		if (getUnitToolkit().isUnitAccessible(getSelectedUnit()) 
+		if (getUnitToolkit().isUnitAccessible(getSelectedUnit())
 				&& isActionState() && getSelectedUnit().hasAbility(Ability.NECROMANCER)) {
 			this.attackable_positions = getUnitToolkit().createAttackablePositions(selected_unit);
 			setState(STATE_SUMMON);
@@ -130,10 +137,20 @@ public class GameManager implements GameListener {
 	}
 
 	public void beginHealingPhase() {
-		if (getUnitToolkit().isUnitAccessible(getSelectedUnit()) 
+		if (getUnitToolkit().isUnitAccessible(getSelectedUnit())
 				&& isActionState() && getSelectedUnit().hasAbility(Ability.HEALER)) {
 			this.attackable_positions = getUnitToolkit().createAttackablePositions(selected_unit);
 			setState(STATE_HEAL);
+		}
+	}
+
+	public void beginPreviewPhase(int x, int y) {
+		Unit unit = getGame().getMap().getUnit(x, y);
+		if ((state == STATE_SELECT || state == STATE_PREVIEW) && unit != null) {
+			selected_unit = unit;
+			getUnitToolkit().setCurrentUnit(selected_unit);
+			movable_positions = getUnitToolkit().createMovablePositions();
+			setState(STATE_PREVIEW);
 		}
 	}
 
@@ -152,7 +169,7 @@ public class GameManager implements GameListener {
 			if (unit != null) {
 				selected_unit = unit;
 				last_position = new Point(x, y);
-				unit_toolkit.setCurrentUnit(selected_unit);
+				getUnitToolkit().setCurrentUnit(selected_unit);
 				is_selected_unit_moved = false;
 				if (is_new_unit_phase) {
 					is_new_unit_phase = false;
