@@ -2,7 +2,6 @@ package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
 import com.toyknight.aeii.core.Game;
-import com.toyknight.aeii.core.SuffixFileFilter;
 import com.toyknight.aeii.core.creator.GameCreator;
 import com.toyknight.aeii.core.creator.GameCreatorListener;
 import com.toyknight.aeii.gui.AEIIApplet;
@@ -17,13 +16,14 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -63,6 +63,12 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 		map_list.setBackground(Color.DARK_GRAY);
 		map_list.setCellRenderer(new MapListCellRenderer(ts));
 		map_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		map_list.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				creator.changeMap(map_list.getSelectedIndex());
+			}
+		});
 		JScrollPane sp_map_list = new JScrollPane(map_list);
 		sp_map_list.setBounds(ts / 2, ts / 2, ts * 6, height - ts);
 		sp_map_list.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -77,19 +83,21 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 
 	public void reloadMaps() {
 		String[] maps = creator.getMapList();
-		if(maps.length > 0) {
+		if (maps.length > 0) {
 			map_list.setListData(maps);
 			creator.changeMap(0);
 		}
 		updateButtons();
 	}
-	
+
 	@Override
 	public void onMapChanged(int index) {
-		map_list.setSelectedIndex(index);
-		updateButtons();
+		if (map_list.getSelectedIndex() != index) {
+			map_list.setSelectedIndex(index);
+			updateButtons();
+		}
 	}
-	
+
 	private void updateButtons() {
 		btn_next.setEnabled(creator.canCreate());
 	}

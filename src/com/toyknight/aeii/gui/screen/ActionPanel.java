@@ -54,7 +54,7 @@ public class ActionPanel extends AEIIPanel {
 
 	public void initComponents(int ts) {
 		this.setLayout(null);
-		btn_end_turn.setBounds(ts / 2, getHeight() - ts, getWidth() - ts, ts / 2);
+		btn_end_turn.setBounds(ts / 4, getHeight() - ts / 2 - ts / 4, getWidth() - ts / 2, ts / 2);
 		btn_end_turn.addActionListener(btn_end_turn_listener);
 		btn_end_turn.registerKeyboardAction(
 				btn_end_turn_listener,
@@ -62,7 +62,7 @@ public class ActionPanel extends AEIIPanel {
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_end_turn.setToolTipText("Alt + Enter");
 		this.add(btn_end_turn);
-		btn_mini_map.setBounds(ts / 2, getHeight() - ts * 2, getWidth() - ts, ts / 2);
+		btn_mini_map.setBounds(ts / 4, getHeight() - ts - ts / 2, getWidth() - ts / 2, ts / 2);
 		this.add(btn_mini_map);
 		lb_unit_icon.setBounds(ts / 2, ts / 2, ts / 3 * 4, ts / 3 * 4);
 		lb_unit_icon.setHorizontalAlignment(JLabel.CENTER);

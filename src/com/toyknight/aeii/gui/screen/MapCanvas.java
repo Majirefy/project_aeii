@@ -759,11 +759,11 @@ public class MapCanvas extends Screen {
 				infoy + tfh + ts / 24 * 2 + (tfh - fm.getHeight()) / 2 + fm.getAscent());
 		//defender defence arrow
 		if (defender_defence_bonus > 0) {
-			int p_defence_width = fm.stringWidth(attacker_p_defence_str);
+			int p_defence_width = fm.stringWidth(defender_p_defence_str);
 			paintRiseArrow(g,
 					lmargin + hw * 2 + tfw + ts / 24 * 6 + ts / 4 + p_defence_width,
 					infoy + tfh + ts / 24 * 2 + (tfh - ah) / 2);
-			int m_defence_width = fm.stringWidth(attacker_m_defence_str);
+			int m_defence_width = fm.stringWidth(defender_m_defence_str);
 			paintRiseArrow(g,
 					lmargin + hw * 3 + tfw * 2 + ts / 24 * 8 + ts / 4 + m_defence_width,
 					infoy + tfh + ts / 24 * 2 + (tfh - ah) / 2);
