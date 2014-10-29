@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.io.File;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -25,8 +24,7 @@ public class MapListCellRenderer implements ListCellRenderer {
 	@Override
 	public Component getListCellRendererComponent(
 			JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-		File map_file = (File)value;
-		return new MapLabel(list.getWidth(), " "+map_file.getName(), isSelected);
+		return new MapLabel(list.getWidth(), " "+(String)value, isSelected);
 	}
 
 	private class MapLabel extends JLabel {

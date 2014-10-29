@@ -1,7 +1,7 @@
 package com.toyknight.aeii.core.map;
 
 import com.toyknight.aeii.core.AEIIException;
-import com.toyknight.aeii.gui.util.SuffixFileFilter;
+import com.toyknight.aeii.core.SuffixFileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;

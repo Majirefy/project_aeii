@@ -3,7 +3,7 @@ package com.toyknight.aeii.gui;
 import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.util.ResourceUtil;
-import com.toyknight.aeii.gui.util.SuffixFileFilter;
+import com.toyknight.aeii.core.SuffixFileFilter;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;

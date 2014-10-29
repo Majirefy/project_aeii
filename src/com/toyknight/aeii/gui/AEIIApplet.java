@@ -3,11 +3,13 @@ package com.toyknight.aeii.gui;
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.Launcher;
 import com.toyknight.aeii.core.AEIIException;
+import com.toyknight.aeii.core.Game;
+import com.toyknight.aeii.core.creator.GameCreator;
 import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
+import com.toyknight.aeii.gui.screen.GameCreateScreen;
 import com.toyknight.aeii.gui.screen.GameScreen;
-import com.toyknight.aeii.gui.screen.LocalMapScreen;
 import com.toyknight.aeii.gui.screen.LogoScreen;
 import com.toyknight.aeii.gui.screen.MainMenuScreen;
 import com.toyknight.aeii.gui.screen.internal.MainMenu;
@@ -30,7 +32,7 @@ public class AEIIApplet {
 
 	public static final String ID_LOGO_SCREEN = "logo";
 	public static final String ID_MAIN_MENU_SCREEN = "main_menu";
-	public static final String ID_LOCAL_MAP_SCREEN = "local_map";
+	public static final String ID_GAME_CREATE_SCREEN = "game_create";
 	public static final String ID_GAME_SCREEN = "game";
 
 	private CommandLine command_line;
@@ -50,7 +52,7 @@ public class AEIIApplet {
 	private Screen current_screen;
 	private LogoScreen logo_screen;
 	private MainMenuScreen main_menu_screen;
-	private LocalMapScreen local_map_screen;
+	private GameCreateScreen game_create_screen;
 	private GameScreen game_screen;
 
 	private CardLayout screen_container;
@@ -73,9 +75,9 @@ public class AEIIApplet {
 		main_menu_screen = new MainMenuScreen(SCREEN_SIZE, this);
 		main_menu_screen.initComponents();
 		this.getContentPane().add(main_menu_screen, ID_MAIN_MENU_SCREEN);
-		local_map_screen = new LocalMapScreen(SCREEN_SIZE, this);
-		local_map_screen.initComponents();
-		this.getContentPane().add(local_map_screen, ID_LOCAL_MAP_SCREEN);
+		game_create_screen = new GameCreateScreen(SCREEN_SIZE, this);
+		game_create_screen.initComponents();
+		this.getContentPane().add(game_create_screen, ID_GAME_CREATE_SCREEN);
 		game_screen = new GameScreen(SCREEN_SIZE, this);
 		game_screen.initComponents();
 		this.getContentPane().add(game_screen, ID_GAME_SCREEN);
@@ -150,8 +152,8 @@ public class AEIIApplet {
 			case ID_MAIN_MENU_SCREEN:
 				current_screen = main_menu_screen;
 				break;
-			case ID_LOCAL_MAP_SCREEN:
-				current_screen = local_map_screen;
+			case ID_GAME_CREATE_SCREEN:
+				current_screen = game_create_screen;
 				break;
 			case ID_GAME_SCREEN:
 				current_screen = game_screen;
@@ -167,10 +169,15 @@ public class AEIIApplet {
 		main_menu_screen.getMenu().showMenu(MainMenu.ID_WELCOME_MENU);
 	}
 	
-	public void gotoLocalMapScreen(int mode) {
-		setCurrentScreen(ID_LOCAL_MAP_SCREEN);
-		local_map_screen.setMode(mode);
-		local_map_screen.reloadMaps();
+	public void gotoGameCreateScreen(GameCreator creator) {
+		setCurrentScreen(ID_GAME_CREATE_SCREEN);
+		game_create_screen.setGameCreator(creator);
+		game_create_screen.reloadMaps();
+	}
+	
+	public void gotoGameScreen(Game game) {
+		game_screen.setGame(game);
+		setCurrentScreen(ID_GAME_SCREEN);
 	}
 
 	public Screen getCurrentScreen() {

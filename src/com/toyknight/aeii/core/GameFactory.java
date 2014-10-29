@@ -20,5 +20,11 @@ public class GameFactory {
 		game.init();
 		return game;
 	}
+	
+	public Game createSkirmishGame(Player[] players, int max_population) {
+		SkirmishGame game = new SkirmishGame(map, players, max_population);
+		game.init();
+		return game;
+	}
 
 }

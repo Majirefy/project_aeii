@@ -1,13 +1,16 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
+import com.toyknight.aeii.core.Game;
+import com.toyknight.aeii.core.SuffixFileFilter;
+import com.toyknight.aeii.core.creator.GameCreator;
+import com.toyknight.aeii.core.creator.GameCreatorListener;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.control.AEIIButton;
 import com.toyknight.aeii.gui.screen.internal.MapListCellRenderer;
 import com.toyknight.aeii.gui.util.ResourceUtil;
-import com.toyknight.aeii.gui.util.SuffixFileFilter;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -26,19 +29,15 @@ import javax.swing.ScrollPaneConstants;
  *
  * @author toyknight
  */
-public class LocalMapScreen extends Screen {
+public class GameCreateScreen extends Screen implements GameCreatorListener {
 
-	public static final int MODE_SKIRMISH = 0x1;
-	public static final int MODE_CTF = 0x1;
-
-	private int mode = MODE_SKIRMISH;
-
-	private final SuffixFileFilter map_file_filter = new SuffixFileFilter("aem");
 	private final AEIIButton btn_back = new AEIIButton(Language.getText("LB_BACK"));
 	private final AEIIButton btn_next = new AEIIButton(Language.getText("LB_NEXT"));
 	private final JList map_list = new JList();
 
-	public LocalMapScreen(Dimension size, AEIIApplet context) {
+	private GameCreator creator;
+
+	public GameCreateScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
 	}
 
@@ -47,7 +46,7 @@ public class LocalMapScreen extends Screen {
 		this.setLayout(null);
 		int width = getPreferredSize().width;
 		int height = getPreferredSize().height;
-		btn_back.setBounds(ts / 2, height - ts, ts * 3, ts / 2);
+		btn_back.setBounds(width - ts * 7, height - ts, ts * 3, ts / 2);
 		btn_back.registerKeyboardAction(
 				btn_back_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
@@ -65,27 +64,34 @@ public class LocalMapScreen extends Screen {
 		map_list.setCellRenderer(new MapListCellRenderer(ts));
 		map_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane sp_map_list = new JScrollPane(map_list);
-		sp_map_list.setBounds((width - height * 4 / 3) / 2, ts / 2, ts * 6, height - ts * 2);
+		sp_map_list.setBounds(ts / 2, ts / 2, ts * 6, height - ts);
 		sp_map_list.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		this.add(sp_map_list);
 		this.add(btn_next);
 	}
 
-	public void setMode(int mode) {
-		this.mode = mode;
+	public void setGameCreator(GameCreator creator) {
+		this.creator = creator;
+		this.creator.setGameCreatorListener(this);
 	}
 
 	public void reloadMaps() {
-		File map_dir = new File("map/");
-		File[] maps = map_dir.listFiles(map_file_filter);
-		map_list.setListData(maps);
-		if (maps.length > 0) {
-			map_list.setSelectedIndex(0);
+		String[] maps = creator.getMapList();
+		if(maps.length > 0) {
+			map_list.setListData(maps);
+			creator.changeMap(0);
 		}
+		updateButtons();
 	}
-
-	private void displaySelectedMap() {
-
+	
+	@Override
+	public void onMapChanged(int index) {
+		map_list.setSelectedIndex(index);
+		updateButtons();
+	}
+	
+	private void updateButtons() {
+		btn_next.setEnabled(creator.canCreate());
 	}
 
 	@Override
@@ -109,7 +115,8 @@ public class LocalMapScreen extends Screen {
 	private final ActionListener btn_next_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-
+			Game game = creator.create();
+			getContext().gotoGameScreen(game);
 		}
 	};
 
