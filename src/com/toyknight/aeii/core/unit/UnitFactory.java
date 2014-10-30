@@ -16,6 +16,7 @@ public class UnitFactory {
 	private static Unit[] units;
 	private static long current_code;
 
+	private static int commander_index;
 	private static int skeleton_index;
 	private static int crystal_index;
 
@@ -28,6 +29,7 @@ public class UnitFactory {
 					unit_data_dir.getAbsolutePath() + "/unit_config.dat");
 			Scanner din = new Scanner(unit_config);
 			unit_count = din.nextInt();
+			commander_index = din.nextInt();
 			skeleton_index = din.nextInt();
 			crystal_index = din.nextInt();
 		} catch (java.util.NoSuchElementException ex) {
@@ -60,7 +62,8 @@ public class UnitFactory {
 					ability_list.add(din.nextInt());
 				}
 				din.close();
-				Unit unit = i == 9 ? new Unit(i, true) : new Unit(i, false);
+				Unit unit = 
+						i == commander_index ? new Unit(i, true) : new Unit(i, false);
 				unit.setPrice(price);
 				unit.setMaxHp(max_hp);
 				unit.setMovementPoint(mp);

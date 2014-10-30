@@ -39,3 +39,6 @@ LB_CTF=CTF
 LB_LOAD=Load
 LB_BACK=Back
 LB_NEXT=Next
+LB_PLAY=Play
+LB_REFRESH=Refresh
+LB_PREVIEW=Preview

@@ -1,4 +1,3 @@
-
 package com.toyknight.aeii.core.map;
 
 import com.toyknight.aeii.core.unit.Unit;
@@ -13,13 +12,17 @@ import java.io.IOException;
  * @author toyknight
  */
 public class MapFactory {
-	
+
 	private MapFactory() {
 	}
-	
+
 	public static Map createMap(File map_file) throws IOException {
 		DataInputStream fis = new DataInputStream(new FileInputStream(map_file));
 		String author_name = fis.readUTF();
+		boolean[] team_access = new boolean[4];
+		for (int team = 0; team < 4; team++) {
+			team_access[team] = fis.readBoolean();
+		}
 		int width = fis.readInt();
 		int height = fis.readInt();
 		short[][] map_data = new short[width][height];
@@ -28,7 +31,7 @@ public class MapFactory {
 				map_data[i][j] = fis.readShort();
 			}
 		}
-		Map map = new Map(map_data, author_name);
+		Map map = new Map(map_data, team_access, author_name);
 		int unit_count = fis.readInt();
 		for (int i = 0; i < unit_count; i++) {
 			int team = fis.readInt();
@@ -43,5 +46,5 @@ public class MapFactory {
 		fis.close();
 		return map;
 	}
-	
+
 }

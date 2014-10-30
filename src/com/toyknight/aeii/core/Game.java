@@ -173,7 +173,7 @@ public class Game implements OperationListener {
 		}
 	}
 
-	public void destrouUnit(int unit_x, int unit_y) {
+	public void destroyUnit(int unit_x, int unit_y) {
 		Unit unit = getMap().getUnit(unit_x, unit_y);
 		if (unit != null) {
 			submitGameEvent(new UnitDestroyEvent(this, unit));

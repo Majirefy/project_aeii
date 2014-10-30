@@ -32,7 +32,9 @@ import javax.swing.event.ListSelectionListener;
 public class GameCreateScreen extends Screen implements GameCreatorListener {
 
 	private final AEIIButton btn_back = new AEIIButton(Language.getText("LB_BACK"));
-	private final AEIIButton btn_next = new AEIIButton(Language.getText("LB_NEXT"));
+	private final AEIIButton btn_play = new AEIIButton(Language.getText("LB_PLAY"));
+	private final AEIIButton btn_refresh = new AEIIButton(Language.getText("LB_REFRESH"));
+	private final AEIIButton btn_preview = new AEIIButton(Language.getText("LB_PREVIEW"));
 	private final JList map_list = new JList();
 
 	private GameCreator creator;
@@ -53,12 +55,13 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_back.addActionListener(btn_back_listener);
 		this.add(btn_back);
-		btn_next.setBounds(width - ts * 3 - ts / 2, height - ts, ts * 3, ts / 2);
-		btn_next.registerKeyboardAction(
+		btn_play.setBounds(width - ts * 3 - ts / 2, height - ts, ts * 3, ts / 2);
+		btn_play.registerKeyboardAction(
 				btn_next_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
-		btn_next.addActionListener(btn_next_listener);
+		btn_play.addActionListener(btn_next_listener);
+		this.add(btn_play);
 		map_list.setFocusable(false);
 		map_list.setBackground(Color.DARK_GRAY);
 		map_list.setCellRenderer(new MapListCellRenderer(ts));
@@ -66,19 +69,35 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 		map_list.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				creator.changeMap(map_list.getSelectedIndex());
+				int index = map_list.getSelectedIndex();
+				if (index >= 0) {
+					creator.changeMap(index);
+				}
 			}
 		});
 		JScrollPane sp_map_list = new JScrollPane(map_list);
 		sp_map_list.setBounds(ts / 2, ts / 2, ts * 6, height - ts);
 		sp_map_list.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		this.add(sp_map_list);
-		this.add(btn_next);
+		btn_refresh.setBounds(ts * 7, height - ts, ts * 3, ts / 2);
+		btn_refresh.registerKeyboardAction(
+				btn_refresh_listener,
+				KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_MASK),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		btn_refresh.addActionListener(btn_refresh_listener);
+		this.add(btn_refresh);
+		btn_preview.setBounds(ts * 10 + ts / 2, height - ts, ts * 3, ts / 2);
+		btn_preview.registerKeyboardAction(
+				btn_preview_listener,
+				KeyStroke.getKeyStroke(KeyEvent.VK_P, 0),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		btn_preview.addActionListener(btn_preview_listener);
+		this.add(btn_preview);
 	}
 
 	public void setGameCreator(GameCreator creator) {
+		creator.setGameCreatorListener(this);
 		this.creator = creator;
-		this.creator.setGameCreatorListener(this);
 	}
 
 	public void reloadMaps() {
@@ -99,7 +118,7 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 	}
 
 	private void updateButtons() {
-		btn_next.setEnabled(creator.canCreate());
+		btn_play.setEnabled(creator.canCreate());
 	}
 
 	@Override
@@ -120,11 +139,26 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 			getContext().gotoMainMenuScreen();
 		}
 	};
+
 	private final ActionListener btn_next_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Game game = creator.create();
 			getContext().gotoGameScreen(game);
+		}
+	};
+
+	private final ActionListener btn_refresh_listener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			reloadMaps();
+		}
+	};
+
+	private final ActionListener btn_preview_listener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
 		}
 	};
 

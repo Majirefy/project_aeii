@@ -20,7 +20,7 @@ public class SkirmishGameCreator implements GameCreator {
 
 	private GameCreatorListener listener;
 
-	private Player[] players;
+	private final Player[] players = new Player[4];
 	private int start_gold = 1000;
 	private int max_population = 10;
 
@@ -29,11 +29,18 @@ public class SkirmishGameCreator implements GameCreator {
 	private String[] map_name_list;
 	private int selected_map_index;
 
-	public SkirmishGameCreator() {
-		players = new Player[4];
-		for (int i = 0; i < players.length; i++) {
-			players[i] = new LocalPlayer();
-			players[i].setAlliance(i);
+	private void updatePlayers() {
+		if (selected_map != null) {
+			for (int team = 0; team < 4; team++) {
+				boolean access = selected_map.getTeamAccess(team);
+				if(access == true && players[team] == null) {
+					players[team] = new LocalPlayer();
+					players[team].setAlliance(team);
+				}
+				if(access == false) {
+					players[team] = null;
+				}
+			}
 		}
 	}
 
@@ -70,12 +77,14 @@ public class SkirmishGameCreator implements GameCreator {
 
 	@Override
 	public void changeMap(int index) {
-		this.selected_map_index = index;
 		File map_file = map_list[index];
 		try {
 			this.selected_map = MapFactory.createMap(map_file);
+			this.selected_map_index = index;
+			updatePlayers();
 			this.listener.onMapChanged(index);
 		} catch (IOException ex) {
+			this.listener.onMapChanged(selected_map_index);
 		}
 	}
 

@@ -15,6 +15,7 @@ import java.util.Set;
 public class Map {
 
 	private final String author;
+	private final boolean[] team_access;
 
 	private final short[][] map_data;
 	private final Unit[][] upper_unit_layer;
@@ -22,8 +23,9 @@ public class Map {
 	private final ArrayList<Tomb> tomb_list;
 	private final Point[][] position_map;
 
-	public Map(short[][] map_data, String author) {
+	public Map(short[][] map_data,boolean[] team_access, String author) {
 		this.author = author;
+		this.team_access = team_access;
 		this.map_data = map_data;
 		this.unit_map = new HashMap();
 		this.tomb_list = new ArrayList();
@@ -208,6 +210,10 @@ public class Map {
 
 	public Point getPosition(int x, int y) {
 		return position_map[x][y];
+	}
+	
+	public boolean getTeamAccess(int team) {
+		return team_access[team];
 	}
 
 }
