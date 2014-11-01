@@ -50,9 +50,11 @@ public class MiniMap extends JInternalFrame {
 	}
 
 	public void display(Map map) {
-		this.map = map;
-		this.init(map);
-		this.setVisible(true);
+		synchronized (getTreeLock()) {
+			this.map = map;
+			this.init(map);
+			this.setVisible(true);
+		}
 	}
 
 	private class MapPane extends JPanel {

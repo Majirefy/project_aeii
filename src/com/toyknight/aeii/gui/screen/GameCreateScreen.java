@@ -91,10 +91,10 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 		btn_refresh.addActionListener(btn_refresh_listener);
 		this.add(btn_refresh);
 		btn_preview.setBounds(ts * 10 + ts / 2, height - ts, ts * 3, ts / 2);
-//		btn_preview.registerKeyboardAction(
-//				btn_preview_listener,
-//				KeyStroke.getKeyStroke(KeyEvent.VK_P, 0),
-//				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		btn_preview.registerKeyboardAction(
+				btn_preview_listener,
+				KeyStroke.getKeyStroke(KeyEvent.VK_P, 0),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_preview.addActionListener(btn_preview_listener);
 		this.add(btn_preview);
 		this.add(mini_map);
