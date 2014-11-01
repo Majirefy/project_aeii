@@ -2,9 +2,12 @@ package com.toyknight.aeii.gui;
 
 import com.toyknight.aeii.Configuration;
 import com.toyknight.aeii.Launcher;
+import com.toyknight.aeii.audio.AudioManager;
 import com.toyknight.aeii.core.AEIIException;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.creator.GameCreator;
+import com.toyknight.aeii.core.map.LocalMapProvider;
+import com.toyknight.aeii.core.map.MapProvider;
 import com.toyknight.aeii.core.map.TileRepository;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.gui.effect.ImageWaveEffect;
@@ -34,6 +37,8 @@ public class AEIIApplet {
 	public static final String ID_MAIN_MENU_SCREEN = "main_menu";
 	public static final String ID_GAME_CREATE_SCREEN = "game_create";
 	public static final String ID_GAME_SCREEN = "game";
+	
+	private final LocalMapProvider local_map_provider;
 
 	private CommandLine command_line;
 
@@ -61,9 +66,13 @@ public class AEIIApplet {
 		this.TILE_SIZE = ts;
 		SCREEN_SIZE = new Dimension(width, height);
 		fpsDelay = 1000 / Configuration.getGameSpeed();
+		
+		File map_dir = new File("map/");
+		local_map_provider = new LocalMapProvider(map_dir);
 	}
 
 	public void init() {
+		AudioManager.init();
 		ImageWaveEffect.createSinTab();
 
 		content_pane = new Container();
@@ -167,11 +176,13 @@ public class AEIIApplet {
 	public void gotoMainMenuScreen() {
 		setCurrentScreen(ID_MAIN_MENU_SCREEN);
 		main_menu_screen.getMenu().showMenu(MainMenu.ID_WELCOME_MENU);
+		AudioManager.playBgm("res/bgm/main_theme.ogg", true);
 	}
 	
-	public void gotoGameCreateScreen(GameCreator creator) {
+	public void gotoGameCreateScreen(GameCreator creator, MapProvider provider) {
 		setCurrentScreen(ID_GAME_CREATE_SCREEN);
 		game_create_screen.setGameCreator(creator);
+		game_create_screen.setMapProvider(provider);
 		game_create_screen.reloadMaps();
 	}
 	
@@ -183,10 +194,14 @@ public class AEIIApplet {
 	public Screen getCurrentScreen() {
 		return current_screen;
 	}
-
-	public GameScreen getGameScreen() {
-		return game_screen;
+	
+	public LocalMapProvider getLocalMapProvider() {
+		return local_map_provider;
 	}
+
+//	public GameScreen getGameScreen() {
+//		return game_screen;
+//	}
 
 	public int getTileSize() {
 		return TILE_SIZE;

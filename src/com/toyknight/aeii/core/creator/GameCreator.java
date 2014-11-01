@@ -2,6 +2,7 @@
 package com.toyknight.aeii.core.creator;
 
 import com.toyknight.aeii.core.Game;
+import com.toyknight.aeii.core.map.Map;
 
 /**
  *
@@ -9,15 +10,11 @@ import com.toyknight.aeii.core.Game;
  */
 public interface GameCreator {
 	
-	public void setGameCreatorListener(GameCreatorListener listener);
-	
 	public boolean canChangeProperty();
 	
-	public String[] getMapList();
+	public void setGameCreatorListener(GameCreatorListener listener);
 	
-	public void refreshMapList();
-	
-	public void changeMap(int index);
+	public void setMap(Map map);
 	
 	public void setMaxPopulation(int population);
 	

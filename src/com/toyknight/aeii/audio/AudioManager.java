@@ -6,7 +6,7 @@ import java.util.Random;
  *
  * @author adams
  */
-public class AudioSystem {
+public class AudioManager {
 
     public static Audio at = null;
     public static Audio sound_effect = null;
@@ -15,7 +15,7 @@ public class AudioSystem {
     private static int bgm_volumn;
     private static int se_volumn;
 
-    private AudioSystem() {
+    private AudioManager() {
 
     }
 

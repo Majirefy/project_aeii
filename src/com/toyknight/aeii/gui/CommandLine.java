@@ -32,10 +32,14 @@ public class CommandLine extends Thread {
 		this.command_wrapper = new CommandWrapper();
 		this.cin = new BufferedReader(new InputStreamReader(System.in));
 	}
+	
+	public AEIIApplet getContext() {
+		return context;
+	}
 
 	@Override
 	public void run() {
-		while (context.isRunning()) {
+		while (getContext().isRunning()) {
 			System.out.print(">");
 			try {
 				excute(cin.readLine());
@@ -108,11 +112,7 @@ public class CommandLine extends Thread {
 		}
 
 		public void setspeed(int speed) {
-			context.setCurrentFpsDelay(1000 / speed);
-		}
-
-		public void cmdtest(String msg) {
-			System.out.println(msg);
+			getContext().setCurrentFpsDelay(1000 / speed);
 		}
 
 		public void maptest(String map_name) {
@@ -127,8 +127,7 @@ public class CommandLine extends Thread {
 					players[team].setGold(1000);
 				}
 				Game game = game_factory.createBasicGame(players, 10);
-				context.getGameScreen().setGame(game);
-				context.setCurrentScreen(AEIIApplet.ID_GAME_SCREEN);
+				getContext().gotoGameScreen(game);
 			} catch (IOException ex) {
 				System.err.println(ex.getClass().toString() + ": " + ex.getMessage());
 			}

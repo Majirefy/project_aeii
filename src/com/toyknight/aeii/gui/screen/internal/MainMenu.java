@@ -2,15 +2,18 @@ package com.toyknight.aeii.gui.screen.internal;
 
 import com.toyknight.aeii.Language;
 import com.toyknight.aeii.Launcher;
+import com.toyknight.aeii.core.creator.GameCreator;
 import com.toyknight.aeii.core.creator.SkirmishGameCreator;
+import com.toyknight.aeii.core.map.LocalMapProvider;
+import com.toyknight.aeii.core.map.MapProvider;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.control.AEIIButton;
-import com.toyknight.aeii.gui.screen.GameCreateScreen;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.JPanel;
 
 /**
@@ -21,6 +24,8 @@ public class MainMenu extends JPanel {
 
 	public static final String ID_WELCOME_MENU = "welcome_menu";
 	public static final String ID_SINGLE_PLAYER_MENU = "single_player_menu";
+	
+	private static final File map_dir = new File("map/");
 
 	private final AEIIApplet context;
 	private final CardLayout menu_container;
@@ -97,7 +102,9 @@ public class MainMenu extends JPanel {
 		btn_skirmish.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				context.gotoGameCreateScreen(new SkirmishGameCreator());
+				GameCreator game_creator = new SkirmishGameCreator();
+				MapProvider map_provider = getContext().getLocalMapProvider();
+				getContext().gotoGameCreateScreen(game_creator, map_provider);
 			}
 		});
 		single_player_menu.add(btn_skirmish);
@@ -116,6 +123,10 @@ public class MainMenu extends JPanel {
 		});
 		single_player_menu.add(btn_back);
 		this.add(single_player_menu, ID_SINGLE_PLAYER_MENU);
+	}
+	
+	public AEIIApplet getContext() {
+		return context;
 	}
 
 	public void showMenu(String menu_id) {

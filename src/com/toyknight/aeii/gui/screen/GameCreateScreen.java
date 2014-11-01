@@ -4,6 +4,8 @@ import com.toyknight.aeii.Language;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.creator.GameCreator;
 import com.toyknight.aeii.core.creator.GameCreatorListener;
+import com.toyknight.aeii.core.map.Map;
+import com.toyknight.aeii.core.map.MapProvider;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
@@ -37,7 +39,8 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 	private final AEIIButton btn_preview = new AEIIButton(Language.getText("LB_PREVIEW"));
 	private final JList map_list = new JList();
 
-	private GameCreator creator;
+	private GameCreator game_creator;
+	private MapProvider map_provider;
 
 	public GameCreateScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
@@ -70,9 +73,8 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				int index = map_list.getSelectedIndex();
-				if (index >= 0) {
-					creator.changeMap(index);
-				}
+				Map map = map_provider.getMap(index);
+				game_creator.setMap(map);
 			}
 		});
 		JScrollPane sp_map_list = new JScrollPane(map_list);
@@ -97,28 +99,33 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 
 	public void setGameCreator(GameCreator creator) {
 		creator.setGameCreatorListener(this);
-		this.creator = creator;
+		this.game_creator = creator;
+	}
+
+	public void setMapProvider(MapProvider provider) {
+		this.map_provider = provider;
 	}
 
 	public void reloadMaps() {
-		String[] maps = creator.getMapList();
-		if (maps.length > 0) {
-			map_list.setListData(maps);
-			creator.changeMap(0);
+		String[] maps = new String[map_provider.getMapCount()];
+		for (int index = 0; index < maps.length; index++) {
+			maps[index] = map_provider.getMapName(index);
+			
 		}
-		updateButtons();
+		map_list.setListData(maps);
+		if(maps.length > 0) {
+			map_list.setSelectedIndex(0);
+		}
+		//updateButtons();
 	}
 
 	@Override
-	public void onMapChanged(int index) {
-		if (map_list.getSelectedIndex() != index) {
-			map_list.setSelectedIndex(index);
-			updateButtons();
-		}
+	public void onMapChanged(Map map) {
+		updateButtons();
 	}
 
 	private void updateButtons() {
-		btn_play.setEnabled(creator.canCreate());
+		btn_play.setEnabled(game_creator.canCreate());
 	}
 
 	@Override
@@ -143,7 +150,7 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 	private final ActionListener btn_next_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Game game = creator.create();
+			Game game = game_creator.create();
 			getContext().gotoGameScreen(game);
 		}
 	};
