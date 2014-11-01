@@ -53,6 +53,11 @@ public class SkirmishGameCreator implements GameCreator {
 	}
 	
 	@Override
+	public Map getMap() {
+		return map;
+	}
+	
+	@Override
 	public void setMap(Map map) {
 		this.map = map;
 		updatePlayers();

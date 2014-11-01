@@ -14,6 +14,8 @@ public interface GameCreator {
 	
 	public void setGameCreatorListener(GameCreatorListener listener);
 	
+	public Map getMap();
+	
 	public void setMap(Map map);
 	
 	public void setMaxPopulation(int population);

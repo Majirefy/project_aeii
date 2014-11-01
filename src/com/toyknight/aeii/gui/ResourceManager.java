@@ -17,6 +17,8 @@ import javax.imageio.ImageIO;
  */
 public class ResourceManager {
 
+	private static final SuffixFileFilter png_file_filter = new SuffixFileFilter("png");
+
 	private static BufferedImage img_title;
 	private static BufferedImage img_title_mask;
 	private static BufferedImage img_title_glow;
@@ -32,6 +34,7 @@ public class ResourceManager {
 	private static BufferedImage[] big_circles;
 	private static BufferedImage[] borders;
 	private static BufferedImage[] tiles;
+	private static BufferedImage[] stiles;
 	private static BufferedImage[] top_tiles;
 	private static BufferedImage tomb;
 	private static BufferedImage[][][] units;
@@ -127,6 +130,13 @@ public class ResourceManager {
 			tiles[i] = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 			tiles[i].getGraphics().drawImage(ImageIO.read(tile), 0, 0, ts, ts, null);
 		}
+		File stile_dir = new File("res/img/stiles");
+		int stile_count = stile_dir.listFiles(png_file_filter).length;
+		stiles = new BufferedImage[stile_count];
+		for (int i = 0; i < stile_count; i++) {
+			File stile = new File("res/img/stiles/stiles" + i + ".png");
+			stiles[i] = ImageIO.read(stile);
+		}
 		File tomb_file = new File("res/img/tombstone.png");
 		tomb = new BufferedImage(ts, ts, BufferedImage.TYPE_INT_ARGB);
 		tomb.getGraphics().drawImage(ImageIO.read(tomb_file), 0, 0, ts, ts, null);
@@ -134,7 +144,7 @@ public class ResourceManager {
 
 	private static void loadTopTiles(int ts) throws IOException {
 		File img_top_tile_dir = new File("res/img/tiles/top_tiles");
-		int top_tile_count = img_top_tile_dir.listFiles(new SuffixFileFilter("png")).length;
+		int top_tile_count = img_top_tile_dir.listFiles(png_file_filter).length;
 		top_tiles = new BufferedImage[top_tile_count];
 		for (int i = 0; i < top_tile_count; i++) {
 			File tile = new File("res/img/tiles/top_tiles/top_tile_" + i + ".png");
@@ -342,11 +352,11 @@ public class ResourceManager {
 	public static BufferedImage getTitleImage() {
 		return img_title;
 	}
-	
+
 	public static BufferedImage getTitleMask() {
 		return img_title_mask;
 	}
-	
+
 	public static BufferedImage getTitleGlow() {
 		return img_title_glow;
 	}
@@ -385,6 +395,10 @@ public class ResourceManager {
 
 	public static BufferedImage getTileImage(int index) {
 		return tiles[index];
+	}
+	
+	public static BufferedImage getSTileImage(int index) {
+		return stiles[index];
 	}
 
 	public static BufferedImage getTopTileImage(int index) {

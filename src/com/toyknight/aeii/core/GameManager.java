@@ -97,6 +97,17 @@ public class GameManager implements GameListener {
 		}
 	}
 
+	public void beginPreviewPhase(int x, int y) {
+		Unit unit = getGame().getMap().getUnit(x, y);
+		if ((state == STATE_SELECT || state == STATE_PREVIEW)
+				&& unit != null && !unit.isStandby()) {
+			selected_unit = unit;
+			getUnitToolkit().setCurrentUnit(selected_unit);
+			movable_positions = getUnitToolkit().createMovablePositions();
+			setState(STATE_PREVIEW);
+		}
+	}
+
 	public void cancelPreviewPhase() {
 		if (state == STATE_PREVIEW) {
 			setState(STATE_SELECT);
@@ -141,16 +152,6 @@ public class GameManager implements GameListener {
 				&& isActionState() && getSelectedUnit().hasAbility(Ability.HEALER)) {
 			this.attackable_positions = getUnitToolkit().createAttackablePositions(selected_unit);
 			setState(STATE_HEAL);
-		}
-	}
-
-	public void beginPreviewPhase(int x, int y) {
-		Unit unit = getGame().getMap().getUnit(x, y);
-		if ((state == STATE_SELECT || state == STATE_PREVIEW) && unit != null) {
-			selected_unit = unit;
-			getUnitToolkit().setCurrentUnit(selected_unit);
-			movable_positions = getUnitToolkit().createMovablePositions();
-			setState(STATE_PREVIEW);
 		}
 	}
 

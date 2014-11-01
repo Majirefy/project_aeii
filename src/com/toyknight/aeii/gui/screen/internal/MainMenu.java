@@ -4,7 +4,6 @@ import com.toyknight.aeii.Language;
 import com.toyknight.aeii.Launcher;
 import com.toyknight.aeii.core.creator.GameCreator;
 import com.toyknight.aeii.core.creator.SkirmishGameCreator;
-import com.toyknight.aeii.core.map.LocalMapProvider;
 import com.toyknight.aeii.core.map.MapProvider;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.AEIIPanel;
@@ -47,8 +46,6 @@ public class MainMenu extends JPanel {
 			= new AEIIButton(Language.getText("LB_CAMPAIGN"));
 	private final AEIIButton btn_skirmish
 			= new AEIIButton(Language.getText("LB_SKIRMISH"));
-	private final AEIIButton btn_ctf
-			= new AEIIButton(Language.getText("LB_CTF"));
 	private final AEIIButton btn_load
 			= new AEIIButton(Language.getText("LB_LOAD"));
 	private final AEIIButton btn_back
@@ -108,10 +105,7 @@ public class MainMenu extends JPanel {
 			}
 		});
 		single_player_menu.add(btn_skirmish);
-		btn_ctf.setBounds(ts / 4, ts / 4 * 3 + ts, ts * 4 - ts / 2, ts / 2);
-		btn_ctf.setEnabled(false);
-		single_player_menu.add(btn_ctf);
-		btn_load.setBounds(ts / 4, ts / 4 * 4 + ts / 2 * 3, ts * 4 - ts / 2, ts / 2);
+		btn_load.setBounds(ts / 4, ts / 4 * 3 + ts, ts * 4 - ts / 2, ts / 2);
 		btn_load.setEnabled(false);
 		single_player_menu.add(btn_load);
 		btn_back.setBounds(ts / 4, ts / 4 * 5 + ts / 2 * 4, ts * 4 - ts / 2, ts / 2);

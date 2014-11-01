@@ -11,6 +11,7 @@ import com.toyknight.aeii.gui.ResourceManager;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.control.AEIIButton;
 import com.toyknight.aeii.gui.screen.internal.MapListCellRenderer;
+import com.toyknight.aeii.gui.screen.internal.MiniMap;
 import com.toyknight.aeii.gui.util.ResourceUtil;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -38,6 +39,7 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 	private final AEIIButton btn_refresh = new AEIIButton(Language.getText("LB_REFRESH"));
 	private final AEIIButton btn_preview = new AEIIButton(Language.getText("LB_PREVIEW"));
 	private final JList map_list = new JList();
+	private final MiniMap mini_map = new MiniMap();
 
 	private GameCreator game_creator;
 	private MapProvider map_provider;
@@ -89,12 +91,13 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 		btn_refresh.addActionListener(btn_refresh_listener);
 		this.add(btn_refresh);
 		btn_preview.setBounds(ts * 10 + ts / 2, height - ts, ts * 3, ts / 2);
-		btn_preview.registerKeyboardAction(
-				btn_preview_listener,
-				KeyStroke.getKeyStroke(KeyEvent.VK_P, 0),
-				JComponent.WHEN_IN_FOCUSED_WINDOW);
+//		btn_preview.registerKeyboardAction(
+//				btn_preview_listener,
+//				KeyStroke.getKeyStroke(KeyEvent.VK_P, 0),
+//				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_preview.addActionListener(btn_preview_listener);
 		this.add(btn_preview);
+		this.add(mini_map);
 	}
 
 	public void setGameCreator(GameCreator creator) {
@@ -104,9 +107,11 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 
 	public void setMapProvider(MapProvider provider) {
 		this.map_provider = provider;
+		this.mini_map.setVisible(false);
 	}
 
 	public void reloadMaps() {
+		mini_map.setVisible(false);
 		String[] maps = new String[map_provider.getMapCount()];
 		for (int index = 0; index < maps.length; index++) {
 			maps[index] = map_provider.getMapName(index);
@@ -165,7 +170,11 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 	private final ActionListener btn_preview_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-
+			if(mini_map.isVisible()) {
+				mini_map.setVisible(false);
+			} else {
+				mini_map.display(game_creator.getMap());
+			}
 		}
 	};
 
