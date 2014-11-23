@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Please do not modify this file manually.</comment>
+<entry key="CANVAS_SCALE">1</entry>
+<entry key="KEY_INFO">73</entry>
+<entry key="KEY_LEFT">37</entry>
+<entry key="BASE_TILE_SIZE">48</entry>
+<entry key="KEY_UP">38</entry>
+<entry key="LANGUAGE_FILE">en.lang</entry>
+<entry key="KEY_DOWN">40</entry>
+<entry key="KEY_RIGHT">39</entry>
+<entry key="SPEED">30</entry>
+<entry key="KEY_CANCEL">27</entry>
+</properties>

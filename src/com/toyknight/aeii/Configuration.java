@@ -26,7 +26,7 @@ public class Configuration {
 	
 	private static String lang_file;
 
-	private static final File CONFIG_FILE = new File("config.ini");
+	private static final File CONFIG_FILE = new File("config.xml");
 
 	private Configuration() {
 	}
@@ -43,7 +43,7 @@ public class Configuration {
 	private static void loadConfig() throws IOException {
 		Properties config = new Properties();
 		FileInputStream fis = new FileInputStream(CONFIG_FILE);
-		config.load(fis);
+		config.loadFromXML(fis);
 		fis.close();
 		speed = Integer.parseInt(config.getProperty("SPEED", Integer.toString(30)));
 		scale = Integer.parseInt(config.getProperty("CANVAS_SCALE", Integer.toString(1)));
@@ -70,7 +70,7 @@ public class Configuration {
 		config.setProperty("KEY_INFO", Integer.toString(KeyEvent.VK_I));
 		config.setProperty("LANGUAGE_FILE", "en.lang");
 		FileOutputStream fos = new FileOutputStream(CONFIG_FILE);
-		config.store(fos, "Please do not modify this file manually.");
+		config.storeToXML(fos, "Please do not modify this file manually.");
 		fos.flush();
 		fos.close();
 	}
