@@ -129,9 +129,7 @@ public class ActionPanel extends AEIIPanel {
 	}
 
 	private boolean isOperatable() {
-		return manager.getGame().isLocalPlayer()
-				&& !manager.isProcessing()
-				&& !manager.isGameOver();
+		return game_screen.getCanvas().isOperatable();
 	}
 
 	private final ActionListener btn_end_turn_listener = new ActionListener() {
@@ -141,7 +139,7 @@ public class ActionPanel extends AEIIPanel {
 			synchronized (getTreeLock()) {
 				manager.getGame().endTurn();
 				game_screen.getCanvas().hideActionBar();
-				game_screen.getCanvas().closeAllInternalFrames();
+				game_screen.getCanvas().closeAllInternalWindows();
 			}
 		}
 

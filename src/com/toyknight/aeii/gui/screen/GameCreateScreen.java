@@ -1,6 +1,7 @@
 package com.toyknight.aeii.gui.screen;
 
 import com.toyknight.aeii.Language;
+import com.toyknight.aeii.audio.AudioManager;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.creator.GameCreator;
 import com.toyknight.aeii.core.creator.GameCreatorListener;
@@ -62,10 +63,10 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 		this.add(btn_back);
 		btn_play.setBounds(width - ts * 3 - ts / 2, height - ts, ts * 3, ts / 2);
 		btn_play.registerKeyboardAction(
-				btn_next_listener,
+				btn_play_listener,
 				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
-		btn_play.addActionListener(btn_next_listener);
+		btn_play.addActionListener(btn_play_listener);
 		this.add(btn_play);
 		map_list.setFocusable(false);
 		map_list.setBackground(Color.DARK_GRAY);
@@ -152,11 +153,12 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 		}
 	};
 
-	private final ActionListener btn_next_listener = new ActionListener() {
+	private final ActionListener btn_play_listener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Game game = game_creator.create();
 			getContext().gotoGameScreen(game);
+            AudioManager.stopBgm();
 		}
 	};
 

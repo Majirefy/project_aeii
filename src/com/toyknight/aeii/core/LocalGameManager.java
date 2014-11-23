@@ -139,7 +139,7 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
 	}
 	
 	@Override
-	public void onGameWin(int alliance) {
+	public void onGameOver(int alliance) {
 		
 	}
 
