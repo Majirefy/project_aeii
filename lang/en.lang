@@ -14,6 +14,7 @@ LB_BUY=Buy
 LB_CLOSE=Close
 LB_MSG_OCCUPIED=Occupied
 LB_MSG_REPAIRED=Repaired
+LB_MSG_GAME_OVER=Team %team win!
 LB_UNIT_NAME_0_0=Soldier
 LB_UNIT_NAME_1_0=Archer
 LB_UNIT_NAME_2_0=Water Element

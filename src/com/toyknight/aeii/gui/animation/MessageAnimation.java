@@ -15,21 +15,23 @@ import java.awt.RenderingHints;
  */
 public class MessageAnimation extends MapAnimation {
 
-	private int delay = 0;
 	private float alpha = 1.0f;
+    private int current_delay = 0;
 
 	private final int ts;
+    private final int delay;
 	private final String message;
 
-	public MessageAnimation(String message, int ts) {
+	public MessageAnimation(String message, int delay, int ts) {
 		this.ts = ts;
+        this.delay = delay;
 		this.message = message;
 	}
 
 	@Override
 	protected void doUpdate() {
-		if (delay < 15) {
-			delay++;
+		if (current_delay < delay) {
+			current_delay++;
 		} else {
 			if (alpha > 0.2f) {
 				alpha -= 0.2f;

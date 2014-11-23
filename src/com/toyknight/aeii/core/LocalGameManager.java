@@ -140,7 +140,8 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
 	
 	@Override
 	public void onGameOver(int alliance) {
-		
+		Animation animation = animation_provider.getGameOverAnimation(alliance);
+        submitAnimation(animation);
 	}
 
 	public void update() {
