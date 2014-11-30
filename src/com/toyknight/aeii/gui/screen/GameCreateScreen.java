@@ -40,13 +40,14 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 	private final AEIIButton btn_refresh = new AEIIButton(Language.getText("LB_REFRESH"));
 	private final AEIIButton btn_preview = new AEIIButton(Language.getText("LB_PREVIEW"));
 	private final JList map_list = new JList();
-	private final MiniMap mini_map = new MiniMap();
+	private final MiniMap mini_map;
 
 	private GameCreator game_creator;
 	private MapProvider map_provider;
 
 	public GameCreateScreen(Dimension size, AEIIApplet context) {
 		super(size, context);
+        this.mini_map = new MiniMap(size);
 	}
 
 	@Override

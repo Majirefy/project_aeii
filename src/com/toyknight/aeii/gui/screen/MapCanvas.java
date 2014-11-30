@@ -18,6 +18,7 @@ import com.toyknight.aeii.gui.animation.MapAnimation;
 import com.toyknight.aeii.gui.animation.UnitAnimation;
 import com.toyknight.aeii.gui.animation.UnitDestroyedAnimation;
 import com.toyknight.aeii.gui.screen.internal.ActionBar;
+import com.toyknight.aeii.gui.screen.internal.MiniMap;
 import com.toyknight.aeii.gui.screen.internal.UnitStore;
 import com.toyknight.aeii.gui.sprite.AttackCursorSprite;
 import com.toyknight.aeii.gui.sprite.CursorSprite;
@@ -29,6 +30,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Set;
@@ -45,6 +47,7 @@ public class MapCanvas extends Screen {
 
     private final ActionBar action_bar;
     private final UnitStore unit_store;
+    private final MiniMap mini_map;
 
     private Rectangle viewport;
 
@@ -67,11 +70,20 @@ public class MapCanvas extends Screen {
         this.setOpaque(false);
         action_bar = new ActionBar(this, ts);
         unit_store = new UnitStore(this, ts);
+        mini_map = new MiniMap(size);
     }
 
     public void init() {
+        mini_map.getRootPane().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                game_screen.getActionPanel().update();
+            }
+        });
+        this.add(mini_map);
         this.add(action_bar);
         this.add(unit_store);
+        mini_map.setVisible(false);
         unit_store.setVisible(false);
         cursor = new CursorSprite(ts);
         cursor.setInterval(SPRITE_INTERVAL);
@@ -110,13 +122,16 @@ public class MapCanvas extends Screen {
         if (unit_store.isVisible()) {
             closeUnitStore();
         }
+        if (mini_map.isVisible()) {
+            closeMiniMap();
+        }
         game_screen.getActionPanel().update();
     }
 
     public boolean isInternalWindowShown() {
-        return unit_store.isVisible();
+        return unit_store.isVisible() || mini_map.isVisible();
     }
-
+    
     private boolean isOnUnitAnimation(int x, int y) {
         if (isAnimating()) {
             Animation current_animation = manager.getCurrentAnimation();
@@ -158,6 +173,24 @@ public class MapCanvas extends Screen {
                 store_width, store_height);
         unit_store.display(map_x, map_y);
         game_screen.getActionPanel().update();
+    }
+    
+    public void showMiniMap() {
+        if (!mini_map.isVisible()) {
+            mini_map.display(getGame().getMap());
+            game_screen.getActionPanel().update();
+        }
+    }
+
+    public void closeMiniMap() {
+        if (mini_map.isVisible()) {
+            mini_map.setVisible(false);
+            game_screen.getActionPanel().update();
+        }
+    }
+
+    public boolean isMiniMapShown() {
+        return mini_map.isVisible();
     }
 
     protected void onMousePress(MouseEvent e) {
@@ -239,6 +272,13 @@ public class MapCanvas extends Screen {
             }
             if (e.getKeyCode() == Configuration.getKeyRight()) {
                 this.right_pressed = true;
+            }
+        }
+        if(e.getKeyCode() == Configuration.getKeyCancel()) {
+            if(isInternalWindowShown()) {
+                closeAllInternalWindows();
+            } else {
+                //show menu
             }
         }
     }

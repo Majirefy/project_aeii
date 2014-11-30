@@ -98,13 +98,13 @@ public class UnitStore extends AEIIPanel {
                 close();
             }
         });
-        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-        btn_close.registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                close();
-            }
-        }, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+//        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+//        btn_close.registerKeyboardAction(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                close();
+//            }
+//        }, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
         this.add(btn_close);
         last_selection = 0;
     }
