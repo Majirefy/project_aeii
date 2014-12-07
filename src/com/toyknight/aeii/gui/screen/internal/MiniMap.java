@@ -51,7 +51,6 @@ public class MiniMap extends JInternalFrame {
                 setVisible(false);
             }
         });
-
         display_units = true;
     }
 

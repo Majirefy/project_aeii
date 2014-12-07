@@ -99,6 +99,7 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		btn_preview.addActionListener(btn_preview_listener);
 		this.add(btn_preview);
+        this.mini_map.setDisplayUnits(false);
 		this.add(mini_map);
 	}
 
@@ -123,7 +124,6 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 		if(maps.length > 0) {
 			map_list.setSelectedIndex(0);
 		}
-		//updateButtons();
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class GameCreateScreen extends Screen implements GameCreatorListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Game game = game_creator.create();
-			getContext().gotoGameScreen(game);
+			getContext().gotoGameScreen(game, AEIIApplet.MODE_LOCAL);
             AudioManager.stopBgm();
 		}
 	};

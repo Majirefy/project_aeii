@@ -1,14 +1,7 @@
 package com.toyknight.aeii.gui;
 
 import com.toyknight.aeii.Launcher;
-import com.toyknight.aeii.core.Game;
-import com.toyknight.aeii.core.GameFactory;
-import com.toyknight.aeii.core.map.Map;
-import com.toyknight.aeii.core.map.MapFactory;
-import com.toyknight.aeii.core.player.LocalPlayer;
-import com.toyknight.aeii.core.player.Player;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
@@ -113,24 +106,6 @@ public class CommandLine extends Thread {
 
 		public void setspeed(int speed) {
 			getContext().setCurrentFpsDelay(1000 / speed);
-		}
-
-		public void maptest(String map_name) {
-			try {
-				File map_file = new File("map/" + map_name);
-				Map map = MapFactory.createMap(map_file);
-				GameFactory game_factory = new GameFactory(map);
-				Player[] players = new Player[4];
-				for (int team = 0; team < 4; team++) {
-					players[team] = new LocalPlayer();
-					players[team].setAlliance(team);
-					players[team].setGold(1000);
-				}
-				Game game = game_factory.createBasicGame(players, 10);
-				getContext().gotoGameScreen(game);
-			} catch (IOException ex) {
-				System.err.println(ex.getClass().toString() + ": " + ex.getMessage());
-			}
 		}
 
 	}

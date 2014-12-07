@@ -2,7 +2,6 @@ package com.toyknight.aeii.core.creator;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameFactory;
-import com.toyknight.aeii.core.SuffixFileFilter;
 import com.toyknight.aeii.core.map.Map;
 import com.toyknight.aeii.core.player.LocalPlayer;
 import com.toyknight.aeii.core.player.Player;
@@ -12,8 +11,6 @@ import com.toyknight.aeii.core.player.Player;
  * @author toyknight
  */
 public class SkirmishGameCreator implements GameCreator {
-
-	private final SuffixFileFilter map_file_filter = new SuffixFileFilter("aem");
 
 	private GameCreatorListener listener;
 

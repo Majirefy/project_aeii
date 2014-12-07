@@ -5,10 +5,10 @@ import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.LocalGameManager;
 import com.toyknight.aeii.core.ManagerStateListener;
+import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SwingAnimatingProvider;
-import com.toyknight.aeii.gui.screen.internal.MiniMap;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -20,7 +20,6 @@ import java.awt.event.MouseEvent;
  */
 public class GameScreen extends Screen implements Displayable, ManagerStateListener {
 
-    private Game game;
     private LocalGameManager manager;
     private SwingAnimatingProvider animation_provider;
 
@@ -82,25 +81,21 @@ public class GameScreen extends Screen implements Displayable, ManagerStateListe
         this.addMouseListener(mouse_adapter);
     }
 
-    public void setGame(Game game) {
-        this.game = game;
-        this.manager = new LocalGameManager(game, animation_provider);
+    public void setGameManager(LocalGameManager manager) {
+        this.manager = manager;
+        Game game = manager.getGame();
         this.manager.setStateListener(this);
         this.animation_provider.setGameManager(manager);
         this.map_canvas.setGameManager(manager);
         this.action_panel.setGameManager(manager);
         this.status_panel.setGameManager(manager);
         this.tile_panel.setGameManager(manager);
-        this.game.setAnimationDispatcher(manager);
-        this.game.setGameListener(manager);
-        this.game.setDisplayable(this);
-        this.game.startTurn();
+        game.setAnimationDispatcher(manager);
+        game.setGameListener(manager);
+        game.setDisplayable(this);
+        game.startTurn();
         this.action_panel.update();
         this.tile_panel.update();
-    }
-
-    public Game getGame() {
-        return game;
     }
 
     @Override
@@ -129,6 +124,10 @@ public class GameScreen extends Screen implements Displayable, ManagerStateListe
 
     public MapCanvas getCanvas() {
         return map_canvas;
+    }
+    
+    public AnimationProvider getAnimationProvicer() {
+        return animation_provider;
     }
 
     @Override
