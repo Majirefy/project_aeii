@@ -17,26 +17,26 @@ public interface AnimationDispatcher {
 	
 	public boolean isAnimating();
 	
-	public void onOccupy();
+	public void submitOccupyAnimation();
 	
-	public void onRepair();
+	public void submitRepairAnimation();
+    
+    public void submitSummonAnimation(Unit summoner, int target_x, int target_y);
 	
-	public void onUnitHpChanged(Unit unit, int change);
+	public void submitUnitHpChangeAnimation(Unit unit, int change);
 	
-	public void onSummon(Unit summoner, int target_x, int target_y);
+    public void submitTileDestroyAnimation(int tile_index, int x, int y);
 	
-	public void onUnitAttack(Unit attacker, Unit defender, int damage);
+	public void submitUnitAttackAnimation(Unit attacker, Unit defender, int damage);
 	
-	public void onTileDestroyed(int tile_index, int x, int y);
+	public void submitUnitDestroyAnimation(Unit unit);
 	
-	public void onUnitDestroyed(Unit unit);
+	public void submitUnitLevelUpAnimation(Unit unit);
 	
-	public void onUnitLevelUp(Unit unit);
+	public void submitUnitMoveAnimation(Unit unit, int start_x, int start_y, int dest_x, int dest_y);
 	
-	public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y);
+	public void submitTurnStartAnimation(int turn, int income, int team);
 	
-	public void onTurnStart(int turn, int income, int team);
-	
-	public void onGameOver(int alliance);
+	public void submitGameOverAnimation(int alliance);
 	
 }

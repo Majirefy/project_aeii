@@ -2,7 +2,6 @@ package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -31,13 +30,13 @@ public class UnitHpChangeEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+	public void execute(GameListener listener) {
 		int actual_change = validateHpChange(unit, change);
 		int changed_hp = unit.getCurrentHp() + actual_change;
 		unit.setCurrentHp(changed_hp);
-		dispatcher.onUnitHpChanged(unit, actual_change);
+		listener.onUnitHpChange(unit, actual_change);
 		if (unit.getCurrentHp() <= 0) {
-			new UnitDestroyEvent(getGame(), unit).execute(null, dispatcher);
+			new UnitDestroyEvent(getGame(), unit).execute(listener);
 		}
 	}
 

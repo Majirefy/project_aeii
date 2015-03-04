@@ -2,7 +2,6 @@
 package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -27,8 +26,8 @@ public class UnitMoveFinishEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
-		listener.onUnitMoveFinished(unit, start_x, start_y);
+	public void execute(GameListener listener) {
+		listener.onUnitMoveFinish(unit, start_x, start_y);
 	}
 	
 }

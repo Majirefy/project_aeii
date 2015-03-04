@@ -223,9 +223,45 @@ public class GameManager implements GameListener {
 			return false;
 		}
 	}
-
+    
+    @Override
+    public void onOccupy() {
+    }
+    
+    @Override
+    public void onRepair() {
+    }
+    
+    @Override
+    public void onSummon(Unit summoner, int target_x, int target_y) {
+    }
+    
+    @Override
+    public void onUnitHpChange(Unit unit, int change) {
+    }
+    
+    @Override
+    public void onTileDestroy(int tile_index, int x, int y) {
+    }
+    
+    @Override
+    public void onUnitAttack(Unit attacker, Unit defender, int damage) {
+    }
+    
+    @Override
+    public void onUnitDestroy(Unit unit) {
+    }
+    
+    @Override
+    public void onUnitLevelUp(Unit unit) {
+    }
+    
+    @Override
+    public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
+    }
+    
 	@Override
-	public void onUnitActionFinished(Unit unit) {
+	public void onUnitActionFinish(Unit unit) {
 		if (getGame().isLocalPlayer()) {
 			if (UnitToolkit.canMoveAgain(unit)
 					&& getUnitToolkit().isUnitAccessible(unit)) {
@@ -238,7 +274,7 @@ public class GameManager implements GameListener {
 	}
 
 	@Override
-	public void onUnitMoveFinished(Unit unit, int start_x, int start_y) {
+	public void onUnitMoveFinish(Unit unit, int start_x, int start_y) {
 		switch (state) {
 			case STATE_MOVE:
 				if (unit.hasAbility(Ability.SIEGE_MACHINE)
@@ -257,6 +293,14 @@ public class GameManager implements GameListener {
 			//do nothing
 		}
 	}
+    
+    @Override
+    public void onTurnStart(int turn, int income, int team) {
+    }
+    
+    @Override
+    public void onGameOver(int team) {
+    }
 
 	public void doAttack(int target_x, int target_y) {
 		if (canAttack(target_x, target_y) && state == STATE_ATTACK) {

@@ -55,7 +55,7 @@ public class SkirmishGame extends Game {
 		if (checkEnemyUnitsCleaned(team) && checkEnemyCastlesCleaned(team)) {
 			clearGameEvents();
 			this.is_game_over = true;
-			getAnimationDispatcher().onGameOver(getAlliance(team));
+			getGameListener().onGameOver(getAlliance(team));
 		}
 	}
 

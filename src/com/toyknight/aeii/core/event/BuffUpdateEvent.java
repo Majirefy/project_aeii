@@ -2,7 +2,6 @@
 package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -23,7 +22,7 @@ public class BuffUpdateEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+	public void execute(GameListener listener) {
 		unit.updateBuff();
 	}
 	

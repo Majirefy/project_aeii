@@ -2,7 +2,6 @@ package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -32,14 +31,14 @@ public class UnitHealEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+	public void execute(GameListener listener) {
 		int base_heal = healer.getLevel() * 10 + 50;
 		int heal = target.getCurrentHp() + base_heal < target.getMaxHp()
 				? base_heal : target.getMaxHp() - target.getCurrentHp();
 		target.setCurrentHp(target.getCurrentHp() + heal);
-		dispatcher.onUnitHpChanged(target, heal);
+		listener.onUnitHpChange(target, heal);
 		if (healer.gainExperience(30)) {
-			dispatcher.onUnitLevelUp(healer);
+			listener.onUnitLevelUp(healer);
 		}
 	}
 

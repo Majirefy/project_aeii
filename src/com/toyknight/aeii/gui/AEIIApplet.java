@@ -180,6 +180,7 @@ public class AEIIApplet {
     public void gotoMainMenuScreen() {
         setCurrentScreen(ID_MAIN_MENU_SCREEN);
         main_menu_screen.getMenu().showMenu(MainMenu.ID_WELCOME_MENU);
+        AudioManager.stopBgm();
         AudioManager.playBgm("res/bgm/main_theme.ogg", true);
     }
 

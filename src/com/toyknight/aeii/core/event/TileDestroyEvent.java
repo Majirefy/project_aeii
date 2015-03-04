@@ -3,7 +3,6 @@ package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 
 /**
  *
@@ -31,9 +30,9 @@ public class TileDestroyEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+	public void execute(GameListener listener) {
 		int tile_index = getGame().getMap().getTileIndex(x, y);
-		dispatcher.onTileDestroyed(tile_index, x, y);
+		listener.onTileDestroy(tile_index, x, y);
 		short destroyed_tile_index = 
 				getGame().getMap().getTile(x, y).getDestroyedTileIndex();
 		getGame().getMap().setTile(destroyed_tile_index, x, y);

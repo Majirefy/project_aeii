@@ -2,7 +2,6 @@ package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.map.Tile;
 import com.toyknight.aeii.core.unit.Unit;
 
@@ -34,11 +33,11 @@ public class RepairEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+	public void execute(GameListener listener) {
 		Tile tile = getGame().getMap().getTile(x, y);
 		getGame().changeTile(tile.getRepairedTileIndex(), x, y);
 		getGame().standbyUnit(repairer.getX(), repairer.getY());
-		dispatcher.onRepair();
+		listener.onRepair();
 	}
 
 }

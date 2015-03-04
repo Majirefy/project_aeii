@@ -54,7 +54,9 @@ public class AudioManager {
     }
 
     public static void stopBgm() {
-        at.Stop();
+        if (at != null) {
+            at.Stop();
+        }
     }
 
     //can play multiple SE at a time

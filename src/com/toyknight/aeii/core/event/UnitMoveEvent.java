@@ -3,7 +3,6 @@ package com.toyknight.aeii.core.event;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.SkirmishGame;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
 
 /**
@@ -34,11 +33,11 @@ public class UnitMoveEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+	public void execute(GameListener listener) {
 		int start_x = unit.getX();
 		int start_y = unit.getY();
 		getGame().getMap().moveUnit(unit, dest_x, dest_y);
-		dispatcher.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
+		listener.onUnitMove(unit, start_x, start_y, dest_x, dest_y);
 		if(getGame() instanceof SkirmishGame) {
 			((SkirmishGame)getGame()).onUnitMoved(unit, dest_x, dest_y);
 		}

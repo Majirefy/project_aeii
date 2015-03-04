@@ -3,7 +3,6 @@ package com.toyknight.aeii.core.event;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.SkirmishGame;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
 
@@ -31,10 +30,10 @@ public class UnitDestroyEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+	public void execute(GameListener listener) {
 		getGame().getMap().removeUnit(unit.getX(), unit.getY());
 		getGame().updatePopulation(unit.getTeam());
-		dispatcher.onUnitDestroyed(unit);
+		listener.onUnitDestroy(unit);
 		if (unit.getIndex() != UnitFactory.getSkeletonIntex()) {
 			getGame().getMap().addTomb(unit.getX(), unit.getY());
 		}

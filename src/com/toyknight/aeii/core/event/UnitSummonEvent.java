@@ -36,14 +36,14 @@ public class UnitSummonEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+	public void execute(GameListener listener) {
 		int skeleton = UnitFactory.getSkeletonIntex();
 		getGame().getMap().removeTomb(target_x, target_y);
 		getGame().addUnit(skeleton, getGame().getCurrentTeam(), target_x, target_y);
 		getGame().getMap().getUnit(target_x, target_y).setStandby(true);
-		dispatcher.onSummon(summoner, target_x, target_y);
+		listener.onSummon(summoner, target_x, target_y);
 		if (summoner.gainExperience(30)) {
-			dispatcher.onUnitLevelUp(summoner);
+			listener.onUnitLevelUp(summoner);
 		}
 	}
 	

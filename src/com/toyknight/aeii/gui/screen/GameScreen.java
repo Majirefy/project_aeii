@@ -90,7 +90,6 @@ public class GameScreen extends Screen implements Displayable, ManagerStateListe
         this.action_panel.setGameManager(manager);
         this.status_panel.setGameManager(manager);
         this.tile_panel.setGameManager(manager);
-        game.setAnimationDispatcher(manager);
         game.setGameListener(manager);
         game.setDisplayable(this);
         game.startTurn();

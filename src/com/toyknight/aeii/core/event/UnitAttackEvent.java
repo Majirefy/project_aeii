@@ -2,7 +2,6 @@ package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 import com.toyknight.aeii.core.unit.Ability;
 import com.toyknight.aeii.core.unit.Buff;
 import com.toyknight.aeii.core.unit.Unit;
@@ -34,14 +33,14 @@ public class UnitAttackEvent implements GameEvent {
 	}
 
 	@Override
-	public void execute(GameListener listener, AnimationDispatcher dispatcher) {
+	public void execute(GameListener listener) {
 		int attack_damage = UnitToolkit.getDamage(attacker, defender, getGame().getMap());
-		doDamage(attacker, defender, attack_damage, dispatcher);
+		doDamage(attacker, defender, attack_damage, listener);
 		int attack_exp = 30;
 		if (defender.getCurrentHp() > 0) {
 			if (UnitToolkit.canCounter(defender, attacker)) {
 				int counter_damage = UnitToolkit.getDamage(defender, attacker, getGame().getMap());
-				doDamage(defender, attacker, counter_damage, dispatcher);
+				doDamage(defender, attacker, counter_damage, listener);
 				int counter_exp = 20;
 				if (attacker.getCurrentHp() > 0) {
 					attachBuffAfterAttack(defender, attacker);
@@ -49,7 +48,7 @@ public class UnitAttackEvent implements GameEvent {
 					counter_exp += 30;
 				}
 				if (defender.gainExperience(counter_exp)) {
-					dispatcher.onUnitLevelUp(defender);
+					listener.onUnitLevelUp(defender);
 				}
 			}
 			attachBuffAfterAttack(attacker, defender);
@@ -57,16 +56,16 @@ public class UnitAttackEvent implements GameEvent {
 			attack_exp += 30;
 		}
 		if (attacker.getCurrentHp() > 0 && attacker.gainExperience(attack_exp)) {
-			dispatcher.onUnitLevelUp(attacker);
+			listener.onUnitLevelUp(attacker);
 		}
 	}
 
-	private void doDamage(Unit attacker, Unit defender, int damage, AnimationDispatcher dispatcher) {
+	private void doDamage(Unit attacker, Unit defender, int damage, GameListener listener) {
 		damage = defender.getCurrentHp() > damage ? damage : defender.getCurrentHp();
 		defender.setCurrentHp(defender.getCurrentHp() - damage);
-		dispatcher.onUnitAttack(attacker, defender, damage);
+		listener.onUnitAttack(attacker, defender, damage);
 		if (defender.getCurrentHp() <= 0) {
-			new UnitDestroyEvent(getGame(), defender).execute(null, dispatcher);
+			new UnitDestroyEvent(getGame(), defender).execute(listener);
 		}
 	}
 

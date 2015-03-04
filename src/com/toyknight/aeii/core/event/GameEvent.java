@@ -2,7 +2,6 @@
 package com.toyknight.aeii.core.event;
 
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.animation.AnimationDispatcher;
 
 /**
  *
@@ -12,6 +11,6 @@ public interface GameEvent {
 	
 	public boolean canExecute();
 	
-	public void execute(GameListener listener, AnimationDispatcher dispatcher);
+	public void execute(GameListener listener);
 	
 }
