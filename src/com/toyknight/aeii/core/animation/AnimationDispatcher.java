@@ -1,7 +1,9 @@
 
 package com.toyknight.aeii.core.animation;
 
+import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.unit.Unit;
+import java.util.Map;
 
 /**
  *
@@ -24,6 +26,8 @@ public interface AnimationDispatcher {
     public void submitSummonAnimation(Unit summoner, int target_x, int target_y);
 	
 	public void submitUnitHpChangeAnimation(Unit unit, int change);
+    
+    public void submitMapHpChangeAnimation(Map<Point, Integer> hp_change_map);
 	
     public void submitTileDestroyAnimation(int tile_index, int x, int y);
 	

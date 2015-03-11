@@ -1,7 +1,9 @@
 
 package com.toyknight.aeii.core.animation;
 
+import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.unit.Unit;
+import java.util.Map;
 
 /**
  *
@@ -18,6 +20,8 @@ public interface AnimationProvider {
 	public Animation getSmokeAnimation(int x, int y);
 	
 	public Animation getUnitHpChangeAnimation(Unit unit, int change);
+    
+    public Animation getMapHpChangeAnimation(Map<Point, Integer> hp_change_map);
 	
 	public Animation getTileAttackedAnimation(int tile_index, int x, int y);
 	

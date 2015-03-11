@@ -2,6 +2,7 @@ package com.toyknight.aeii.core;
 
 import com.toyknight.aeii.core.event.BuffUpdateEvent;
 import com.toyknight.aeii.core.event.GameEvent;
+import com.toyknight.aeii.core.event.MapHpChangeEvent;
 import com.toyknight.aeii.core.event.OccupyEvent;
 import com.toyknight.aeii.core.event.RepairEvent;
 import com.toyknight.aeii.core.event.TileDestroyEvent;
@@ -24,6 +25,7 @@ import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -454,21 +456,60 @@ public class Game implements OperationListener {
     }
 
     private void updateUnits(int team) {
-        Set<Point> position_set = new HashSet(getMap().getUnitPositionSet());
-        for (Point position : position_set) {
+        Set<Point> unit_position_set = new HashSet(getMap().getUnitPositionSet());
+        HashMap<Point, Integer> hp_change_map = new HashMap();
+        
+        Set<Point> temp_unit_position_set = new HashSet(unit_position_set);
+        for (Point position : temp_unit_position_set) {
             Unit unit = getMap().getUnit(position.x, position.y);
             if (unit.getTeam() == team) {
+                int change = 0;
                 //deal with terrain heal issues
-                int heal = getTerrainHeal(unit);
-                submitGameEvent(new UnitHpChangeEvent(this, unit, heal));
+                change += getTerrainHeal(unit);
                 //deal with buff issues
                 if (unit.hasBuff(Buff.POISONED)) {
-                    submitGameEvent(new UnitHpChangeEvent(this, unit, -poison_damage));
+                    change -= poison_damage;
                 }
-                submitGameEvent(new BuffUpdateEvent(unit));
-                //deal with ability issues
+                hp_change_map.put(position, change);
+            } else {
+                //remove other teams' unit position
+                unit_position_set.remove(position);
             }
         }
+        //healing aura
+        for (Point position : unit_position_set) {
+            Unit unit = getMap().getUnit(position.x, position.y);
+            if (unit.hasAbility(Ability.HEALING_AURA)) {
+                for (int x = unit.getX() - 1; x <= unit.getX() + 1; x++) {
+                    for (int y = unit.getY() - 1; y <= unit.getY() + 1; y++) {
+                        //not healer himself
+                        if ((x != unit.getX() || y != unit.getY()) && getMap().isWithinMap(x, y)) {
+                            Point target_position = getMap().getPosition(x, y);
+                            //there's a unit at the position
+                            if (unit_position_set.contains(target_position)) {
+                                if (hp_change_map.keySet().contains(target_position)) {
+                                    int change = hp_change_map.get(target_position) + 15;
+                                    hp_change_map.put(target_position, change);
+                                } else {
+                                    hp_change_map.put(target_position, 15);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        submitGameEvent(new MapHpChangeEvent(this, hp_change_map));
+        //check for dead units after hp change
+        for (Point position : hp_change_map.keySet()) {
+            Unit unit = getMap().getUnit(position.x, position.y);
+            int change = hp_change_map.get(position);
+            int unit_hp = unit.getCurrentHp();
+            if (unit_hp + change <= 0) {
+                submitGameEvent(new UnitDestroyEvent(this, unit));
+            }
+        }
+        submitGameEvent(new BuffUpdateEvent(this, unit_position_set));
     }
 
     private void restoreUnit(Unit unit) {

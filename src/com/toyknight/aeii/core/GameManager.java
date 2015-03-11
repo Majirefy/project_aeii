@@ -6,6 +6,7 @@ import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.core.unit.UnitFactory;
 import com.toyknight.aeii.core.unit.UnitToolkit;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  *
@@ -238,6 +239,10 @@ public class GameManager implements GameListener {
     
     @Override
     public void onUnitHpChange(Unit unit, int change) {
+    }
+    
+    @Override
+    public void onMapHpChange(Map<Point, Integer> hp_change_map) {
     }
     
     @Override

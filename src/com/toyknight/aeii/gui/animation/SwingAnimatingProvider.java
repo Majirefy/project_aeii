@@ -9,6 +9,7 @@ import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.core.unit.Unit;
 import com.toyknight.aeii.gui.screen.GameScreen;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  *
@@ -62,6 +63,13 @@ public class SwingAnimatingProvider implements AnimationProvider {
     @Override
     public Animation getUnitHpChangeAnimation(Unit unit, int change) {
         UnitHpChangeAnimation animation = new UnitHpChangeAnimation(unit, change, ts);
+        processAnimation(animation);
+        return animation;
+    }
+    
+    @Override
+    public Animation getMapHpChangeAnimation(Map<Point, Integer> hp_change_map) {
+        MapHpChangeAnimation animation = new MapHpChangeAnimation(hp_change_map, ts);
         processAnimation(animation);
         return animation;
     }

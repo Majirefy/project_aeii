@@ -6,6 +6,7 @@ import com.toyknight.aeii.core.animation.AnimationListener;
 import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.core.unit.Unit;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -94,6 +95,11 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
     }
     
     @Override
+    public void onMapHpChange(Map<Point, Integer> hp_change_map) {
+        this.submitMapHpChangeAnimation(hp_change_map);
+    }
+    
+    @Override
     public void onTileDestroy(int tile_index, int x, int y) {
         this.submitTileDestroyAnimation(tile_index, x, y);
     }
@@ -144,6 +150,12 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
     @Override
     public void submitUnitHpChangeAnimation(Unit unit, int change) {
         Animation change_animation = animation_provider.getUnitHpChangeAnimation(unit, change);
+        submitAnimation(change_animation);
+    }
+    
+    @Override
+    public void submitMapHpChangeAnimation(Map<Point, Integer> hp_change_map) {
+        Animation change_animation = animation_provider.getMapHpChangeAnimation(hp_change_map);
         submitAnimation(change_animation);
     }
     

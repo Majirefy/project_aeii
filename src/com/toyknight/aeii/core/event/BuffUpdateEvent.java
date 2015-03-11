@@ -1,29 +1,34 @@
-
 package com.toyknight.aeii.core.event;
 
+import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
-import com.toyknight.aeii.core.unit.Unit;
+import com.toyknight.aeii.core.Point;
+import java.util.Set;
 
 /**
  *
  * @author toyknight
  */
 public class BuffUpdateEvent implements GameEvent {
-	
-	private final Unit unit;
-	
-	public BuffUpdateEvent(Unit unit) {
-		this.unit = unit;
-	}
-	
-	@Override
-	public boolean canExecute() {
-		return true;
-	}
 
-	@Override
-	public void execute(GameListener listener) {
-		unit.updateBuff();
-	}
-	
+    private final Game game;
+    private final Set<Point> unit_position_set;
+
+    public BuffUpdateEvent(Game game, Set<Point> unit_position_set) {
+        this.game = game;
+        this.unit_position_set = unit_position_set;
+    }
+
+    @Override
+    public boolean canExecute() {
+        return !unit_position_set.isEmpty();
+    }
+
+    @Override
+    public void execute(GameListener listener) {
+        for (Point position : unit_position_set) {
+            game.getMap().getUnit(position.x, position.y).updateBuff();
+        }
+    }
+
 }
