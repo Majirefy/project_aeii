@@ -73,60 +73,72 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
     public boolean canReverseMove() {
         return is_selected_unit_moved;
     }
-    
+
     @Override
     public void onOccupy() {
         this.submitOccupyAnimation();
     }
-    
+
     @Override
     public void onRepair() {
         this.submitRepairAnimation();
     }
-    
+
     @Override
     public void onSummon(Unit summoner, int target_x, int target_y) {
         this.submitSummonAnimation(summoner, target_x, target_y);
     }
-    
+
     @Override
     public void onUnitHpChange(Unit unit, int change) {
         this.submitUnitHpChangeAnimation(unit, change);
     }
-    
+
     @Override
     public void onMapHpChange(Map<Point, Integer> hp_change_map) {
-        this.submitMapHpChangeAnimation(hp_change_map);
+        if (!hp_change_map.isEmpty()) {
+            this.submitMapHpChangeAnimation(hp_change_map);
+        }
     }
-    
+
     @Override
     public void onTileDestroy(int tile_index, int x, int y) {
         this.submitTileDestroyAnimation(tile_index, x, y);
     }
-    
+
     @Override
     public void onUnitAttack(Unit attacker, Unit defender, int damage) {
         this.submitUnitAttackAnimation(attacker, defender, damage);
     }
-    
+
     @Override
     public void onUnitDestroy(Unit unit) {
         this.submitUnitDestroyAnimation(unit);
     }
-    
+
     @Override
     public void onUnitLevelUp(Unit unit) {
         this.submitUnitLevelUpAnimation(unit);
     }
-    
+
     @Override
     public void onUnitMove(Unit unit, int start_x, int start_y, int dest_x, int dest_y) {
         this.submitUnitMoveAnimation(unit, start_x, start_y, dest_x, dest_y);
     }
-    
+
     @Override
     public void onTurnStart(int turn, int income, int team) {
         this.submitTurnStartAnimation(turn, income, team);
+    }
+    
+    @Override
+    public void onMapFocused(int map_x, int map_y) {
+        listener.onMapFocused(map_x, map_y);
+    }
+
+    @Override
+    public void onGameEventCleared() {
+        listener.onGameEventCleared();
     }
 
     @Override
@@ -140,7 +152,7 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
         Animation msg_animation = animation_provider.getRepairedMessageAnimation();
         submitAnimation(msg_animation);
     }
-    
+
     @Override
     public void submitSummonAnimation(Unit summoner, int target_x, int target_y) {
         Animation summon_animation = animation_provider.getSummonAnimation(summoner, target_x, target_y);
@@ -152,13 +164,13 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
         Animation change_animation = animation_provider.getUnitHpChangeAnimation(unit, change);
         submitAnimation(change_animation);
     }
-    
+
     @Override
     public void submitMapHpChangeAnimation(Map<Point, Integer> hp_change_map) {
         Animation change_animation = animation_provider.getMapHpChangeAnimation(hp_change_map);
         submitAnimation(change_animation);
     }
-    
+
     @Override
     public void submitTileDestroyAnimation(int tile_index, int x, int y) {
         Animation animation = animation_provider.getTileAttackedAnimation(tile_index, x, y);
@@ -166,13 +178,13 @@ public class LocalGameManager extends GameManager implements AnimationDispatcher
         Animation smoke_animation = animation_provider.getSmokeAnimation(x, y);
         submitAnimation(smoke_animation);
     }
-    
+
     @Override
     public void submitUnitAttackAnimation(Unit attacker, Unit defender, int damage) {
         Animation attack_animation = animation_provider.getUnitAttackAnimation(attacker, defender, damage);
         submitAnimation(attack_animation);
     }
-    
+
     @Override
     public void submitUnitDestroyAnimation(Unit unit) {
         Animation animation = animation_provider.getUnitDestroyedAnimation(unit);

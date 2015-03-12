@@ -411,34 +411,46 @@ public class MapCanvas extends Screen {
             action_bar.setVisible(false);
         }
     }
-
-    public void locateViewport(int map_x, int map_y) {
+    
+    public Point getViewportLocation() {
+        return new Point(viewport.x, viewport.y);
+    }
+    
+    public Point createViewportLocation(int map_x, int map_y) {
+        Point location = new Point();
         int center_sx = map_x * ts;
         int center_sy = map_y * ts;
         int map_width = getGame().getMap().getWidth() * ts;
         int map_height = getGame().getMap().getHeight() * ts;
         if (viewport.width < map_width) {
-            viewport.x = center_sx - (viewport.width - ts) / 2;
-            if (viewport.x < 0) {
-                viewport.x = 0;
+            location.x = center_sx - (viewport.width - ts) / 2;
+            if (location.x < 0) {
+                location.x = 0;
             }
-            if (viewport.x > map_width - viewport.width) {
-                viewport.x = map_width - viewport.width;
+            if (location.x > map_width - viewport.width) {
+                location.x = map_width - viewport.width;
             }
         } else {
-            viewport.x = (map_width - viewport.width) / 2;
+            location.x = (map_width - viewport.width) / 2;
         }
         if (viewport.height < map_height) {
-            viewport.y = center_sy - (viewport.height - ts) / 2;
-            if (viewport.y < 0) {
-                viewport.y = 0;
+            location.y = center_sy - (viewport.height - ts) / 2;
+            if (location.y < 0) {
+                location.y = 0;
             }
-            if (viewport.y > map_height - viewport.height) {
-                viewport.y = map_height - viewport.height;
+            if (location.y > map_height - viewport.height) {
+                location.y = map_height - viewport.height;
             }
         } else {
-            viewport.y = (map_height - viewport.height) / 2;
+            location.y = (map_height - viewport.height) / 2;
         }
+        return location;
+    }
+
+    public void locateViewport(int map_x, int map_y) {
+        Point location = createViewportLocation(map_x, map_y);
+        viewport.x = location.x;
+        viewport.y = location.y;
     }
 
     public void dragViewport(int delta_x, int delta_y) {

@@ -3,6 +3,7 @@ package com.toyknight.aeii.core.event;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameListener;
 import com.toyknight.aeii.core.Point;
+import com.toyknight.aeii.core.unit.Unit;
 import java.util.Set;
 
 /**
@@ -27,7 +28,10 @@ public class BuffUpdateEvent implements GameEvent {
     @Override
     public void execute(GameListener listener) {
         for (Point position : unit_position_set) {
-            game.getMap().getUnit(position.x, position.y).updateBuff();
+            Unit unit = game.getMap().getUnit(position.x, position.y);
+            if(unit != null) {
+                unit.updateBuff();
+            }
         }
     }
 

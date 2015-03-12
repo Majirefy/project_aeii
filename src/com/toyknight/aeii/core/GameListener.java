@@ -36,5 +36,9 @@ public interface GameListener {
     public void onTurnStart(int turn, int income, int team);
 
     public void onGameOver(int team);
+    
+    public void onMapFocused(int map_x, int map_y);
+    
+    public void onGameEventCleared();
 
 }

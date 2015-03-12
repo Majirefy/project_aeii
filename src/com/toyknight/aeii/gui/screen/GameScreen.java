@@ -1,14 +1,15 @@
 package com.toyknight.aeii.gui.screen;
 
-import com.toyknight.aeii.core.Displayable;
 import com.toyknight.aeii.core.Game;
 import com.toyknight.aeii.core.GameManager;
 import com.toyknight.aeii.core.LocalGameManager;
-import com.toyknight.aeii.core.ManagerStateListener;
+import com.toyknight.aeii.core.GameManagerListener;
+import com.toyknight.aeii.core.Point;
 import com.toyknight.aeii.core.animation.AnimationProvider;
 import com.toyknight.aeii.gui.AEIIApplet;
 import com.toyknight.aeii.gui.Screen;
 import com.toyknight.aeii.gui.animation.SwingAnimatingProvider;
+import com.toyknight.aeii.gui.animation.ViewportMoveAnimation;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -18,7 +19,7 @@ import java.awt.event.MouseEvent;
  *
  * @author toyknight
  */
-public class GameScreen extends Screen implements Displayable, ManagerStateListener {
+public class GameScreen extends Screen implements GameManagerListener {
 
     private LocalGameManager manager;
     private SwingAnimatingProvider animation_provider;
@@ -91,26 +92,34 @@ public class GameScreen extends Screen implements Displayable, ManagerStateListe
         this.status_panel.setGameManager(manager);
         this.tile_panel.setGameManager(manager);
         game.setGameListener(manager);
-        game.setDisplayable(this);
         game.startTurn();
         this.action_panel.update();
         this.tile_panel.update();
     }
 
     @Override
-    public void updateControllers() {
+    public void onManagerStateChanged(GameManager manager) {
         getActionPanel().update();
+        getCanvas().updateActionBar();
     }
 
     @Override
-    public void locateViewport(int map_x, int map_y) {
-        getCanvas().locateViewport(map_x, map_y);
+    public void onMapFocused(int map_x, int map_y) {
+        //target viewport location
+        Point tlocation = getCanvas().createViewportLocation(map_x, map_y);
+        //current viewport location
+        Point clocation = getCanvas().getViewportLocation();
+        //see if the viewport needs to move
+        if (!tlocation.equals(clocation)) {
+            ViewportMoveAnimation animation = 
+                    new ViewportMoveAnimation(getCanvas(), tlocation.x, tlocation.y);
+            manager.submitAnimation(animation);
+        }
     }
 
     @Override
-    public void managerStateChanged(GameManager manager) {
-        action_panel.update();
-        map_canvas.updateActionBar();
+    public void onGameEventCleared() {
+        getActionPanel().update();
     }
 
     public ActionPanel getActionPanel() {
@@ -124,7 +133,7 @@ public class GameScreen extends Screen implements Displayable, ManagerStateListe
     public MapCanvas getCanvas() {
         return map_canvas;
     }
-    
+
     public AnimationProvider getAnimationProvicer() {
         return animation_provider;
     }

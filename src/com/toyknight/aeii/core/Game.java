@@ -43,7 +43,6 @@ public class Game implements OperationListener {
     private int current_team;
     private final Player[] player_list;
     private GameListener game_listener;
-    private Displayable displayable;
     private final Queue<GameEvent> event_queue;
 
     private int turn;
@@ -99,10 +98,6 @@ public class Game implements OperationListener {
         return game_listener;
     }
 
-    protected Displayable getDisplayable() {
-        return displayable;
-    }
-
     protected void submitGameEvent(GameEvent e) {
         event_queue.add(e);
     }
@@ -141,10 +136,6 @@ public class Game implements OperationListener {
 
     public void setGameListener(GameListener listener) {
         this.game_listener = listener;
-    }
-
-    public void setDisplayable(Displayable displayable) {
-        this.displayable = displayable;
     }
 
     @Override
@@ -447,18 +438,18 @@ public class Game implements OperationListener {
         getCurrentPlayer().addGold(income);
 
         game_listener.onTurnStart(turn, income, getCurrentTeam());
-
-        updateUnits(getCurrentTeam());
-
+        
         //posit viewport
         Point team_start_position = getTurnStartPosition(getCurrentTeam());
-        displayable.locateViewport(team_start_position.x, team_start_position.y);
+        game_listener.onMapFocused(team_start_position.x, team_start_position.y);
+
+        updateUnits(getCurrentTeam());
     }
 
     private void updateUnits(int team) {
         Set<Point> unit_position_set = new HashSet(getMap().getUnitPositionSet());
         HashMap<Point, Integer> hp_change_map = new HashMap();
-        
+
         Set<Point> temp_unit_position_set = new HashSet(unit_position_set);
         for (Point position : temp_unit_position_set) {
             Unit unit = getMap().getUnit(position.x, position.y);
@@ -487,6 +478,7 @@ public class Game implements OperationListener {
                             Point target_position = getMap().getPosition(x, y);
                             //there's a unit at the position
                             if (unit_position_set.contains(target_position)) {
+                                //see if this unit already has hp change
                                 if (hp_change_map.keySet().contains(target_position)) {
                                     int change = hp_change_map.get(target_position) + 15;
                                     hp_change_map.put(target_position, change);
@@ -551,13 +543,13 @@ public class Game implements OperationListener {
             while (!event.canExecute()) {
                 event = event_queue.poll();
                 if (event == null) {
-                    displayable.updateControllers();
+                    game_listener.onGameEventCleared();
                     return;
                 }
             }
             event.execute(game_listener);
             if (event_queue.isEmpty()) {
-                displayable.updateControllers();
+                game_listener.onGameEventCleared();
             }
         }
     }
